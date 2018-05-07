@@ -1,1 +1,3 @@
-e-dev.io
+# omega
+
+data driven JavaScript library, based on JSX

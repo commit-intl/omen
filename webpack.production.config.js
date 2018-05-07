@@ -33,33 +33,6 @@ module.exports = {
         use: [
           {loader: 'babel'}
         ],
-      },
-      {
-        test: /\.(css|scss)$/,
-        use: [
-          {loader: 'style'},
-          {
-            loader: 'css',
-            options: {
-              modules: true,
-              importLoaders: 4,
-              localIdentName: '[hash:base64:4]',
-              camelCase: true,
-              minimize: true,
-            },
-          },
-          {
-            loader: 'postcss',
-            options: {
-              plugins() {
-                return [
-                  autoprefixer({browsers: ['last 2 versions']}),
-                ];
-              },
-            },
-          },
-          {loader: 'sass'},
-        ]
       }
     ]
   }

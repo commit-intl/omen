@@ -27,50 +27,6 @@ module.exports = {
         use: [
           {loader: 'babel'}
         ],
-      },
-      {
-        test: /\.html$/,
-        use: [{
-          loader: 'html',
-          options: {
-            minimize: true
-          }
-        }],
-      },
-      {
-        test: /\.(css|scss)$/,
-        use: [
-          {loader: 'style'},
-          {
-            loader: 'css',
-            options: {
-              modules: true,
-              importLoaders: 4,
-              localIdentName: '[name]__[local]___[hash:base64:5]',
-              camelCase: 'dashes',
-              minimize: true,
-            },
-          },
-          {
-            loader: 'postcss',
-            options: {
-              plugins() {
-                return [
-                  autoprefixer({browsers: ['last 2 versions']}),
-                ];
-              },
-            },
-          },
-          {
-            loader: 'sass',
-            options: {
-              data: '@import "styles/variables";',
-              includePaths: [
-                path.join(__dirname, 'src')
-              ]
-            },
-          },
-        ]
       }
     ]
   }
