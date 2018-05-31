@@ -4,10 +4,10 @@
   "description": "data driven JavaScript library, based on JSX",
   "main": "index.js",
   "scripts": {
-    "start": "node server.js",
-    "start:prod": "set NODE_ENV=production&& node server.js",
-    "build": "(rm -rf dist/** || mkdir dir dist) && cp index.html dist && webpack -p",
-    "build:prod": "set NODE_ENV=production&& rm -rf dist && mkdir dist && cp test/index.html dist && cp -R test/assets dist && webpack -p",
+    "start": "webpack-dev-server",
+    "start:prod": "set NODE_ENV=production&& webpack-dev-server",
+    "build": "rm -rf dist && mkdir dist && cp example/index.html dist && webpack -p",
+    "build:prod": "set NODE_ENV=production&& rm -rf dist && mkdir dist && cp example/index.html dist && webpack -p",
     "test": "echo  NO TESTS DEFINED! TODO: define some",
     "lint": "eslint src",
     "deploy": "gh-pages -d dist"
@@ -17,16 +17,17 @@
   "dependencies": {},
   "devDependencies": {
     "autoprefixer": "^6.7.7",
-    "babel-cli": "^6.24.1",
-    "babel-core": "^6.0.20",
-    "babel-eslint": "^6.1.2",
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
+    "babel-eslint": "^8.2.3",
     "babel-loader": "^7.1.4",
-    "babel-plugin-transform-react-jsx": "^6.4.0",
-    "babel-preset-es2015": "^6.0.15",
-    "babel-preset-stage-0": "^6.0.15",
+    "babel-plugin-transform-react-jsx": "^6.24.1",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
     "eslint": "^3.2.2",
-    "extract-text-webpack-plugin": "^3.0.2",
-    "webpack": "^3.0.2",
-    "webpack-dev-server": "^2.4.1"
+    "extract-text-webpack-plugin": "^4.0.0-beta.0",
+    "webpack": "^4.10.2",
+    "webpack-cli": "^2.1.4",
+    "webpack-dev-server": "^3.1.4"
   }
 }

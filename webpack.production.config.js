@@ -5,7 +5,8 @@ const autoprefixer = require('autoprefixer');
 
 module.exports = {
   devtool: 'source-map',
-  context: path.join(__dirname, 'test'),
+  mode: 'production',
+  context: path.join(__dirname, 'example'),
   entry: [
     //'webpack-dev-server/client?http://localhost:3000',
     './index'

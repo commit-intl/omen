@@ -5,10 +5,11 @@ const autoprefixer = require('autoprefixer');
 
 module.exports = {
   devtool: 'source-map',
-  context: path.join(__dirname, 'test'),
+  mode: 'development',
+  context: path.join(__dirname, 'example'),
   entry: [
     //'webpack-dev-server/client?http://localhost:3000',
-    './index.js',
+    './index',
   ],
   output: {
     path: path.join(__dirname, 'dist', 'static'),
@@ -21,7 +22,7 @@ module.exports = {
   plugins: [
   ],
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.js$/,
         use: [
