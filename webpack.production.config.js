@@ -4,17 +4,22 @@ const webpack = require('webpack')
 const autoprefixer = require('autoprefixer');
 
 module.exports = {
+  devServer: {
+    contentBase: path.join(__dirname, "dist"),
+    compress: true,
+    hot: true,
+    port: 8080
+  },
   devtool: 'source-map',
   mode: 'production',
-  context: path.join(__dirname, 'example'),
+  context: __dirname,
   entry: [
     //'webpack-dev-server/client?http://localhost:3000',
-    './index'
+    './example/index',
   ],
   output: {
-    path: path.join(__dirname, 'dist', 'static'),
+    path: path.join(__dirname, 'dist'),
     filename: 'bundle.js',
-    publicPath: '/static/'
   },
   resolveLoader: {
     moduleExtensions: ['-loader']
@@ -28,11 +33,23 @@ module.exports = {
     })
   ],
   module: {
-    loaders: [
+    rules: [
+      {
+        test: /\.html/,
+        use: [
+          {loader: 'html'},
+        ],
+      },
       {
         test: /\.js$/,
         use: [
-          {loader: 'babel'}
+          {loader: 'babel'},
+        ],
+      },
+      {
+        test: /\.(css|scss|sass)/,
+        use: [
+          {loader: 'sass'},
         ],
       }
     ]

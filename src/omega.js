@@ -3,6 +3,8 @@ import Component from './component';
 const omega = {
   create: (component, props, ...children) => {
 
+    if(!props) props = {};
+
     switch (typeof component) {
       case 'function':
         props.children = children;
@@ -22,19 +24,13 @@ const omega = {
     let directives = {};
     let childrenElements = [];
 
-    const alias = {
-      'className': 'class',
-    };
-
     for (let attr in props) {
-      let key = alias[attr] || attr;
-
-      if (key.indexOf('on') === 0) {
-        listeners[key.substr(2).toLowerCase()] = props[attr];
-      } else if (key[0] === '$') {
-        directives[key] = props[attr];
+      if (attr.indexOf('on') === 0) {
+        listeners[attr.substr(2).toLowerCase()] = props[attr];
+      } else if (attr[0] === '$') {
+        directives[attr] = props[attr];
       } else {
-        elementProps[key] = props[attr];
+        elementProps[attr] = props[attr];
       }
     }
 

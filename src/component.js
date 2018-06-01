@@ -59,7 +59,7 @@ Component.prototype = {
       if (mapping[i]) {
         props[i] = mapping[i](props[i]);
       }
-      this.element.setAttribute(i, props[i]);
+      this.element[i] = props[i];
     }
 
     console.log('update', props);

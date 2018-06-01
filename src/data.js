@@ -30,12 +30,12 @@ DataStore.prototype = {
     if(path) {
       let parent = this.get(path.slice(0,-1));
       if(parent) {
-        parent[path[path.length-1]] = value;
+        parent[path[path.length-1]] = typeof value === 'function' ? value(parent[path[path.length-1]]) : value;
         this.notify(path);
       }
     }
     else {
-      this.state = value;
+      this.state = typeof value === 'function' ? value(parent[path[path.length-1]]) : value;
       this.notify(path);
     }
   },
