@@ -35,7 +35,21 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.html/,
+        test: /\.(css|scss|sass)$/,
+        use: ["" +
+        "style", // creates style nodes from JS strings
+          {
+            loader: "css",
+            options: {
+              modules: true,
+              localIdentName: '[path][name]__[local]--[hash:base64:5]'
+            }
+          }, // translates CSS into CommonJS
+          "sass" // compiles Sass to CSS
+        ],
+      },
+      {
+        test: /\.html$/,
         use: [
           {loader: 'html'},
         ],
@@ -46,12 +60,6 @@ module.exports = {
           {loader: 'babel'},
         ],
       },
-      {
-        test: /\.(css|scss|sass)/,
-        use: [
-          {loader: 'sass'},
-        ],
-      }
     ]
   }
 };
