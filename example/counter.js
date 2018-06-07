@@ -1,5 +1,4 @@
-import omega from 'omega/omega';
-import DataStore from 'omega/data';
+import { omega, DataStore, _o } from 'omega';
 import styles from './counter.scss';
 
 const store =
@@ -15,37 +14,42 @@ const store =
 const Button = ({ value, path }) => {
   return <button
     className={styles.button}
-    onClick={(event) => store.set(path, (data) => data + value)}>
+    onClick={(event) => {store.set(path, (data) => data + value)}}>
     {(value > 0 ? '+' : '') + value}
   </button>;
 };
 
-const Input = ({path}) => {
-  return <input
-    $bind={path}
-    type="number"
-    style={{ border: '2 solid orange', fontSize: '16px', padding: '10px' }}
-    value={(data) => data}
-    onChange={(event) => {
-      store.set(path, parseInt(event.target.value) || 0)
-    }}
-  />
+const Input = ({ path }) => {
+  return (
+    <_o bind={path}>
+      <input
+        type="number"
+        style={{ border: '2 solid orange', fontSize: '16px', padding: '10px' }}
+        value={(data) => data}
+        onChange={(event) => {
+          store.set(path, parseInt(event.target.value) || 0)
+        }}
+      />
+    </_o>
+  )
 };
 
 const Counter = ({ path }) => {
   return (
     <div>
-      <Button value={-5} path={path}/>
-      <Button value={-1} path={path}/>
-      <Input path={path}/>
-      <Button value={+1} path={path}/>
-      <Button value={+5} path={path}/>
-      <div $bind={path} className={styles.display}>
-        {(data) => data}
-      </div>
+      <_o bind={path}>
+        <Button value={-5} path={path}/>
+        <Button value={-1} path={path}/>
+        <Input path={path}/>
+        <Button value={+1} path={path}/>
+        <Button value={+5} path={path}/>
+        <div $bind={path} className={styles.display}>
+          {(data) => data}
+        </div>
+      </_o>
     </div>
   );
-}
+};
 
 omega.render(
   <div className={styles.wrapper}>

@@ -1,6 +1,6 @@
 const path = require('path');
 const glob = require('glob');
-const webpack = require('webpack')
+const webpack = require('webpack');
 const autoprefixer = require('autoprefixer');
 
 module.exports = {
@@ -61,5 +61,13 @@ module.exports = {
         ],
       },
     ]
+  },
+  resolve: {
+    alias: {
+      'omega': path.join(__dirname, 'src/index.js'),
+    },
+    modules: [
+      "node_modules",
+    ],
   }
 };

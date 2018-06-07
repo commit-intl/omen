@@ -60,7 +60,7 @@ module.exports = {
   },
   resolve: {
     alias: {
-      'omega': path.join(__dirname, 'src'),
+      'omega': path.join(__dirname, 'src/index.js'),
     },
     modules: [
       "node_modules",
