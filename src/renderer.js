@@ -9,8 +9,8 @@ export const Renderer = {
     let element;
 
     if (typeof component === 'function') {
-      props.children = children;
-      return component(props);
+      element = () => document.createDocumentFragment();
+      return new BasicComponent(element, props, [component({...props, children: children})]);
     }
     else if (typeof component === 'object') {
       props.children = children;
@@ -26,9 +26,9 @@ export const Renderer = {
     }
   },
 
-  render: (component, store) => {
+  render: (component, appendTo, store) => {
     component.init(store);
-    document.body.appendChild(
+    appendTo.appendChild(
       component && component.render()
     );
   }

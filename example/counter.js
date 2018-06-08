@@ -1,4 +1,4 @@
-import { omega, DataStore, _o } from 'omega';
+import { omega, DataStore, _o, createDataStoreViewer } from 'omega';
 import styles from './counter.scss';
 
 const store =
@@ -16,21 +16,21 @@ store.addListener('', (data) => console.log('STORE_CHANGE', data));
 const Button = ({ value }) => {
   return <button
     className={styles.button}
-    onClick={(event, path) => {
-      console.log(path);
+    onClick={(event, data, path) => {
+      console.log(path)
       store.set(path, (data) => data + value)
     }}>
     {(value > 0 ? '+' : '') + value}
   </button>;
 };
 
-const Input = ({ path }) => {
+const Input = () => {
   return (
     <input
       type="number"
       style={{ border: '2 solid orange', fontSize: '16px', padding: '10px' }}
       value={(data) => data}
-      onChange={(event, path) => {
+      onChange={(event, data, path) => {
         console.log(path);
         store.set(path, parseInt(event.target.value) || 0)
       }}
@@ -38,7 +38,7 @@ const Input = ({ path }) => {
   )
 };
 
-const Counter = ({path}) => {
+const Counter = ({ path }) => {
   return (
     <div>
       <_o bind={path}>
@@ -59,8 +59,14 @@ omega.render(
   <div className={styles.wrapper}>
     <_o forIn={''}>
       <h1>{data => data}</h1>
-      <Counter path={data => (data) => `${data}.value`}/>
+      <Counter path={(data) => `${data}.value`}/>
     </_o>
   </div>,
+  document.body,
+  store
+);
+
+createDataStoreViewer(
+  document.body,
   store
 );

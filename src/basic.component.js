@@ -12,13 +12,13 @@ export class BasicComponent extends AbstractComponent {
     return this.element;
   }
 
-  update(data) {
+  update(data, path) {
     this.updateProps(data);
-    super.update(data);
+    super.update(data, path);
 
     for (let i in this.children) {
       if(this.children[i].update) {
-        this.children[i].update(data);
+        this.children[i].update(data, path);
       }
     }
   }
@@ -40,7 +40,7 @@ export class BasicComponent extends AbstractComponent {
 
     for (let attr in this.props) {
       if (attr.indexOf('on') === 0) {
-        const eventHandler = (handler) => (event) => handler(event, this.currentData);
+        const eventHandler = (handler) => (event) => handler(event, this.currentData, this.currentPath);
         this.listeners[attr.substr(2).toLowerCase()] = eventHandler(this.props[attr]);
       } else {
         newProps[attr] = this.props[attr];

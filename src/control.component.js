@@ -5,7 +5,6 @@ import BasicComponent from './basic.component';
 export class ControlComponent extends AbstractComponent {
   constructor(element, props, children) {
     super(element, props, children);
-    console.log(this.props);
   }
 
   init(store) {
@@ -15,7 +14,6 @@ export class ControlComponent extends AbstractComponent {
       this.bind(this.props.bind)
     }
     else if (this.props.forIn != null) {
-      console.log('forIn');
       this.forIn(this.props.forIn)
     }
 
@@ -41,7 +39,6 @@ export class ControlComponent extends AbstractComponent {
     if (this.store && path != null) {
       if (typeof path === 'function') {
         this.onUpdate.push((data) => {
-          console.log('try bind', data, path(data));
           this.bind(path(data));
         });
       }
@@ -52,7 +49,7 @@ export class ControlComponent extends AbstractComponent {
         let handler = (data) => {
           for (let i in this.children) {
             if(this.children[i].update) {
-              this.children[i].update(data);
+              this.children[i].update(data, path);
             }
           }
         };
@@ -61,47 +58,34 @@ export class ControlComponent extends AbstractComponent {
           path,
           handler
         );
-        console.log('addListener bind', path);
-
         this.listeners.push({ path, handler });
-
       }
     }
-    console.log('after bind', path, this.onUpdate, this.props.id);
   }
 
   forIn(path) {
     if (this.store && path != null) {
       this.templateChildren = this.children;
       this.children = [];
-      console.log('register forIn');
 
       let handler = (data) => {
-        console.log('update forIn', data);
         const keys = Object.keys(data);
         let i;
         for (i = 0; i < keys.length; i++) {
           let key = keys[i];
           if (this.children[i * this.templateChildren.length]) {
-            console.log('update existing', key, data[key]);
             for (let c = 0; c < this.templateChildren.length; c++) {
-              this.children[(i * this.templateChildren.length) + c].update(key);
+              this.children[(i * this.templateChildren.length) + c].update(key, path);
             }
           }
           else {
-            console.log('create clone', key, data[key]);
             let cloned = this.templateChildren.map(child => child.clone ? child.clone() : child);
             this.children.push(...cloned);
             cloned.forEach(clone => {
               if(typeof clone === 'object') {
                 clone.parent = this;
-                console.log(clone);
-                console.log('INIT');
                 clone.init(this.store);
-                console.log(clone);
-                console.log('UPDATE');
-                clone.update(key);
-                console.log(clone);
+                clone.update(key, path);
               }
             });
           }
@@ -114,16 +98,6 @@ export class ControlComponent extends AbstractComponent {
       );
 
       this.listeners.push({ path, handler });
-    }
-  }
-
-  update(data) {
-    console.log('update', data, this.onUpdate, this.props.id);
-    this.currentData = data;
-
-    for (let i in this.onUpdate) {
-      console.log('update', i, this.onUpdate[i], data);
-      this.onUpdate[i](data);
     }
   }
 

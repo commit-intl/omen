@@ -35,8 +35,8 @@ export class DataStore {
         this.notify(path);
       }
     }
-    else {
-      this.state = typeof value === 'function' ? value(parent[path[path.length-1]]) : value;
+    else if (path === ''){
+      this.state = typeof value === 'function' ? value(this.state) : value;
       this.notify(path);
     }
   }

@@ -12,6 +12,7 @@ export class AbstractComponent {
     this.onUpdate = [];
     this.children = children;
     this.currentData = undefined;
+    this.currentPath = undefined;
 
     for ( let i in this.children ) {
       if(typeof this.children[i] === 'object') {
@@ -40,11 +41,12 @@ export class AbstractComponent {
     return this.element;
   }
 
-  update(data) {
+  update(data, path) {
     this.currentData = data;
+    this.currentPath = path;
 
     for (let i in this.onUpdate) {
-      this.onUpdate[i](data);
+      this.onUpdate[i](data, path);
     }
   }
 
