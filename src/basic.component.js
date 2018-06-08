@@ -55,11 +55,15 @@ export class BasicComponent extends AbstractComponent {
           this.element.append(this.children[i]);
           break;
         case 'function':
-          let span = document.createElement('span');
+
+          let target = this.element;
+          if(this.children.length !== 1) {
+            target = document.createElement('span');
+            this.element.appendChild(target);
+          }
           this.onUpdate.push((data) => {
-            span.innerHTML = this.children[i](data);
+            target.innerHTML = this.children[i](data);
           });
-          this.element.appendChild(span);
           break;
         default:
           this.element.appendChild(this.children[i].element);
