@@ -1,10 +1,13 @@
 
 
 export class AbstractComponent {
-  constructor(element, props, children) {
+  constructor(elementFactory, props, children, listeners, onUpdate) {
     this.parent = undefined;
-    this.element = element;
+    this.elementFactory = elementFactory;
+    this.element = elementFactory();
     this.props = props;
+    this.listeners = listeners;
+    this.onUpdate = onUpdate;
 
     this.children = children;
     for ( let i in this.children ) {
@@ -37,6 +40,10 @@ export class AbstractComponent {
   destroy() {
     this.parent.removeChild(this);
     this.element.parentNode.removeChild(this.element);
+  }
+
+  clone() {
+    console.log('TODO: override Component.clone()');
   }
 }
 

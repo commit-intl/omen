@@ -1,4 +1,5 @@
 import AbstractComponent from './abstract.component';
+import {cloneDeep} from "./helpers";
 
 export class ControlComponent extends AbstractComponent {
   constructor(element, props, children) {
@@ -18,10 +19,23 @@ export class ControlComponent extends AbstractComponent {
   bind(path) {
     if(this.store && path) {
       let handler = (data) => {
-        if(data !== undefined) {
-          console.log('update', data);
-          this.update(data);
-        }
+        this.update(data);
+      };
+
+      this.store.addListener(
+        path,
+        handler
+      );
+
+      this.listeners.push({path, handler});
+    }
+  }
+
+  forOf(path) {
+    if(this.store && path) {
+      let handler = (data) => {
+
+        this.update(data);
       };
 
       this.store.addListener(
@@ -39,6 +53,14 @@ export class ControlComponent extends AbstractComponent {
     }
     this.listeners = [];
     super.destroy();
+  }
+
+  clone() {
+
+    let clonedChildren = this.children.map(child => child.clone());
+
+
+    return new ControlComponent(this.elementFactory, cloneDeep(this.props), clonedChildren);
   }
 }
 

@@ -30,15 +30,12 @@ export const Renderer = {
 
       let listeners = [];
       let elementProps = {};
-      let onRender = [];
-      let directives = {};
+      let onUpdate = [];
       let childrenElements = [];
 
       for (let attr in props) {
         if (attr.indexOf('on') === 0) {
           listeners[attr.substr(2).toLowerCase()] = props[attr];
-        } else if (attr[0] === '$') {
-          directives[attr] = props[attr];
         } else {
           elementProps[attr] = props[attr];
         }
@@ -51,7 +48,7 @@ export const Renderer = {
             break;
           case 'function':
             let fragment = document.createElement('span');
-            onRender.push((data) => {
+            onUpdate.push((data) => {
               console.log('jep', data);
               fragment.innerHTML = children[i](data)
             });
@@ -66,10 +63,10 @@ export const Renderer = {
 
 
       if (component === '_o') {
-        return new ControlComponent(element, elementProps, childrenElements);
+        return new ControlComponent(element, elementProps, childrenElements, listeners, onUpdate);
       }
       else {
-        return new BasicComponent(element, elementProps, childrenElements, listeners, onRender);
+        return new BasicComponent(element, elementProps, childrenElements, listeners, onUpdate);
       }
     }
   },

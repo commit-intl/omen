@@ -13,9 +13,7 @@ const mapping = {
 export class BasicComponent extends AbstractComponent {
 
   constructor(element, props, children, listeners, onUpdate) {
-    super(element, props, children);
-    this.listeners = listeners;
-    this.onUpdate = onUpdate;
+    super(element, props, children, listeners, onUpdate);
 
     for ( let i in children ) {
       children[i].parent = this;
