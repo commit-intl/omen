@@ -3,38 +3,42 @@ import styles from './counter.scss';
 
 const store =
   new DataStore({
-    counter_a: {
+    'Foo Counter': {
       value: 0,
     },
-    counter_b: {
+    'Baa Counter': {
       value: 0,
     }
   });
 
-const Button = ({ value, path }) => {
+store.addListener('', (data) => console.log('STORE_CHANGE', data));
+
+const Button = ({ value }) => {
   return <button
     className={styles.button}
-    onClick={(event) => {store.set(path, (data) => data + value)}}>
+    onClick={(event, path) => {
+      console.log(path);
+      store.set(path, (data) => data + value)
+    }}>
     {(value > 0 ? '+' : '') + value}
   </button>;
 };
 
 const Input = ({ path }) => {
   return (
-    <_o bind={path}>
-      <input
-        type="number"
-        style={{ border: '2 solid orange', fontSize: '16px', padding: '10px' }}
-        value={(data) => data}
-        onChange={(event) => {
-          store.set(path, parseInt(event.target.value) || 0)
-        }}
-      />
-    </_o>
+    <input
+      type="number"
+      style={{ border: '2 solid orange', fontSize: '16px', padding: '10px' }}
+      value={(data) => data}
+      onChange={(event, path) => {
+        console.log(path);
+        store.set(path, parseInt(event.target.value) || 0)
+      }}
+    />
   )
 };
 
-const Counter = ({ path }) => {
+const Counter = ({path}) => {
   return (
     <div>
       <_o bind={path}>
@@ -43,7 +47,7 @@ const Counter = ({ path }) => {
         <Input path={path}/>
         <Button value={+1} path={path}/>
         <Button value={+5} path={path}/>
-        <div $bind={path} className={styles.display}>
+        <div className={styles.display}>
           {(data) => data}
         </div>
       </_o>
@@ -53,8 +57,10 @@ const Counter = ({ path }) => {
 
 omega.render(
   <div className={styles.wrapper}>
-    <Counter path={'counter_a.value'}/>
-    <Counter path={'counter_b.value'}/>
+    <_o forIn={''}>
+      <h1>{data => data}</h1>
+      <Counter path={data => (data) => `${data}.value`}/>
+    </_o>
   </div>,
   store
 );

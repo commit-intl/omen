@@ -1,17 +1,22 @@
+import { cloneDeep } from './helpers';
+import ControlComponent from './control.component';
 
 
 export class AbstractComponent {
-  constructor(elementFactory, props, children, listeners, onUpdate) {
+  constructor(elementFactory, props, children) {
     this.parent = undefined;
     this.elementFactory = elementFactory;
-    this.element = elementFactory();
+    this.initialProps = props;
     this.props = props;
-    this.listeners = listeners;
-    this.onUpdate = onUpdate;
-
+    this.listeners = [];
+    this.onUpdate = [];
     this.children = children;
+    this.currentData = undefined;
+
     for ( let i in this.children ) {
-      this.children[i].parent = this;
+      if(typeof this.children[i] === 'object') {
+        this.children[i].parent = this;
+      }
     }
   }
 
@@ -19,8 +24,12 @@ export class AbstractComponent {
     this.store = store;
 
     for (let i in this.children) {
-      this.children[i].init(store);
+      if(this.children[i].init) {
+        this.children[i].init(store);
+      }
     }
+
+    this.element = this.elementFactory();
   }
 
   removeChild(child) {
@@ -32,18 +41,19 @@ export class AbstractComponent {
   }
 
   update(data) {
-    for (let i in this.children) {
-      this.children[i].update(data);
+    this.currentData = data;
+
+    for (let i in this.onUpdate) {
+      this.onUpdate[i](data);
     }
   }
 
   destroy() {
     this.parent.removeChild(this);
     this.element.parentNode.removeChild(this.element);
-  }
 
-  clone() {
-    console.log('TODO: override Component.clone()');
+    this.listeners = [];
+    this.onUpdate = [];
   }
 }
 

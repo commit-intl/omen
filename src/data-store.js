@@ -1,26 +1,27 @@
 
-const DataStore = function (state) {
-  this.state = state;
-  this.subs = {};
-};
+export class DataStore {
 
-DataStore.prototype = {
+  constructor(state) {
+    this.state = state;
+    this.subs = {};
+  }
+
   get(path) {
     if(path) {
       if(typeof path === 'string'){
         path = path.split('.')
       }
-      let data = this.state;
+      let dataStore = this.state;
       for (let i in path) {
-        if(!data) {
-          return data;
+        if(!dataStore) {
+          return dataStore;
         }
-        data = data[path[i]];
+        dataStore = dataStore[path[i]];
       }
-      return data;
+      return dataStore;
     }
     return this.state;
-  },
+  }
 
   set(path, value) {
     if(typeof path === 'string'){
@@ -38,7 +39,7 @@ DataStore.prototype = {
       this.state = typeof value === 'function' ? value(parent[path[path.length-1]]) : value;
       this.notify(path);
     }
-  },
+  }
 
   addListener(path, callback) {
     path = path || '';
@@ -47,13 +48,13 @@ DataStore.prototype = {
     }
     this.subs[path].push(callback);
     callback(this.get(path));
-  },
+  }
 
   removeListener(path, callback) {
     if(this.subs[path]) {
       this.subs[path] = this.subs[path].filter((cb) => cb !== callback);
     }
-  },
+  }
 
   notify(path) {
     if(typeof path === 'string'){
@@ -73,7 +74,7 @@ DataStore.prototype = {
       }
       data = typeof data === 'object' ? data[path[i]] : undefined;
     }
-  },
-};
+  }
+}
 
-module.exports = DataStore;
+export default DataStore;

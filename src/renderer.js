@@ -8,74 +8,29 @@ export const Renderer = {
 
     let element;
 
-    console.log(component);
-
     if (typeof component === 'function') {
       props.children = children;
       return component(props);
     }
     else if (typeof component === 'object') {
       props.children = children;
-      console.log('object', component, props);
       return component.render(props);
     }
+    else if (component === '_o') {
+      element = () => document.createDocumentFragment();
+      return new ControlComponent(element, props, children);
+    }
     else {
-      if (component === '_o') {
-        element = document.createDocumentFragment();
-      }
-      else {
-        element = document.createElement(component);
-      }
-
-
-      let listeners = [];
-      let elementProps = {};
-      let onUpdate = [];
-      let childrenElements = [];
-
-      for (let attr in props) {
-        if (attr.indexOf('on') === 0) {
-          listeners[attr.substr(2).toLowerCase()] = props[attr];
-        } else {
-          elementProps[attr] = props[attr];
-        }
-      }
-
-      for (let i in children) {
-        switch (typeof children[i]) {
-          case 'string':
-            element.append(children[i]);
-            break;
-          case 'function':
-            let fragment = document.createElement('span');
-            onUpdate.push((data) => {
-              console.log('jep', data);
-              fragment.innerHTML = children[i](data)
-            });
-            element.appendChild(fragment);
-            break;
-          default:
-            console.log(children[i]);
-            childrenElements.push(children[i]);
-            element.appendChild(children[i].element);
-        }
-      }
-
-
-      if (component === '_o') {
-        return new ControlComponent(element, elementProps, childrenElements, listeners, onUpdate);
-      }
-      else {
-        return new BasicComponent(element, elementProps, childrenElements, listeners, onUpdate);
-      }
+      element = () => document.createElement(component);
+      return new BasicComponent(element, props, children);
     }
   },
 
   render: (component, store) => {
+    component.init(store);
     document.body.appendChild(
       component && component.render()
     );
-    component.init(store);
   }
 };
 

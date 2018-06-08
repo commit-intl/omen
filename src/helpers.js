@@ -3,6 +3,10 @@ export const cloneDeep = (value) => {
     return value;
   }
 
+  if(value instanceof Date) {
+    return new Date(value.valueOf())
+  }
+
   if (value.length !== undefined) {
     const clone = [];
 
@@ -12,13 +16,23 @@ export const cloneDeep = (value) => {
 
     return clone;
   }
-  else {
-    const clone = {};
 
+  const clone = {};
+
+  for (let i in value) {
+    clone[i] = cloneDeep(value[i]);
+  }
+
+  return clone;
+};
+
+
+export const htmlPropMap = {
+  'style': (value) => {
+    let result = '';
     for (let i in value) {
-      clone[i] = cloneDeep(value[i]);
+      result += i.replace(/([A-Z])/g, '-$1').toLowerCase() + ':' + value[i] + ';';
     }
-
-    return clone;
+    return result;
   }
 };
