@@ -41,18 +41,20 @@ export class DataStore {
     }
   }
 
-  addListener(path, callback) {
+  addListener(path, callback, options) {
     path = path || '';
     if(!this.subs[path]) {
       this.subs[path] = [];
     }
-    this.subs[path].push(callback);
-    callback(this.get(path));
+    this.subs[path].push({callback, options});
+    if(!options || !options.noInitial) {
+      callback(this.get(path));
+    }
   }
 
   removeListener(path, callback) {
     if(this.subs[path]) {
-      this.subs[path] = this.subs[path].filter((cb) => cb !== callback);
+      this.subs[path] = this.subs[path].filter((listener) => listener && listener.callback !== callback);
     }
   }
 
@@ -67,10 +69,17 @@ export class DataStore {
       this.subs[''][s](data);
     }
 
-    for(let i in path) {
+    for(let i = 0; i < path.length; i++) {
       let key = path.slice(0, i+1).join('.');
-      for (let s in this.subs[key]) {
-        this.subs[key][s](data[path[i]]);
+      for (let s = 0; s < this.subs[key].length; s++) {
+        const listener = this.subs[key][s];
+        const options = listener.options;
+        if(
+          !options
+          || (options.depth != null && options.depth <= path.length - i - 1)
+        ) {
+          listener.callback(data[path[i]]);
+        }
       }
       data = typeof data === 'object' ? data[path[i]] : undefined;
     }
