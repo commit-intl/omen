@@ -34,6 +34,9 @@ export class AbstractComponent {
 
   removeChild(child) {
     this.children = this.children.filter(c => c !== child);
+    if(child && child.element && this.element) {
+      this.element.removeChild(child.element);
+    }
   }
 
   render() {
@@ -51,7 +54,6 @@ export class AbstractComponent {
 
   destroy() {
     this.parent.removeChild(this);
-    this.element.parentNode.removeChild(this.element);
 
     this.listeners = [];
     this.onUpdate = [];

@@ -24,7 +24,6 @@ export class DataStore {
   }
 
   set(path, value) {
-    console.log(path, value);
     if(typeof path === 'string'){
       path = path.split('.')
     }
@@ -32,7 +31,12 @@ export class DataStore {
     if(path) {
       let parent = this.get(path.slice(0,-1));
       if(parent) {
-        parent[path[path.length-1]] = typeof value === 'function' ? value(parent[path[path.length-1]]) : value;
+        if(value !== undefined) {
+          parent[path[path.length-1]] = typeof value === 'function' ? value(parent[path[path.length-1]]) : value;
+        }
+        else {
+          delete parent[path[path.length-1]];
+        }
         this.notify(path);
       }
     }
@@ -76,10 +80,9 @@ export class DataStore {
         for (let s = 0; s < this.subs[key].length; s++) {
           const listener = this.subs[key][s];
           const options = listener.options;
-          console.log('notify', path, data[path[i]]);
           if(
             !options
-            || (options.depth != null && options.depth <= path.length - i - 1)
+            || (options.depth != null && options.depth >= (path.length - i - 1))
           ) {
             listener.callback(data[path[i]]);
           }

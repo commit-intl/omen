@@ -5,9 +5,11 @@ const store =
   new DataStore({
     counters: {
       'Tempus Count': {
+        name: 'Tempus Count',
         value: 13,
       },
       'Eternal Size': {
+        name: 'Eternal Size',
         value: -3,
       }
     },
@@ -62,7 +64,7 @@ const NewCounter = () => {
     store.set(
       'counters',
       (data) => {
-        data[newCounter] = {value: 0};
+        data[newCounter] = {name: newCounter, value: 0};
         return data;
       });
 
@@ -79,10 +81,10 @@ const NewCounter = () => {
 
 omega.render(
   <div className={styles.wrapper}>
-    <div _forIn={'counters'}>
+    <div _for={'counters'}>
         <div className={styles.entry}>
           <div className={styles.remove} onClick={(event, data, path) => store.set(path, undefined)}>×</div>
-          <h1 className={styles.title}>{data => data}</h1>
+          <h1 className={styles.title}>{data => data && data.name}</h1>
           <Counter path={(data, path) => path+'.value'}/>
         </div>
     </div>

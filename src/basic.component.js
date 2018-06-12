@@ -31,9 +31,9 @@ export class BasicComponent extends AbstractComponent {
       this.appendChildren();
       this._bind(this.props._bind);
     }
-    else if (this.props._forIn != null) {
+    else if (this.props._for != null) {
       this.dontPropagateUpdates = true;
-      this._forIn(this.props._forIn)
+      this._for(this.props._for)
     }
     else {
       this.appendChildren();
@@ -76,21 +76,22 @@ export class BasicComponent extends AbstractComponent {
           this.storeListener = null;
         }
 
-        let handler = (data) => {
+        let handler = ((self, path) => (data) => {
           console.log('bind update', path, data);
-          this.update(data, path, true);
-        };
+          self.update(data, path, true);
+        })(this, path);
 
         this.store.addListener(
           path,
           handler
         );
+
         this.storeListener = {path, handler};
       }
     }
   }
 
-  _forIn(path) {
+  _for(path) {
     if (this.store && path != null) {
       this.currentPath = path;
       this.templateChildren = this.children;
@@ -104,7 +105,7 @@ export class BasicComponent extends AbstractComponent {
           let key = keys[i];
           if (this.children[i * this.templateChildren.length]) {
             for (let c = 0; c < this.templateChildren.length; c++) {
-              this.children[(i * this.templateChildren.length) + c].update(key, path + '.' + key);
+              this.children[(i * this.templateChildren.length) + c].update(data[key], path + '.' + key);
             }
           }
           else {
@@ -115,13 +116,26 @@ export class BasicComponent extends AbstractComponent {
               if (typeof clone === 'object') {
                 clone.parent = this;
                 clone.init(this.store);
-                clone.update(key, path + '.' + key);
+                clone.update(data[key], path + '.' + key);
               }
             });
           }
         }
 
-        this.appendChildren(this.children.length - newChildren.length, true);
+        let c = keys.length * this.templateChildren.length;
+        let children = [...this.children];
+        while( c < children.length) {
+          if(children[c].destroy) {
+            console.log('destroy', c, children[c]);
+            children[c].destroy();
+          }
+          c++;
+        }
+        this.children = this.children.slice(0, keys.length * this.templateChildren.length);
+
+        if(newChildren.length > 0) {
+          this.appendChildren(this.children.length - newChildren.length, true);
+        }
       };
 
       this.store.addListener(
