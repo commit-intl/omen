@@ -1,5 +1,4 @@
 import BasicComponent from './basic.component';
-import ControlComponent from './control.component';
 
 export const Renderer = {
   create: (component, props, ...children) => {
@@ -15,10 +14,6 @@ export const Renderer = {
     else if (typeof component === 'object') {
       props.children = children;
       return component.render(props);
-    }
-    else if (component === '_o') {
-      element = () => document.createDocumentFragment();
-      return new ControlComponent(element, props, children);
     }
     else {
       element = () => document.createElement(component);

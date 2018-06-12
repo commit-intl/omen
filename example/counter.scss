@@ -6,9 +6,35 @@
   width: calc(100% - 200px);
 }
 
+.entry {
+  position: relative;
+  max-width: 500px;
+  margin: auto;
+}
+
+.remove {
+  position: absolute;
+  top: -5px;
+  right: 5px;
+  padding: 5px;
+  font-size: 40px;
+  line-height: 0.6;
+  cursor: pointer;
+  color: #000000;
+  background-color: #ffffff;
+  transition: background-color .25s ease, color .25s ease;
+
+  &:hover {
+    color: #ffffff;
+    background-color: #000000;
+  }
+}
+
 .title {
   font-family: monospace;
   margin-top: 50px;
+  min-height: 1em;
+  line-height: 1;
 }
 
 .counter, .newCounter {

@@ -1,5 +1,4 @@
 import { cloneDeep } from './helpers';
-import ControlComponent from './control.component';
 
 
 export class AbstractComponent {
