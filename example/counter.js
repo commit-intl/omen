@@ -3,17 +3,32 @@ import styles from './counter.scss';
 
 const store =
   new DataStore({
-    counters: {
-      'Tempus Count': {
-        name: 'Tempus Count',
-        value: 13,
+      'Important': {
+        counters: [
+          {
+            name: 'Tempus Count',
+            value: 13,
+          },
+          {
+            name: 'Eternal Size',
+            value: -3,
+          }
+        ],
+        newCounter: '',
       },
-      'Eternal Size': {
-        name: 'Eternal Size',
-        value: -3,
+      'Unnecessary': {
+        counters: [
+          {
+            name: 'Memes Created',
+            value: 13,
+          },
+          {
+            name: 'Lifes Changed',
+            value: 0,
+          }
+        ],
+        newCounter: '',
       }
-    },
-    newCounter: ''
   });
 
 store.addListener('', (data) => console.log('STORE_CHANGE', data));
@@ -26,7 +41,7 @@ const Button = ({ value, onClick }) => {
   </button>;
 };
 
-const Input = ({type, value, onChange}) => {
+const Input = ({ type, value, onChange }) => {
   return (
     <input
       className={styles.input}
@@ -59,12 +74,12 @@ const NewCounter = () => {
   let inputChange = (event, data, path) => {
     store.set(path, event.target.value)
   };
-  let addCounter = () => {
-    let newCounter = store.get('newCounter');
+  let addCounter = (event, data, path) => {
+    let newCounter = store.get(path+'.newCounter');
     store.set(
-      'counters',
+      path+'.counters',
       (data) => {
-        data[newCounter] = {name: newCounter, value: 0};
+        data.push({ name: newCounter, value: 0 });
         return data;
       });
 
@@ -73,7 +88,7 @@ const NewCounter = () => {
 
   return (
     <div className={styles.newCounter}>
-      <Input _bind={'newCounter'} type="text" value={data => data} onChange={inputChange}/>
+      <Input _bind={(data, path) => path+'.newCounter'} type="text" value={data => data} onChange={inputChange}/>
       <Button value="add counter" onClick={addCounter}/>
     </div>
   );
@@ -81,14 +96,19 @@ const NewCounter = () => {
 
 omega.render(
   <div className={styles.wrapper}>
-    <div _for={'counters'}>
-        <div className={styles.entry}>
-          <div className={styles.remove} onClick={(event, data, path) => store.set(path, undefined)}>×</div>
-          <h1 className={styles.title}>{data => data && data.name}</h1>
-          <Counter path={(data, path) => path+'.value'}/>
+    <div _for={''}>
+      <div className={styles.group}>
+        <h1 className={styles.groupTitles}>{(data, path) => path && path.replace(/^.*\./, '')}</h1>
+        <div _for={(data, path) => path+'.counters'}>
+          <div className={styles.entry}>
+            <div className={styles.remove} onClick={(event, data, path) => store.set(path, undefined)}>×</div>
+            <h2 className={styles.title}>{data => data && data.name}</h2>
+            <Counter path={(data, path) => path + '.value'}/>
+          </div>
         </div>
+        <NewCounter/>
+      </div>
     </div>
-    <NewCounter/>
   </div>,
   document.body,
   store

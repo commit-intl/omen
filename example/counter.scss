@@ -6,6 +6,18 @@
   width: calc(100% - 200px);
 }
 
+.group {
+  padding: 30px 0;
+}
+
+.groupTitles {
+  font-family: monospace;
+  margin-top: 25px;
+  min-height: 1em;
+  font-size: 40px;
+  line-height: 1;
+}
+
 .entry {
   position: relative;
   max-width: 500px;
@@ -34,6 +46,7 @@
   font-family: monospace;
   margin-top: 50px;
   min-height: 1em;
+  font-size: 30px;
   line-height: 1;
 }
 

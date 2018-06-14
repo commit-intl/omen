@@ -52,11 +52,19 @@ export class AbstractComponent {
     }
   }
 
-  destroy() {
-    this.parent.removeChild(this);
+  destroy(root = true) {
+    if(root && this.parent) {
+      this.parent.removeChild(this);
+    }
 
     this.listeners = [];
     this.onUpdate = [];
+
+    for (let i in this.children) {
+      if (this.children[i].destroy) {
+        this.children[i].destroy(false);
+      }
+    }
   }
 }
 

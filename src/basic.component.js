@@ -1,5 +1,5 @@
 import AbstractComponent from './abstract.component';
-import {cloneDeep, htmlPropMap} from './helpers';
+import { cloneDeep, htmlPropMap } from './helpers';
 
 
 export class BasicComponent extends AbstractComponent {
@@ -53,8 +53,8 @@ export class BasicComponent extends AbstractComponent {
             target = document.createElement('span');
             this.element.appendChild(target);
           }
-          this.onUpdate.push((data) => {
-            target.innerHTML = this.children[i](data);
+          this.onUpdate.push((data, path) => {
+            target.innerHTML = this.children[i](data, path);
           });
           break;
         default:
@@ -67,7 +67,10 @@ export class BasicComponent extends AbstractComponent {
     if (this.store && path != null) {
       if (typeof path === 'function') {
         this.storeOnUpdate = (data, parentPath) => {
-          this._bind(path(data, parentPath));
+          let newPath = path(data, parentPath);
+          if (this.currentPath !== newPath) {
+            this._bind(newPath);
+          }
         };
       }
       else {
@@ -77,7 +80,6 @@ export class BasicComponent extends AbstractComponent {
         }
 
         let handler = ((self, path) => (data) => {
-          console.log('bind update', path, data);
           self.update(data, path, true);
         })(this, path);
 
@@ -86,65 +88,83 @@ export class BasicComponent extends AbstractComponent {
           handler
         );
 
-        this.storeListener = {path, handler};
+        this.storeListener = { path, handler };
       }
     }
   }
 
   _for(path) {
     if (this.store && path != null) {
-      this.currentPath = path;
-      this.templateChildren = this.children;
-      this.children = [];
+      console.log('for begin', path);
+      if (typeof path === 'function') {
+        console.log('for wait', path);
+        this.storeOnUpdate = (data, parentPath) => {
+          let newPath = path(data, parentPath);
+          console.log('for try', data, parentPath, newPath);
+          this._for(newPath);
+        };
+      }
+      else {
+        if (this.storeListener) {
+          this.store.removeListener(this.storeListener.path, this.storeListener.handler);
+          this.storeListener = null;
+        }
 
-      let handler = (data) => {
-        const keys = Object.keys(data);
-        let newChildren = [];
-        let i;
-        for (i = 0; i < keys.length; i++) {
-          let key = keys[i];
-          if (this.children[i * this.templateChildren.length]) {
-            for (let c = 0; c < this.templateChildren.length; c++) {
-              this.children[(i * this.templateChildren.length) + c].update(data[key], path + '.' + key);
+        this.currentPath = path;
+        this.templateChildren = this.children;
+        this.children = [];
+
+        let handler = (data) => {
+          console.log(data);
+          const keys = data != null ? Object.keys(data) : [];
+          let newChildren = [];
+          let i;
+          for (i = 0; i < keys.length; i++) {
+            let key = keys[i];
+            if (this.children[i * this.templateChildren.length]) {
+              for (let c = 0; c < this.templateChildren.length; c++) {
+                this.children[(i * this.templateChildren.length) + c].update(data[key], path ? path + '.' + key : key);
+              }
+            }
+            else {
+              let cloned = this.templateChildren.map(child => child.clone ? child.clone() : child);
+              this.children.push(...cloned);
+              newChildren.push(...cloned);
+              cloned.forEach(clone => {
+                if (typeof clone === 'object') {
+                  clone.parent = this;
+                  clone.init(this.store);
+                  clone.update(data[key], path ? path + '.' + key : key);
+                }
+              });
             }
           }
-          else {
-            let cloned = this.templateChildren.map(child => child.clone ? child.clone() : child);
-            this.children.push(...cloned);
-            newChildren.push(...cloned);
-            cloned.forEach(clone => {
-              if (typeof clone === 'object') {
-                clone.parent = this;
-                clone.init(this.store);
-                clone.update(data[key], path + '.' + key);
-              }
-            });
+
+          let c = keys.length * this.templateChildren.length;
+          let children = [...this.children];
+          while (c < children.length) {
+            if (children[c].destroy) {
+              children[c].destroy();
+            }
+            c++;
           }
-        }
+          this.children = this.children.slice(0, keys.length * this.templateChildren.length);
 
-        let c = keys.length * this.templateChildren.length;
-        let children = [...this.children];
-        while( c < children.length) {
-          if(children[c].destroy) {
-            console.log('destroy', c, children[c]);
-            children[c].destroy();
+          if (newChildren.length > 0) {
+            this.appendChildren(this.children.length - newChildren.length, true);
           }
-          c++;
-        }
-        this.children = this.children.slice(0, keys.length * this.templateChildren.length);
+        };
 
-        if(newChildren.length > 0) {
-          this.appendChildren(this.children.length - newChildren.length, true);
-        }
-      };
+        console.log('for bind', path);
 
-      this.store.addListener(
-        path,
-        handler,
-        {depth: 1}
-      );
+        this.store.addListener(
+          path,
+          handler,
+          { depth: 1 }
+        );
 
-      this.listeners.push({path, handler});
+        this.storeListener = { path, handler };
+      }
     }
   }
 
@@ -153,7 +173,7 @@ export class BasicComponent extends AbstractComponent {
   }
 
   update(data, path, selfCall = false) {
-    this.updateProps(data);
+    this.updateProps(data, path);
     super.update(data, path);
 
     if (this.storeOnUpdate && !selfCall) {
@@ -169,9 +189,9 @@ export class BasicComponent extends AbstractComponent {
     }
   }
 
-  updateProps(data) {
+  updateProps(data, path) {
     for (let i in this.props) {
-      let value = typeof this.props[i] === 'function' ? this.props[i](data) : this.props[i];
+      let value = typeof this.props[i] === 'function' ? this.props[i](data, path) : this.props[i];
       if (htmlPropMap[i]) {
         value = htmlPropMap[i](this.props[i]);
       }
@@ -184,8 +204,8 @@ export class BasicComponent extends AbstractComponent {
     return new BasicComponent(this.elementFactory, cloneDeep(this.initialProps), clonedChildren);
   }
 
-  destroy() {
-    super.destroy();
+  destroy(root) {
+    super.destroy(root);
 
     if (this.storeListener) {
       this.store.removeListener(this.storeListener.path, this.storeListener.handler);
