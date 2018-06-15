@@ -1,0 +1,103 @@
+
+.wrapper {
+  display: block;
+  padding: 80px 0;
+  text-align: center;
+  width: calc(100% - 200px);
+}
+
+.group {
+  padding: 30px 0;
+}
+
+.groupTitles {
+  font-family: monospace;
+  margin-top: 25px;
+  min-height: 1em;
+  font-size: 40px;
+  line-height: 1;
+}
+
+.entry {
+  position: relative;
+  max-width: 500px;
+  margin: auto;
+}
+
+.remove {
+  position: absolute;
+  top: -5px;
+  right: 5px;
+  padding: 5px;
+  font-size: 40px;
+  line-height: 0.6;
+  cursor: pointer;
+  color: #000000;
+  background-color: #ffffff;
+  transition: background-color .25s ease, color .25s ease;
+
+  &:hover {
+    color: #ffffff;
+    background-color: #000000;
+  }
+}
+
+.title {
+  font-family: monospace;
+  margin-top: 50px;
+  min-height: 1em;
+  font-size: 30px;
+  line-height: 1;
+}
+
+.counter, .newCounter {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  max-width: 500px;
+  margin: auto;
+}
+
+.newCounter {
+  margin-top: 4rem;
+}
+
+.input {
+  flex: 1 1 auto;
+  height: 50px;
+  min-width: 0;
+  padding-left: 15px;
+  font-size: 50px;
+  font-family: monospace;
+  margin: 0 5px;
+  border: none;
+  border-bottom: 4px solid black;
+  text-align: center;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.button {
+  flex: 0 1 auto;
+  padding: 10px;
+  font-size: 25px;
+  font-family: monospace;
+  margin: 0 5px;
+  border: none;
+  border-bottom: 4px solid black;
+  color: #000000;
+  background-color: #ffffff;
+  transition: background-color .25s ease, color .25s ease;
+  cursor: pointer;
+
+  &:hover {
+    color: #ffffff;
+    background-color: #000000;
+  }
+
+  &:focus {
+    outline: none;
+  }
+}

@@ -16,7 +16,7 @@ module.exports = {
   context: __dirname,
   entry: [
     //'webpack-dev-server/client?http://localhost:3000',
-    './example/counter',
+    './example/index',
   ],
   output: {
     path: path.join(__dirname, 'dist'),
