@@ -95,12 +95,9 @@ export class BasicComponent extends AbstractComponent {
 
   _for(path) {
     if (this.store && path != null) {
-      console.log('for begin', path);
       if (typeof path === 'function') {
-        console.log('for wait', path);
         this.storeOnUpdate = (data, parentPath) => {
           let newPath = path(data, parentPath);
-          console.log('for try', data, parentPath, newPath);
           this._for(newPath);
         };
       }
@@ -111,12 +108,14 @@ export class BasicComponent extends AbstractComponent {
         }
 
         this.currentPath = path;
-        this.templateChildren = this.children;
-        this.children = [];
+        if(!this.templateChildren) {
+          this.templateChildren = this.children;
+          this.children = [];
+        }
 
         let handler = (data) => {
-          console.log(data);
           const keys = data != null ? Object.keys(data) : [];
+          console.log('for update', data, this.children.length,  this.templateChildren.length, keys.length);
           let newChildren = [];
           let i;
           for (i = 0; i < keys.length; i++) {

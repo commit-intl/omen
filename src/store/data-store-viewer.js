@@ -1,14 +1,14 @@
-import omega from './renderer';
+import omega from '../renderer';
 
 export const createDataStoreViewer = (appendTo, store) => {
   omega.render(
     <div style={{
-      position: 'absolute',
+      position: 'fixed',
       top: 0,
       right: 0,
       bottom: 0,
-      width: '200px',
-      padding: '5px',
+      maxWidth: '50%',
+      padding: '10px 25px 10px 10px',
       background: '#444',
       color: '#fff',
       overflow: 'auto'
