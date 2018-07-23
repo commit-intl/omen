@@ -52,6 +52,22 @@ export class AbstractComponent {
     }
   }
 
+  hide() {
+    if(!this.hidden) {
+      if(this.element) {
+        this.element.hidden = this.hidden = !this.hidden;
+      }
+    }
+  }
+
+  show() {
+    if(this.hidden) {
+      if(this.element) {
+        this.element.hidden = this.hidden = !this.hidden;
+      }
+    }
+  }
+
   destroy(root = true) {
     if(root && this.parent) {
       this.parent.removeChild(this);

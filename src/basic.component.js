@@ -26,7 +26,13 @@ export class BasicComponent extends AbstractComponent {
       this.element.addEventListener(i, this.listeners[i]);
     }
 
-    if (this.props._bind != null) {
+
+    if (this.props._data != null) {
+      this.dontPropagateUpdates = true;
+      this.appendChildren();
+      this._data(this.props._data);
+    }
+    else if (this.props._bind != null) {
       this.dontPropagateUpdates = true;
       this.appendChildren();
       this._bind(this.props._bind);
@@ -61,6 +67,32 @@ export class BasicComponent extends AbstractComponent {
           this.element.appendChild(this.children[i].element);
       }
     }
+  }
+
+  _data(data) {
+    if (typeof data === 'function') {
+      this.storeOnUpdate = (inputData, parentPath) => {
+        let newData = data(inputData, parentPath);
+        this.currentData = newData;
+      };
+    }
+    else {
+      this.currentData = data;
+      this.dontAcceptData = true;
+    }
+  }
+
+  _if(value) {
+    let _if = this.props._if;
+    const result = typeof _if === 'function' ? _if(value) : _if === value;
+
+    if(result) {
+      this.hide();
+    }
+    else {
+      this.show();
+    }
+
   }
 
   _bind(path) {
@@ -172,17 +204,23 @@ export class BasicComponent extends AbstractComponent {
   }
 
   update(data, path, selfCall = false) {
-    this.updateProps(data, path);
-    super.update(data, path);
+    if(!this.dontAcceptData) {
+      this.updateProps(data, path);
+      super.update(data, path);
 
-    if (this.storeOnUpdate && !selfCall) {
-      this.storeOnUpdate(data, path);
+      if (this.storeOnUpdate && !selfCall) {
+        this.storeOnUpdate(data, path);
+      }
+    }
+
+    if (this.props._if !== undefined) {
+      this._if(this.currentData);
     }
 
     if (!this.dontPropagateUpdates || selfCall) {
       for (let i in this.children) {
         if (this.children[i].update) {
-          this.children[i].update(data, path);
+          this.children[i].update(this.currentData, path);
         }
       }
     }
