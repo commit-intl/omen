@@ -4,8 +4,8 @@ import { cloneDeep, htmlPropMap } from './helpers';
 
 export class BasicComponent extends AbstractComponent {
 
-  constructor(elementFactory, props, children) {
-    super(elementFactory, props, children);
+  constructor(elementFactory, props, childrenFactories) {
+    super(elementFactory, props, childrenFactories);
   };
 
   init(store) {
@@ -29,12 +29,12 @@ export class BasicComponent extends AbstractComponent {
 
     if (this.props._data != null) {
       this.dontPropagateUpdates = true;
-      this.appendChildren();
+      this.initChildren();
       this._data(this.props._data);
     }
     else if (this.props._bind != null) {
       this.dontPropagateUpdates = true;
-      this.appendChildren();
+      this.initChildren();
       this._bind(this.props._bind);
     }
     else if (this.props._for != null) {
@@ -42,9 +42,15 @@ export class BasicComponent extends AbstractComponent {
       this._for(this.props._for)
     }
     else {
-      this.appendChildren();
+      this.initChildren();
       this.updateProps(this.currentData);
     }
+  }
+
+  initChildren() {
+    console.log(this.childrenFactories);
+    this.children = this.childrenFactories && this.childrenFactories.map(f => typeof f === 'object' ? f.clone() : f());
+    this.appendChildren();
   }
 
   appendChildren(from = 0, update = false) {

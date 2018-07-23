@@ -9,7 +9,8 @@ export const Renderer = {
 
     if (typeof component === 'function') {
       element = () => document.createDocumentFragment();
-      return new BasicComponent(element, props, [component({...props, children: children})]);
+      console.log(props);
+      return new BasicComponent(element, props, [() => component({...props, children: children})]);
     }
     else if (typeof component === 'object') {
       props.children = children;

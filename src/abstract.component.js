@@ -2,14 +2,15 @@ import { cloneDeep } from './helpers';
 
 
 export class AbstractComponent {
-  constructor(elementFactory, props, children) {
+  constructor(elementFactory, props, childrenFactories) {
     this.parent = undefined;
     this.elementFactory = elementFactory;
     this.initialProps = props;
     this.props = props;
     this.listeners = [];
     this.onUpdate = [];
-    this.children = children;
+    this.childrenFactories = childrenFactories;
+    this.children = [];
     this.currentData = undefined;
     this.currentPath = undefined;
 
