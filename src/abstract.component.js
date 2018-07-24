@@ -6,30 +6,17 @@ export class AbstractComponent {
     this.parent = undefined;
     this.elementFactory = elementFactory;
     this.initialProps = props;
-    this.props = props;
+    this.props = cloneDeep(props);
     this.listeners = [];
     this.onUpdate = [];
     this.childrenFactories = childrenFactories;
     this.children = [];
     this.currentData = undefined;
     this.currentPath = undefined;
-
-    for ( let i in this.children ) {
-      if(typeof this.children[i] === 'object') {
-        this.children[i].parent = this;
-      }
-    }
   }
 
   init(store) {
     this.store = store;
-
-    for (let i in this.children) {
-      if(this.children[i].init) {
-        this.children[i].init(store);
-      }
-    }
-
     this.element = this.elementFactory();
   }
 

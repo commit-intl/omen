@@ -6,6 +6,10 @@ export class BasicComponent extends AbstractComponent {
 
   constructor(elementFactory, props, childrenFactories) {
     super(elementFactory, props, childrenFactories);
+
+    if(props._for != null) {
+      console.log(props._for, this.childrenFactories.length);
+    }
   };
 
   init(store) {
@@ -25,7 +29,6 @@ export class BasicComponent extends AbstractComponent {
     for (let i in this.listeners) {
       this.element.addEventListener(i, this.listeners[i]);
     }
-
 
     if (this.props._data != null) {
       this.dontPropagateUpdates = true;
@@ -50,6 +53,14 @@ export class BasicComponent extends AbstractComponent {
   initChildren() {
     console.log(this.childrenFactories);
     this.children = this.childrenFactories && this.childrenFactories.map(f => typeof f === 'object' ? f.clone() : f());
+
+    for (let i in this.children) {
+      this.children[i].parent = this;
+      if(this.children[i].init) {
+        this.children[i].init(this.store);
+      }
+    }
+
     this.appendChildren();
   }
 
@@ -132,6 +143,7 @@ export class BasicComponent extends AbstractComponent {
   }
 
   _for(path) {
+    console.log(this.childrenFactories.length);
     if (this.store && path != null) {
       if (typeof path === 'function') {
         this.storeOnUpdate = (data, parentPath) => {
@@ -146,25 +158,26 @@ export class BasicComponent extends AbstractComponent {
         }
 
         this.currentPath = path;
-        if(!this.templateChildren) {
-          this.templateChildren = this.children;
-          this.children = [];
-        }
 
         let handler = (data) => {
+
+
+          console.log('for', data, this.children, this.childrenFactories);
           const keys = data != null ? Object.keys(data) : [];
-          console.log('for update', data, this.children.length,  this.templateChildren.length, keys.length);
           let newChildren = [];
           let i;
           for (i = 0; i < keys.length; i++) {
             let key = keys[i];
-            if (this.children[i * this.templateChildren.length]) {
-              for (let c = 0; c < this.templateChildren.length; c++) {
-                this.children[(i * this.templateChildren.length) + c].update(data[key], path ? path + '.' + key : key);
+            if (this.children[i * this.childrenFactories.length]) {
+              for (let c = 0; c < this.childrenFactories.length; c++) {
+                this.children[(i * this.childrenFactories.length) + c].update(data[key], path ? path + '.' + key : key);
               }
+
+              console.log('for update child', key);
             }
             else {
-              let cloned = this.templateChildren.map(child => child.clone ? child.clone() : child);
+              console.log('for create child', key, this.childrenFactories.length);
+              let cloned = this.childrenFactories.map(f => f => typeof f === 'object' ? f.clone() : f());
               this.children.push(...cloned);
               newChildren.push(...cloned);
               cloned.forEach(clone => {
@@ -177,7 +190,7 @@ export class BasicComponent extends AbstractComponent {
             }
           }
 
-          let c = keys.length * this.templateChildren.length;
+          let c = keys.length * this.childrenFactories.length;
           let children = [...this.children];
           while (c < children.length) {
             if (children[c].destroy) {
@@ -185,14 +198,13 @@ export class BasicComponent extends AbstractComponent {
             }
             c++;
           }
-          this.children = this.children.slice(0, keys.length * this.templateChildren.length);
+          this.children = this.children.slice(0, keys.length * this.childrenFactories.length);
 
           if (newChildren.length > 0) {
             this.appendChildren(this.children.length - newChildren.length, true);
           }
         };
 
-        console.log('for bind', path);
 
         this.store.addListener(
           path,
@@ -243,8 +255,9 @@ export class BasicComponent extends AbstractComponent {
   }
 
   clone() {
-    let clonedChildren = this.children.map(child => child.clone ? child.clone() : child);
-    return new BasicComponent(this.elementFactory, cloneDeep(this.initialProps), clonedChildren);
+    const clone = new BasicComponent(this.elementFactory, cloneDeep(this.initialProps), this.childrenFactories);
+    console.log(this, clone);
+    return clone;
   }
 
   destroy(root) {

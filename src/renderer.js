@@ -18,6 +18,9 @@ export const Renderer = {
     }
     else {
       element = () => document.createElement(component);
+      if(props._for != null) {
+        console.log(props._for, children.length);
+      }
       return new BasicComponent(element, props, children);
     }
   },
