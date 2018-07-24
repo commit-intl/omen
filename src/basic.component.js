@@ -55,9 +55,9 @@ export class BasicComponent extends AbstractComponent {
     this.children = this.childrenFactories && this.childrenFactories.map(f => typeof f === 'object' ? f.clone() : f());
 
     for (let i in this.children) {
-      this.children[i].parent = this;
-      if(this.children[i].init) {
-        this.children[i].init(this.store);
+      if(typeof this.children[i] === 'object') {
+        if(this.children[i].parent) this.children[i].parent = this;
+        if(this.children[i].init) this.children[i].init(this.store);
       }
     }
 
@@ -67,8 +67,8 @@ export class BasicComponent extends AbstractComponent {
   appendChildren(from = 0, update = false) {
     for (let i = from; i < this.children.length; i++) {
       switch (typeof this.children[i]) {
-        case 'string':
-          this.element.append(this.children[i]);
+        case 'object':
+          this.element.appendChild(this.children[i].element);
           break;
         case 'function':
           let target = this.element;
@@ -81,7 +81,7 @@ export class BasicComponent extends AbstractComponent {
           });
           break;
         default:
-          this.element.appendChild(this.children[i].element);
+          this.element.append(this.children[i]);
       }
     }
   }
@@ -237,7 +237,7 @@ export class BasicComponent extends AbstractComponent {
 
     if (!this.dontPropagateUpdates || selfCall) {
       for (let i in this.children) {
-        if (this.children[i].update) {
+        if (this.children[i] && this.children[i].update) {
           this.children[i].update(this.currentData, path);
         }
       }

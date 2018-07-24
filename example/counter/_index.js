@@ -38,8 +38,18 @@ store.addListener('', (data) => console.log('STORE_CHANGE', data));
 
 omega.render(
   <div className={styles.wrapper}>
-    <div _for={''}>
+    <div _bind={''} className={styles.for}>
       <div className={styles.group}>
+        {data => JSON.stringify(data)}
+      </div>
+    </div>
+  </div>,
+  document.body,
+  store
+);
+
+/*
+
         <h1 className={styles.groupTitles}>{(data, path) => path && path.replace(/^.*\./, '')}</h1>
         <div _for={(data, path) => path + '.counters'}>
           <div className={styles.entry}>
@@ -49,14 +59,9 @@ omega.render(
           </div>
         </div>
         <NewCounter/>
-      </div>
-    </div>
-  </div>,
-  document.body,
-  store
-);
+ */
 
-createDataStoreViewer(
-  document.body,
-  store
-);
+// createDataStoreViewer(
+//   document.body,
+//   store
+// );

@@ -9,19 +9,18 @@ export const Renderer = {
 
     if (typeof component === 'function') {
       element = () => document.createDocumentFragment();
-      console.log(props);
+      console.warn('function', children);
       return new BasicComponent(element, props, [() => component({...props, children: children})]);
     }
     else if (typeof component === 'object') {
-      props.children = children;
+      console.warn('object', component, children);
+      component.childrenFactories = children;
       return component.render(props);
     }
     else {
       element = () => document.createElement(component);
-      if(props._for != null) {
-        console.log(props._for, children.length);
-      }
-      return new BasicComponent(element, props, children);
+      console.warn('element', component, children);
+      return new BasicComponent(element, props, children.map(child => () => child));
     }
   },
 
