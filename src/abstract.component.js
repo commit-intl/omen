@@ -8,7 +8,6 @@ export class AbstractComponent {
     this.initialProps = props;
     this.props = cloneDeep(props);
     this.listeners = [];
-    this.onUpdate = [];
     this.childrenFactories = childrenFactories;
     this.children = [];
     this.currentData = undefined;
@@ -21,6 +20,7 @@ export class AbstractComponent {
   }
 
   removeChild(child) {
+    console.log(child, this.element, this.children);
     this.children = this.children.filter(c => c !== child);
     if(child && child.element && this.element) {
       this.element.removeChild(child.element);
@@ -34,10 +34,6 @@ export class AbstractComponent {
   update(data, path) {
     this.currentData = data;
     this.currentPath = path;
-
-    for (let i in this.onUpdate) {
-      this.onUpdate[i](data, path);
-    }
   }
 
   hide() {
@@ -62,7 +58,6 @@ export class AbstractComponent {
     }
 
     this.listeners = [];
-    this.onUpdate = [];
 
     for (let i in this.children) {
       if (this.children[i].destroy) {

@@ -6,10 +6,7 @@ export class BasicComponent extends AbstractComponent {
 
   constructor(elementFactory, props, childrenFactories) {
     super(elementFactory, props, childrenFactories);
-
-    if(props._for != null) {
-      console.log(props._for, this.childrenFactories.length);
-    }
+    this.propagateUpdates = true;
   };
 
   init(store) {
@@ -31,17 +28,17 @@ export class BasicComponent extends AbstractComponent {
     }
 
     if (this.props._data != null) {
-      this.dontPropagateUpdates = true;
+      this.propagateUpdates = false;
       this.initChildren();
       this._data(this.props._data);
     }
     else if (this.props._bind != null) {
-      this.dontPropagateUpdates = true;
+      this.propagateUpdates = false;
       this.initChildren();
       this._bind(this.props._bind);
     }
     else if (this.props._for != null) {
-      this.dontPropagateUpdates = true;
+      this.propagateUpdates = false;
       this._for(this.props._for)
     }
     else {
@@ -51,24 +48,24 @@ export class BasicComponent extends AbstractComponent {
   }
 
   initChildren() {
-    console.log(this.childrenFactories);
     this.children = this.childrenFactories && this.childrenFactories.map(f => typeof f === 'object' ? f.clone() : f());
 
     for (let i in this.children) {
-      if(typeof this.children[i] === 'object') {
-        if(this.children[i].parent) this.children[i].parent = this;
-        if(this.children[i].init) this.children[i].init(this.store);
+      if (typeof this.children[i] === 'object') {
+        if (this.children[i].parent) this.children[i].parent = this;
+        if (this.children[i].init) this.children[i].init(this.store);
       }
     }
 
     this.appendChildren();
   }
 
-  appendChildren(from = 0, update = false) {
+  appendChildren(from = 0) {
     for (let i = from; i < this.children.length; i++) {
-      switch (typeof this.children[i]) {
+      let child = this.children[i];
+      switch (typeof child) {
         case 'object':
-          this.element.appendChild(this.children[i].element);
+          this.element.appendChild(child.element);
           break;
         case 'function':
           let target = this.element;
@@ -76,12 +73,15 @@ export class BasicComponent extends AbstractComponent {
             target = document.createElement('span');
             this.element.appendChild(target);
           }
-          this.onUpdate.push((data, path) => {
-            target.innerHTML = this.children[i](data, path);
-          });
+          const updateFunction = child;
+          this.children[i] = (data, path) => {
+            const result = updateFunction(data, path);
+            console.log(target, data, path, result);
+            target.innerHTML = result;
+          };
           break;
         default:
-          this.element.append(this.children[i]);
+          this.element.append(child);
       }
     }
   }
@@ -89,8 +89,7 @@ export class BasicComponent extends AbstractComponent {
   _data(data) {
     if (typeof data === 'function') {
       this.storeOnUpdate = (inputData, parentPath) => {
-        let newData = data(inputData, parentPath);
-        this.currentData = newData;
+        this.currentData = data(inputData, parentPath);
       };
     }
     else {
@@ -103,7 +102,7 @@ export class BasicComponent extends AbstractComponent {
     let _if = this.props._if;
     const result = typeof _if === 'function' ? _if(value) : _if === value;
 
-    if(result) {
+    if (result) {
       this.hide();
     }
     else {
@@ -143,7 +142,6 @@ export class BasicComponent extends AbstractComponent {
   }
 
   _for(path) {
-    console.log(this.childrenFactories.length);
     if (this.store && path != null) {
       if (typeof path === 'function') {
         this.storeOnUpdate = (data, parentPath) => {
@@ -160,33 +158,40 @@ export class BasicComponent extends AbstractComponent {
         this.currentPath = path;
 
         let handler = (data) => {
-
-
-          console.log('for', data, this.children, this.childrenFactories);
           const keys = data != null ? Object.keys(data) : [];
-          let newChildren = [];
           let i;
           for (i = 0; i < keys.length; i++) {
             let key = keys[i];
+            let subPath = path ? path + '.' + key : key;
             if (this.children[i * this.childrenFactories.length]) {
               for (let c = 0; c < this.childrenFactories.length; c++) {
-                this.children[(i * this.childrenFactories.length) + c].update(data[key], path ? path + '.' + key : key);
+                this.updateChild(
+                  this.children[(i * this.childrenFactories.length) + c],
+                  data[key],
+                  subPath
+                );
+                console.log('for update child', i, c, key);
               }
-
-              console.log('for update child', key);
             }
             else {
-              console.log('for create child', key, this.childrenFactories.length);
-              let cloned = this.childrenFactories.map(f => f => typeof f === 'object' ? f.clone() : f());
+              let cloned = this.childrenFactories.map(f => typeof f === 'object' ? f.clone() : f());
+              console.log('for create child', key, this.childrenFactories.length, cloned);
+              const from = this.children.length;
               this.children.push(...cloned);
-              newChildren.push(...cloned);
+
               cloned.forEach(clone => {
                 if (typeof clone === 'object') {
                   clone.parent = this;
                   clone.init(this.store);
-                  clone.update(data[key], path ? path + '.' + key : key);
                 }
+                this.updateChild(
+                  clone,
+                  data[key],
+                  subPath
+                );
               });
+
+              this.appendChildren(from);
             }
           }
 
@@ -200,9 +205,6 @@ export class BasicComponent extends AbstractComponent {
           }
           this.children = this.children.slice(0, keys.length * this.childrenFactories.length);
 
-          if (newChildren.length > 0) {
-            this.appendChildren(this.children.length - newChildren.length, true);
-          }
         };
 
 
@@ -222,7 +224,8 @@ export class BasicComponent extends AbstractComponent {
   }
 
   update(data, path, selfCall = false) {
-    if(!this.dontAcceptData) {
+    if (!this.dontAcceptData) {
+      console.log('update props', data, this, this.props);
       this.updateProps(data, path);
       super.update(data, path);
 
@@ -232,14 +235,12 @@ export class BasicComponent extends AbstractComponent {
     }
 
     if (this.props._if !== undefined) {
-      this._if(this.currentData);
+      this._if(data);
     }
 
-    if (!this.dontPropagateUpdates || selfCall) {
+    if (this.propagateUpdates || selfCall) {
       for (let i in this.children) {
-        if (this.children[i] && this.children[i].update) {
-          this.children[i].update(this.currentData, path);
-        }
+        this.updateChild(this.children[i], data, path);
       }
     }
   }
@@ -254,10 +255,19 @@ export class BasicComponent extends AbstractComponent {
     }
   }
 
+  updateChild(child, data, path) {
+    switch (typeof child) {
+      case 'object':
+        child.update(data, path);
+        break;
+      case 'function':
+        child(data, path);
+        break;
+    }
+  }
+
   clone() {
-    const clone = new BasicComponent(this.elementFactory, cloneDeep(this.initialProps), this.childrenFactories);
-    console.log(this, clone);
-    return clone;
+    return new BasicComponent(this.elementFactory, cloneDeep(this.initialProps), this.childrenFactories);
   }
 
   destroy(root) {
