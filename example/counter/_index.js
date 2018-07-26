@@ -56,7 +56,7 @@ omega.render(
   store
 );
 
-// createDataStoreViewer(
-//   document.body,
-//   store
-// );
+createDataStoreViewer(
+  document.body,
+  store
+);
