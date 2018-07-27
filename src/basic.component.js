@@ -7,10 +7,12 @@ export class BasicComponent extends AbstractComponent {
   constructor(elementFactory, props, childrenFactories) {
     super(elementFactory, props, childrenFactories);
     this.propagateUpdates = true;
+
   };
 
   init(store) {
     super.init(store);
+
 
     let newProps = {};
     for (let attr in this.props) {
@@ -25,6 +27,10 @@ export class BasicComponent extends AbstractComponent {
 
     for (let i in this.listeners) {
       this.element.addEventListener(i, this.listeners[i]);
+    }
+
+    if (this.props._if !== undefined) {
+      this._if(this.currentData);
     }
 
     if (this.props._data != null) {
@@ -48,7 +54,7 @@ export class BasicComponent extends AbstractComponent {
   }
 
   initChildren() {
-    this.children = this.childrenFactories && this.childrenFactories.map(f => typeof f === 'object' ? f.clone() : f());
+    this.children = this.createNewChildren();
 
     for (let i in this.children) {
       if (typeof this.children[i] === 'object') {
@@ -58,6 +64,14 @@ export class BasicComponent extends AbstractComponent {
     }
 
     this.appendChildren();
+  }
+
+  createNewChildren() {
+    return this.childrenFactories
+      && this.childrenFactories.map(f => {
+        if(typeof f === 'object') return f != null && typeof f.create === 'function' && f.create();
+        return f;
+      });
   }
 
   appendChildren(from = 0) {
@@ -76,7 +90,6 @@ export class BasicComponent extends AbstractComponent {
           const updateFunction = child;
           this.children[i] = (data, path) => {
             const result = updateFunction(data, path);
-            console.log(target, data, path, result);
             target.innerHTML = result;
           };
           break;
@@ -103,10 +116,10 @@ export class BasicComponent extends AbstractComponent {
     const result = typeof _if === 'function' ? _if(value) : _if === value;
 
     if (result) {
-      this.hide();
+      this.show();
     }
     else {
-      this.show();
+      this.hide();
     }
 
   }
@@ -170,12 +183,10 @@ export class BasicComponent extends AbstractComponent {
                   data[key],
                   subPath
                 );
-                console.log('for update child', i, c, key);
               }
             }
             else {
-              let cloned = this.childrenFactories.map(f => typeof f === 'object' ? f.clone() : f());
-              console.log('for create child', key, this.childrenFactories.length, cloned);
+              let cloned = this.createNewChildren();
               const from = this.children.length;
               this.children.push(...cloned);
 
@@ -225,7 +236,6 @@ export class BasicComponent extends AbstractComponent {
 
   update(data, path, selfCall = false) {
     if (!this.dontAcceptData) {
-      console.log('update props', data, this, this.props);
       this.updateProps(data, path);
       super.update(data, path);
 

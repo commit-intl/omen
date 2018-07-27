@@ -31,50 +31,55 @@ export const Renderer = {
     }
   },
 
-  create: (component, props, ...children) => {
+  create: (tag, props, ...children) => {
     if (!props) props = {};
 
     let create;
 
-    if (typeof component === 'function') {
-      create = (component, props, children) => new BasicComponent(
+    if (typeof tag === 'function') {
+      create = (tag, props, children) => new BasicComponent(
         () => document.createDocumentFragment(),
         props,
-        () => component({
-          ...props,
-          children: children
-        })
+        [
+          {
+            create: () => {
+              const component = tag({
+                ...props,
+                children,
+              });
+
+              if (component && typeof component.create === 'function') {
+                return component.create();
+              }
+
+              return component;
+            }
+          }
+        ]
       );
     }
-    else if (typeof component === 'object') {
-      console.error('omega.renderer.create', 'Component Type Object not yet Supported!')
-      create = () => component;
+    else if (typeof tag === 'object') {
+      console.error('omega.renderer.create', 'Component Type Object not yet Supported!');
+      create = (tag, props, children) => tag;
     }
     else {
-      create = () => new BasicComponent(
-        () => document.createElement(component),
+      create = (tag, props, children) => new BasicComponent(
+        () => document.createElement(tag),
         props,
-        children.map(child => () => child)
+        children,
       );
     }
 
     return {
-      create,
-      component,
-      props,
-      children,
-    }
+      create: () => create(tag, props, children),
+    };
   },
 
   render: (component, appendTo, store) => {
-    //component.init(store);
-    console.log(component);
-    const pre = document.createElement('pre');
-    const stringifyFunctions = (key, value) =>
-      typeof value === 'function' ? 'function.' + (value + '').replace(/function (\S*)\((.|\n)*/, '$1') + '.' + hashCode(value + '') : value;
-    pre.innerHTML = JSON.stringify(component, stringifyFunctions, 2);
+    const root = component.create();
+    root.init(store);
     appendTo.append(
-      pre
+      root.render()
     );
   }
 };

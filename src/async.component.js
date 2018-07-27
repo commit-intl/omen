@@ -76,7 +76,6 @@ export class BasicComponent extends AbstractComponent {
           const updateFunction = child;
           this.children[i] = (data, path) => {
             const result = updateFunction(data, path);
-            console.log(target, data, path, result);
             target.innerHTML = result;
           };
           break;
@@ -170,12 +169,10 @@ export class BasicComponent extends AbstractComponent {
                   data[key],
                   subPath
                 );
-                console.log('for update child', i, c, key);
               }
             }
             else {
               let cloned = this.childrenFactories.map(f => typeof f === 'object' ? f.clone() : f());
-              console.log('for create child', key, this.childrenFactories.length, cloned);
               const from = this.children.length;
               this.children.push(...cloned);
 
@@ -225,7 +222,6 @@ export class BasicComponent extends AbstractComponent {
 
   update(data, path, selfCall = false) {
     if (!this.dontAcceptData) {
-      console.log('update props', data, this, this.props);
       this.updateProps(data, path);
       super.update(data, path);
 

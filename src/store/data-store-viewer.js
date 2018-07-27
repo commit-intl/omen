@@ -1,17 +1,13 @@
 import omega from '../renderer';
 
-const KeyTag = ({ key }) => <span style={{ color: '#df92e1' }}>{key}:</span>;
-
 const Param = ({ path, key, value }) => {
-  console.log(path);
   return (
-    <div _data={typeof value}>
-      <KeyTag key={key}/>
-      <span _if="object" style={{ color: '#ffff92' }}>{value}</span>
+    <div _data={(data) => {console.log(data, typeof value(data)); return typeof value(data)}}>
+      <span style={{ color: '#df92e1' }}>{key}:</span>
       <span _if="number" style={{ color: '#6292ff' }}>{value}</span>
       <span _if="string" style={{ color: '#62ff92' }}>'{value}'</span>
       <span _if="boolean" style={{ color: '#ffff92' }}>{value}</span>
-      <ObjectTag _if="object" path={path} />;
+      <ObjectTag _if="object" path={path} />
     </div>
   );
 };
@@ -19,7 +15,8 @@ const Param = ({ path, key, value }) => {
 const ObjectTag = ({ path }) => {
   return (
     <div _for={path} style={{ paddingLeft: '10px' }}>
-      <Param path={(data, path) => {console.log(path); return path}} key={(data, path) => path && path.replace(/^.*\./, '')} value={(data) => data} />
+      {(data, path) => {console.log(data,path); return JSON.stringify(data)}}
+      <Param path={(data, path) => {console.log(path);return path}} key={(data, path) => path && path.replace(/^.*\./, '')} value={(data) => data} />
     </div>
   );
 };

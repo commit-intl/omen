@@ -20,7 +20,6 @@ export class AbstractComponent {
   }
 
   removeChild(child) {
-    console.log(child, this.element, this.children);
     this.children = this.children.filter(c => c !== child);
     if(child && child.element && this.element) {
       this.element.removeChild(child.element);
