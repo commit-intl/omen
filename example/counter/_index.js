@@ -38,14 +38,14 @@ store.addListener('', (data) => console.log('STORE_CHANGE', data));
 
 omega.render(
   <div className={styles.wrapper}>
-    <div _for={''}>
+    <div _for={''} className={styles.for}>
       <div className={styles.group}>
         <h1 className={styles.groupTitles}>{(data, path) => path && path.replace(/^.*\./, '')}</h1>
         <div _for={(data, path) => path + '.counters'}>
           <div className={styles.entry}>
-            <div className={styles.remove} onClick={(event, data, path) => store.set(path, undefined)}>×</div>
+            <div className={styles.remove} onClick={(event, data, path) => {console.log(path);store.set(path, undefined)}}>×</div>
             <h2 className={styles.title}>{data => data && data.name}</h2>
-            <Counter path={(data, path) => path + '.value'}/>
+            <Counter path={(data, path) => path + '.value'} />
           </div>
         </div>
         <NewCounter/>

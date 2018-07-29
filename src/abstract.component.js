@@ -2,34 +2,69 @@ import { cloneDeep } from './helpers';
 
 
 export class AbstractComponent {
-  constructor(elementFactory, props, children) {
+  constructor(elementFactory, props, childrenFactories) {
     this.parent = undefined;
     this.elementFactory = elementFactory;
     this.initialProps = props;
-    this.props = props;
+    this.props = cloneDeep(props);
     this.listeners = [];
-    this.onUpdate = [];
-    this.children = children;
+    this.childrenFactories = childrenFactories;
+    this.children = [];
     this.currentData = undefined;
     this.currentPath = undefined;
-
-    for ( let i in this.children ) {
-      if(typeof this.children[i] === 'object') {
-        this.children[i].parent = this;
-      }
-    }
   }
 
   init(store) {
     this.store = store;
+    this.element = this.elementFactory();
+  }
 
-    for (let i in this.children) {
-      if(this.children[i].init) {
-        this.children[i].init(store);
+  initChildren() {
+    if(!this.hidden) {
+      this.children = this.createNewChildren();
+
+      for (let i in this.children) {
+        if (typeof this.children[i] === 'object') {
+          if (this.children[i].parent) this.children[i].parent = this;
+          if (this.children[i].init) this.children[i].init(this.store);
+        }
+      }
+
+      this.appendChildren();
+    }
+  }
+
+  createNewChildren() {
+    return this.childrenFactories
+      && this.childrenFactories.map(f => {
+        if(typeof f === 'object') return f != null && typeof f.create === 'function' && f.create();
+        return f;
+      });
+  }
+
+  appendChildren(from = 0) {
+    for (let i = from; i < this.children.length; i++) {
+      let child = this.children[i];
+      switch (typeof child) {
+        case 'object':
+          this.element.appendChild(child.element);
+          break;
+        case 'function':
+          let target = this.element;
+          if (this.children.length !== 1) {
+            target = document.createElement('span');
+            this.element.appendChild(target);
+          }
+          const updateFunction = child;
+          this.children[i] = (data, path) => {
+            const result = updateFunction(data, path);
+            target.innerHTML = result;
+          };
+          break;
+        default:
+          this.element.append(child);
       }
     }
-
-    this.element = this.elementFactory();
   }
 
   removeChild(child) {
@@ -39,6 +74,13 @@ export class AbstractComponent {
     }
   }
 
+  removeAllChildren() {
+    while (this.element.firstChild) {
+      this.element.removeChild(this.element.firstChild);
+    }
+    this.children = [];
+  }
+
   render() {
     return this.element;
   }
@@ -46,9 +88,24 @@ export class AbstractComponent {
   update(data, path) {
     this.currentData = data;
     this.currentPath = path;
+  }
 
-    for (let i in this.onUpdate) {
-      this.onUpdate[i](data, path);
+  hide() {
+    if(!this.hidden) {
+      if(this.element) {
+        this.element.hidden = this.hidden = !this.hidden;
+        this.removeAllChildren();
+      }
+    }
+  }
+
+  show() {
+    if(this.hidden) {
+      if(this.element) {
+        this.element.hidden = this.hidden = !this.hidden;
+        this.initChildren();
+        this.update(this.currentData, this.currentPath);
+      }
     }
   }
 
@@ -58,7 +115,6 @@ export class AbstractComponent {
     }
 
     this.listeners = [];
-    this.onUpdate = [];
 
     for (let i in this.children) {
       if (this.children[i].destroy) {

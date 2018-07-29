@@ -5,24 +5,26 @@ import { Input } from './Input';
 import { Button } from './Button';
 
 export const NewCounter = () => {
+
   let inputChange = (event, data, path) => {
     store.set(path, event.target.value)
   };
+
   let addCounter = (event, data, path) => {
-    let newCounter = store.get(path+'.newCounter');
+    let newCounter = store.get(path);
     store.set(
-      path+'.counters',
+      path.replace('newCounter','counters'),
       (data) => {
         data.push({ name: newCounter, value: 0 });
         return data;
       });
 
-    store.set('newCounter', '');
+    store.set(path, '');
   };
 
   return (
-    <div className={styles.newCounter}>
-      <Input _bind={(data, path) => path+'.newCounter'} type="text" value={data => data} onChange={inputChange}/>
+    <div _bind={(data, path) => path+'.newCounter'} className={styles.newCounter}>
+      <Input type="text" value={data => data} onChange={inputChange}/>
       <Button value="add counter" onClick={addCounter}/>
     </div>
   );
