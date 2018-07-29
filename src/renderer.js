@@ -19,7 +19,7 @@ export const Renderer = {
 
     if (typeof component === 'function') {
       element = () => document.createDocumentFragment();
-      return new BasicComponent(element, props, [() => component({ ...props, children: children })]);
+      return new BasicComponent(element, props, [() => component({...props, children: children})]);
     }
     else if (typeof component === 'object') {
       component.childrenFactories = children;
@@ -37,26 +37,18 @@ export const Renderer = {
     let create;
 
     if (typeof tag === 'function') {
-      create = (tag, props, children) => new BasicComponent(
-        () => document.createDocumentFragment(),
-        props,
-        [
-          {
-            create: () => {
-              const component = tag({
-                ...props,
-                children,
-              });
+      create = (tag, props, children) => {
+        const component = tag({
+          ...props,
+          children,
+        });
 
-              if (component && typeof component.create === 'function') {
-                return component.create();
-              }
+        if (component && typeof component.create === 'function') {
+          return component.create();
+        }
 
-              return component;
-            }
-          }
-        ]
-      );
+        return component;
+      };
     }
     else if (typeof tag === 'object') {
       console.error('omega.renderer.create', 'Component Type Object not yet Supported!');
@@ -85,4 +77,4 @@ export const Renderer = {
 };
 
 
-export default { ...Renderer };
+export default {...Renderer};

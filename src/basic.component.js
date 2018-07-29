@@ -1,5 +1,5 @@
 import AbstractComponent from './abstract.component';
-import { cloneDeep, htmlPropMap } from './helpers';
+import {cloneDeep, htmlPropMap} from './helpers';
 
 
 export class BasicComponent extends AbstractComponent {
@@ -7,12 +7,10 @@ export class BasicComponent extends AbstractComponent {
   constructor(elementFactory, props, childrenFactories) {
     super(elementFactory, props, childrenFactories);
     this.propagateUpdates = true;
-
   };
 
   init(store) {
     super.init(store);
-
 
     let newProps = {};
     for (let attr in this.props) {
@@ -53,52 +51,6 @@ export class BasicComponent extends AbstractComponent {
     }
   }
 
-  initChildren() {
-    this.children = this.createNewChildren();
-
-    for (let i in this.children) {
-      if (typeof this.children[i] === 'object') {
-        if (this.children[i].parent) this.children[i].parent = this;
-        if (this.children[i].init) this.children[i].init(this.store);
-      }
-    }
-
-    this.appendChildren();
-  }
-
-  createNewChildren() {
-    return this.childrenFactories
-      && this.childrenFactories.map(f => {
-        if(typeof f === 'object') return f != null && typeof f.create === 'function' && f.create();
-        return f;
-      });
-  }
-
-  appendChildren(from = 0) {
-    for (let i = from; i < this.children.length; i++) {
-      let child = this.children[i];
-      switch (typeof child) {
-        case 'object':
-          this.element.appendChild(child.element);
-          break;
-        case 'function':
-          let target = this.element;
-          if (this.children.length !== 1) {
-            target = document.createElement('span');
-            this.element.appendChild(target);
-          }
-          const updateFunction = child;
-          this.children[i] = (data, path) => {
-            const result = updateFunction(data, path);
-            target.innerHTML = result;
-          };
-          break;
-        default:
-          this.element.append(child);
-      }
-    }
-  }
-
   _data(data) {
     if (typeof data === 'function') {
       this.storeOnUpdate = (inputData, parentPath) => {
@@ -111,9 +63,9 @@ export class BasicComponent extends AbstractComponent {
     }
   }
 
-  _if(value) {
+  _if(data, path) {
     let _if = this.props._if;
-    const result = typeof _if === 'function' ? _if(value) : _if === value;
+    const result = typeof _if === 'function' ? _if(data, path) : _if === data;
 
     if (result) {
       this.show();
@@ -121,7 +73,6 @@ export class BasicComponent extends AbstractComponent {
     else {
       this.hide();
     }
-
   }
 
   _bind(path) {
@@ -149,7 +100,7 @@ export class BasicComponent extends AbstractComponent {
           handler
         );
 
-        this.storeListener = { path, handler };
+        this.storeListener = {path, handler};
       }
     }
   }
@@ -171,7 +122,7 @@ export class BasicComponent extends AbstractComponent {
         this.currentPath = path;
 
         let handler = (data) => {
-          const keys = data != null ? Object.keys(data) : [];
+          const keys = data != null && typeof data === 'object' ? Object.keys(data) : [];
           let i;
           for (i = 0; i < keys.length; i++) {
             let key = keys[i];
@@ -195,6 +146,7 @@ export class BasicComponent extends AbstractComponent {
                   clone.parent = this;
                   clone.init(this.store);
                 }
+
                 this.updateChild(
                   clone,
                   data[key],
@@ -222,10 +174,10 @@ export class BasicComponent extends AbstractComponent {
         this.store.addListener(
           path,
           handler,
-          { depth: 1 }
+          {depth: 1}
         );
 
-        this.storeListener = { path, handler };
+        this.storeListener = {path, handler};
       }
     }
   }
@@ -244,8 +196,8 @@ export class BasicComponent extends AbstractComponent {
       }
     }
 
-    if (this.props._if !== undefined) {
-      this._if(data);
+    if (this.props._if !== undefined && !selfCall) {
+      this._if(data, path);
     }
 
     if (this.propagateUpdates || selfCall) {

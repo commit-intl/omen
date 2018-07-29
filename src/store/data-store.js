@@ -35,7 +35,7 @@ export class DataStore {
         }
         else {
           if (Array.isArray(parent)) {
-            parent.splice(path[path.length], 1)
+            parent.splice(path[path.length-1], 1)
           }
           else {
             delete parent[path[path.length - 1]];

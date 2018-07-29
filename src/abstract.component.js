@@ -19,11 +19,66 @@ export class AbstractComponent {
     this.element = this.elementFactory();
   }
 
+  initChildren() {
+    if(!this.hidden) {
+      this.children = this.createNewChildren();
+
+      for (let i in this.children) {
+        if (typeof this.children[i] === 'object') {
+          if (this.children[i].parent) this.children[i].parent = this;
+          if (this.children[i].init) this.children[i].init(this.store);
+        }
+      }
+
+      this.appendChildren();
+    }
+  }
+
+  createNewChildren() {
+    return this.childrenFactories
+      && this.childrenFactories.map(f => {
+        if(typeof f === 'object') return f != null && typeof f.create === 'function' && f.create();
+        return f;
+      });
+  }
+
+  appendChildren(from = 0) {
+    for (let i = from; i < this.children.length; i++) {
+      let child = this.children[i];
+      switch (typeof child) {
+        case 'object':
+          this.element.appendChild(child.element);
+          break;
+        case 'function':
+          let target = this.element;
+          if (this.children.length !== 1) {
+            target = document.createElement('span');
+            this.element.appendChild(target);
+          }
+          const updateFunction = child;
+          this.children[i] = (data, path) => {
+            const result = updateFunction(data, path);
+            target.innerHTML = result;
+          };
+          break;
+        default:
+          this.element.append(child);
+      }
+    }
+  }
+
   removeChild(child) {
     this.children = this.children.filter(c => c !== child);
     if(child && child.element && this.element) {
       this.element.removeChild(child.element);
     }
+  }
+
+  removeAllChildren() {
+    while (this.element.firstChild) {
+      this.element.removeChild(this.element.firstChild);
+    }
+    this.children = [];
   }
 
   render() {
@@ -39,6 +94,7 @@ export class AbstractComponent {
     if(!this.hidden) {
       if(this.element) {
         this.element.hidden = this.hidden = !this.hidden;
+        this.removeAllChildren();
       }
     }
   }
@@ -47,6 +103,8 @@ export class AbstractComponent {
     if(this.hidden) {
       if(this.element) {
         this.element.hidden = this.hidden = !this.hidden;
+        this.initChildren();
+        this.update(this.currentData, this.currentPath);
       }
     }
   }

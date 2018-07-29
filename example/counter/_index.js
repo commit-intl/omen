@@ -43,7 +43,7 @@ omega.render(
         <h1 className={styles.groupTitles}>{(data, path) => path && path.replace(/^.*\./, '')}</h1>
         <div _for={(data, path) => path + '.counters'}>
           <div className={styles.entry}>
-            <div className={styles.remove} onClick={(event, data, path) => store.set(path, undefined)}>×</div>
+            <div className={styles.remove} onClick={(event, data, path) => {console.log(path);store.set(path, undefined)}}>×</div>
             <h2 className={styles.title}>{data => data && data.name}</h2>
             <Counter path={(data, path) => path + '.value'} />
           </div>
