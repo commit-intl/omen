@@ -20,12 +20,12 @@
 .openCloseButton {
   position: absolute;
   left: 0;
-  top: calc(50% - 12px);
-  border-radius: 2px;
+  top: 50%;
   line-height: 22px;
   font-size: 16px;
   padding: 2px;
   width: 12px;
+  transform: translateY(-50%);
   color: rgb(0, 0, 0);
   background: rgb(204, 204, 204);
   text-align: center;

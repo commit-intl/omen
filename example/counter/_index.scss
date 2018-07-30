@@ -90,6 +90,7 @@
   background-color: #ffffff;
   transition: background-color .25s ease, color .25s ease;
   cursor: pointer;
+  user-select: none;
 
   &:hover {
     color: #ffffff;
