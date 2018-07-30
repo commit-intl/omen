@@ -1,4 +1,4 @@
-export class DataStore {
+export class Store {
 
   constructor(state) {
     this.state = state;
@@ -103,4 +103,4 @@ export class DataStore {
   }
 }
 
-export default DataStore;
+export default Store;

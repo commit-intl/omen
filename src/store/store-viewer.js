@@ -1,5 +1,5 @@
 import omega from '../renderer';
-import styles from './data-store-viewer.scss';
+import styles from './store-viewer.scss';
 
 const Param = () => {
   return (
@@ -33,7 +33,7 @@ const OpenCloseButton = ({ store }) => {
   );
 };
 
-const DataStoreViewer = ({ store }) => (
+const StoreViewer = ({ store }) => (
   <div _bind="_data-store-viewer" className={styles.viewer}>
     <OpenCloseButton store={store}/>
     <div _if={(data) => data && data.open} className={styles.wrapper}>
@@ -44,7 +44,7 @@ const DataStoreViewer = ({ store }) => (
 
 export const createDataStoreViewer = (appendTo, store) => {
   omega.render(
-    <DataStoreViewer store={store}/>,
+    <StoreViewer store={store}/>,
     appendTo,
     store
   );

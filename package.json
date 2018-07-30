@@ -2,7 +2,7 @@
   "name": "omega",
   "version": "0.1.0",
   "description": "data driven JavaScript library, based on JSX",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
     "start": "webpack-dev-server --config webpack.develop.config.js --hot --inline",
     "start:prod": "webpack-dev-server --env production --config webpack.production.config.js --hot --inline",
@@ -10,7 +10,8 @@
     "build:prod": "set NODE_ENV=production&& webpack -p --config webpack.production.config.js",
     "test": "echo  NO TESTS DEFINED! TODO: define some",
     "lint": "eslint src",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist",
+    "prepublish": "babel src --presets es2015,babili --out-dir lib"
   },
   "author": "Dustin Hagemeier <dustin@coding.international>",
   "license": "AGPL-3.0",
@@ -34,6 +35,7 @@
     "style-loader": "^0.21.0",
     "webpack": "^4.10.2",
     "webpack-cli": "^2.1.4",
-    "webpack-dev-server": "^3.1.4"
+    "webpack-dev-server": "^3.1.4",
+    "babel-preset-babili": "^0.1.4"
   }
 }
