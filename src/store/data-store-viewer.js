@@ -24,7 +24,7 @@ const ObjectTag = ({ path }) => {
   );
 };
 
-const OpenCloseButton = ({ open, store }) => {
+const OpenCloseButton = ({ store }) => {
   const onClick = (event, data, path) => store.set(path, (data = {}) => ({ ...data, open: !data.open }));
   return (
     <pre className={styles.openCloseButton} onClick={onClick}>
@@ -35,7 +35,7 @@ const OpenCloseButton = ({ open, store }) => {
 
 const DataStoreViewer = ({ store }) => (
   <div _bind="_data-store-viewer" className={styles.viewer}>
-    <OpenCloseButton store={store} open={false}/>
+    <OpenCloseButton store={store}/>
     <div _if={(data) => data && data.open} className={styles.wrapper}>
       <ObjectTag/>
     </div>

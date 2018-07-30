@@ -23,7 +23,7 @@ export const NewCounter = () => {
   };
 
   return (
-    <div _bind={(data, path) => path+'.newCounter'} className={styles.newCounter}>
+    <div _bind=".newCounter" className={styles.newCounter}>
       <Input type="text" value={data => data} onChange={inputChange}/>
       <Button value="add counter" onClick={addCounter}/>
     </div>

@@ -1,11 +1,11 @@
 import AbstractComponent from './abstract.component';
 import { cloneDeep, htmlPropMap } from './helpers';
 
-
 export class BasicComponent extends AbstractComponent {
 
   constructor(elementFactory, props, childrenFactories) {
     super(elementFactory, props, childrenFactories);
+    this.boundPath = undefined;
     this.propagateUpdates = true;
   };
 
@@ -103,12 +103,16 @@ export class BasicComponent extends AbstractComponent {
     }
   }
 
-  _bind(path) {
-    if (this.store && path != null) {
-      if (typeof path === 'function') {
-        this.storeOnUpdate = (data, parentPath) => {
-          let newPath = path(data, parentPath);
-          if (this.currentPath !== newPath) {
+  _bind(_bind) {
+    if (this.store && _bind != null) {
+      if (typeof _bind === 'function' || _bind[0] === '.') {
+        const combiner =
+          typeof _bind === 'function'
+            ? (data, path) => _bind(data, path)
+            : (data, path) => path + _bind;
+        this.storeOnUpdate = (data, path) => {
+          let newPath = combiner(data, path);
+          if (this.boundPath !== newPath) {
             this._bind(newPath);
           }
         };
@@ -119,26 +123,41 @@ export class BasicComponent extends AbstractComponent {
           this.storeListener = null;
         }
 
+        this.boundPath = _bind;
+
         let handler = ((self, path) => (data) => {
           self.update(data, path, true);
-        })(this, path);
+        })(this, _bind);
 
         this.store.addListener(
-          path,
+          _bind,
           handler
         );
 
-        this.storeListener = { path, handler };
+        this.storeListener = { path: _bind, handler };
       }
     }
   }
 
-  _for(path) {
-    if (this.store && path != null) {
-      if (typeof path === 'function') {
-        this.storeOnUpdate = (data, parentPath) => {
-          let newPath = path(data, parentPath);
-          this._for(newPath);
+  _for(_for) {
+    if (this.store && _for != null) {
+      if (typeof _for === 'function' || _for[0] === '.') {
+        const combiner = (function (binding) {
+          if (typeof binding === 'function') {
+            return (data, path) => binding(data, path)
+          }
+          else {
+            return (data, path) => path + _for;
+          }
+        })(_for);
+
+        console.log(this.element, _for, combiner);
+
+        this.storeOnUpdate = (data, path) => {
+          let newPath = combiner(data, path);
+          if (this.boundPath !== newPath) {
+            this._for(newPath);
+          }
         };
       }
       else {
@@ -147,14 +166,14 @@ export class BasicComponent extends AbstractComponent {
           this.storeListener = null;
         }
 
-        this.currentPath = path;
+        this.boundPath = _for;
 
         let handler = (data) => {
           const keys = data != null && typeof data === 'object' ? Object.keys(data) : [];
           let i;
           for (i = 0; i < keys.length; i++) {
             let key = keys[i];
-            let subPath = path ? path + '.' + key : key;
+            let subPath = _for ? _for + '.' + key : key;
             if (this.children[i * this.childrenFactories.length]) {
               for (let c = 0; c < this.childrenFactories.length; c++) {
                 this.updateChild(
@@ -200,12 +219,12 @@ export class BasicComponent extends AbstractComponent {
 
 
         this.store.addListener(
-          path,
+          _for,
           handler,
           { depth: 1 }
         );
 
-        this.storeListener = { path, handler };
+        this.storeListener = { path: _for, handler };
       }
     }
   }
