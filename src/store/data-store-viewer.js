@@ -1,43 +1,53 @@
 import omega from '../renderer';
+import styles from './data-store-viewer.scss';
 
 const Param = () => {
   return (
-    <div>
-      <span style={{ color: '#df92e1', marginRight: '4px' }}>{(data, path) => path && path.replace(/^.*\./, '')}:</span>
-      <span _if={data => typeof data === 'number'} style={{ color: '#6292ff' }}>{data => data}</span>
-      <span _if={data => typeof data === 'string'} style={{ color: '#62ff92' }}>{data => data}</span>
-      <span _if={data => typeof data === 'boolean'} style={{ color: '#ffff92' }}>{data => data}</span>
-      <ObjectTag _if={data => typeof data === 'object'} path={(data, path) => path}/>
+    <div
+      _switch={data => typeof data}
+      className={(data, path) => path && /^(.*\.)?_[^.]*$/i.test(path) ? styles.paramHidden : styles.param}
+    >
+      <span className={styles.paramKey}>{(data, path) => path && path.replace(/^.*\./, '')}</span>
+      <span _case="number" className={styles.number}>{data => data}</span>
+      <span _case="string" className={styles.string}>{data => data}</span>
+      <span _case="boolean" className={styles.boolean}>{data => data}</span>
+      <ObjectTag _case="object" path={(data, path) => path}/>
     </div>
   );
 };
 
-const ObjectTag = ({path}) => {
+const ObjectTag = ({ path }) => {
   return (
-    <div _for={path || ''} style={{ paddingLeft: '10px', borderLeft: '1px dashed rgba(255,255,255,0.25)'}}>
-        <Param/>
+    <div _for={path || ''} className={styles.object}>
+      <Param/>
     </div>
   );
 };
+
+const OpenCloseButton = ({ open, store }) => {
+  const onClick = (event, data, path) => store.set(path, (data = {}) => ({ ...data, open: !data.open }));
+  return (
+    <pre className={styles.openCloseButton} onClick={onClick}>
+      {data => data && data.open ? '⮞\n⮞\n⮞' : '⮜\n⮜\n⮜'}
+    </pre>
+  );
+};
+
+const DataStoreViewer = ({ store }) => (
+  <div _bind="_data-store-viewer" className={styles.viewer}>
+    <OpenCloseButton store={store} open={false}/>
+    <div _if={(data) => data && data.open} className={styles.wrapper}>
+      <ObjectTag/>
+    </div>
+  </div>
+);
 
 export const createDataStoreViewer = (appendTo, store) => {
   omega.render(
-    <div style={{
-      position: 'fixed',
-      top: 0,
-      right: 0,
-      bottom: 0,
-      maxWidth: '50%',
-      padding: '10px 25px 10px 10px',
-      background: '#333333',
-      color: '#fff',
-      overflow: 'auto'
-    }}>
-      <ObjectTag/>
-    </div>,
+    <DataStoreViewer store={store}/>,
     appendTo,
     store
-  )
+  );
 };
 
 export default createDataStoreViewer;

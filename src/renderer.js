@@ -68,7 +68,7 @@ export const Renderer = {
   },
 
   render: (component, appendTo, store) => {
-    const root = component.create();
+    const root = typeof component === 'function' ? component().create() : component.create();
     root.init(store);
     appendTo.append(
       root.render()

@@ -1,5 +1,5 @@
 import AbstractComponent from './abstract.component';
-import {cloneDeep, htmlPropMap} from './helpers';
+import { cloneDeep, htmlPropMap } from './helpers';
 
 
 export class BasicComponent extends AbstractComponent {
@@ -75,6 +75,34 @@ export class BasicComponent extends AbstractComponent {
     }
   }
 
+  _switch(data, path) {
+    let _switch = this.props._switch;
+    const result =
+      typeof _switch === 'function' ?
+        _switch(data, path)
+        : (_switch === true ? data : _switch);
+
+    this.children.forEach(
+      child => child
+        && child._case
+        && child._case(result)
+    );
+  }
+
+  _case(value) {
+    let _case = this.props._case;
+    if (_case !== undefined) {
+      const result = typeof _case === 'function' ? _case(value) : _case === value;
+
+      if (result) {
+        this.show();
+      }
+      else {
+        this.hide();
+      }
+    }
+  }
+
   _bind(path) {
     if (this.store && path != null) {
       if (typeof path === 'function') {
@@ -100,7 +128,7 @@ export class BasicComponent extends AbstractComponent {
           handler
         );
 
-        this.storeListener = {path, handler};
+        this.storeListener = { path, handler };
       }
     }
   }
@@ -174,10 +202,10 @@ export class BasicComponent extends AbstractComponent {
         this.store.addListener(
           path,
           handler,
-          {depth: 1}
+          { depth: 1 }
         );
 
-        this.storeListener = {path, handler};
+        this.storeListener = { path, handler };
       }
     }
   }
@@ -194,10 +222,14 @@ export class BasicComponent extends AbstractComponent {
       if (this.storeOnUpdate && !selfCall) {
         this.storeOnUpdate(data, path);
       }
-    }
 
-    if (this.props._if !== undefined && !selfCall) {
-      this._if(data, path);
+      if (this.props._if !== undefined && !selfCall) {
+        this._if(data, path);
+      }
+
+      if (this.props._switch !== undefined && !selfCall) {
+        this._switch(data, path);
+      }
     }
 
     if (this.propagateUpdates || selfCall) {
