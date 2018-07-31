@@ -1,6 +1,6 @@
 {
   "name": "ome",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "data driven JavaScript library, based on JSX",
   "main": "lib/index.js",
   "scripts": {
@@ -11,7 +11,7 @@
     "test": "echo  NO TESTS DEFINED! TODO: define some",
     "lint": "eslint src",
     "deploy": "gh-pages -d dist",
-    "prepublish": "babel src --presets es2015,babili --out-dir lib"
+    "prepublish": "rm -Rf lib && babel src --presets es2015,babili --out-dir lib"
   },
   "author": "Dustin Hagemeier <dustin@coding.international>",
   "license": "AGPL-3.0",

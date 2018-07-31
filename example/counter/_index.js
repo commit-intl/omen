@@ -1,11 +1,10 @@
-import { omega, DataStore, createDataStoreViewer } from 'omega';
+import { omega, Store, createStoreViewer } from 'omega';
 import styles from './_index.scss';
 import { Counter } from './Counter';
 import { NewCounter } from './NewCounter';
 
-
 export const store =
-  new DataStore({
+  new Store({
     'app': {
       'Important': {
         counters: [
@@ -46,7 +45,6 @@ omega.render(
         <div _for=".counters">
           <div className={styles.entry}>
             <div className={styles.remove} onClick={(event, data, path) => {
-              console.log(path);
               store.set(path, undefined)
             }}>×
             </div>
@@ -62,7 +60,7 @@ omega.render(
   store
 );
 
-createDataStoreViewer(
+createStoreViewer(
   document.body,
   store
 );

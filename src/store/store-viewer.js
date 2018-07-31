@@ -34,7 +34,7 @@ const OpenCloseButton = ({ store }) => {
 };
 
 const StoreViewer = ({ store }) => (
-  <div _bind="_data-store-viewer" className={styles.viewer}>
+  <div _bind="_store-viewer" className={styles.viewer}>
     <OpenCloseButton store={store}/>
     <div _if={(data) => data && data.open} className={styles.wrapper}>
       <ObjectTag/>

@@ -151,8 +151,6 @@ export class BasicComponent extends AbstractComponent {
           }
         })(_for);
 
-        console.log(this.element, _for, combiner);
-
         this.storeOnUpdate = (data, path) => {
           let newPath = combiner(data, path);
           if (this.boundPath !== newPath) {

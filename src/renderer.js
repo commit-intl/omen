@@ -8,13 +8,13 @@ export const Renderer = {
 
     if (typeof tag === 'function') {
       create = (tag, props, children) => {
-        const component = tag({
+        let component = tag({
           ...props,
           children,
         });
 
-        if (component && typeof component.create === 'function') {
-          return component.create();
+        while (component && typeof component.create === 'function') {
+          component = component.create();
         }
 
         return component;
@@ -38,7 +38,12 @@ export const Renderer = {
   },
 
   render: (component, appendTo, store) => {
-    const root = typeof component === 'function' ? component().create() : component.create();
+    let root = component;
+    while (root && typeof root.create === 'function') {
+      root = root.create();
+    }
+    root = typeof root === 'function' ? root() : root;
+
     root.init(store);
     appendTo.append(
       root.render()
