@@ -26,7 +26,6 @@ export const cloneDeep = (value) => {
   return clone;
 };
 
-
 export const htmlPropMap = {
   'style': (value) => {
     let result = '';
@@ -35,4 +34,19 @@ export const htmlPropMap = {
     }
     return result;
   }
+};
+
+export const flattenDeepArray = (array) => {
+  let result = [];
+
+  for(let i = 0; i < array.length; i++) {
+    if(array[i].constructor === Array) {
+      result.push(...flattenDeepArray(array[i]));
+    }
+    else {
+      result.push(array[i]);
+    }
+  }
+
+  return result;
 };

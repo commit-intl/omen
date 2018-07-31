@@ -1,4 +1,4 @@
-import { cloneDeep } from './helpers';
+import {cloneDeep, flattenDeepArray} from './helpers';
 
 
 export class AbstractComponent {
@@ -8,7 +8,7 @@ export class AbstractComponent {
     this.initialProps = props;
     this.props = cloneDeep(props);
     this.listeners = [];
-    this.childrenFactories = childrenFactories;
+    this.childrenFactories = flattenDeepArray(childrenFactories);
     this.children = [];
     this.currentData = undefined;
     this.currentPath = undefined;
@@ -20,7 +20,7 @@ export class AbstractComponent {
   }
 
   initChildren() {
-    if(!this.hidden) {
+    if (!this.hidden) {
       this.children = this.createNewChildren();
 
       for (let i in this.children) {
@@ -37,7 +37,7 @@ export class AbstractComponent {
   createNewChildren() {
     return this.childrenFactories
       && this.childrenFactories.map(f => {
-        if(typeof f === 'object') return f != null && typeof f.create === 'function' && f.create();
+        if (typeof f === 'object' && typeof f.create === 'function') return f.create();
         return f;
       });
   }
@@ -69,7 +69,7 @@ export class AbstractComponent {
 
   removeChild(child) {
     this.children = this.children.filter(c => c !== child);
-    if(child && child.element && this.element) {
+    if (child && child.element && this.element) {
       this.element.removeChild(child.element);
     }
   }
@@ -91,8 +91,8 @@ export class AbstractComponent {
   }
 
   hide() {
-    if(!this.hidden) {
-      if(this.element) {
+    if (!this.hidden) {
+      if (this.element) {
         this.element.hidden = this.hidden = !this.hidden;
         this.removeAllChildren();
       }
@@ -100,8 +100,8 @@ export class AbstractComponent {
   }
 
   show() {
-    if(this.hidden) {
-      if(this.element) {
+    if (this.hidden) {
+      if (this.element) {
         this.element.hidden = this.hidden = !this.hidden;
         this.initChildren();
         this.update(this.currentData, this.currentPath);
@@ -110,7 +110,7 @@ export class AbstractComponent {
   }
 
   destroy(root = true) {
-    if(root && this.parent) {
+    if (root && this.parent) {
       this.parent.removeChild(this);
     }
 

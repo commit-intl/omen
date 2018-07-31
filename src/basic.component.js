@@ -1,5 +1,5 @@
 import AbstractComponent from './abstract.component';
-import { cloneDeep, htmlPropMap } from './helpers';
+import {cloneDeep, htmlPropMap} from './helpers';
 
 export class BasicComponent extends AbstractComponent {
 
@@ -85,7 +85,7 @@ export class BasicComponent extends AbstractComponent {
     this.children.forEach(
       child => child
         && child._case
-        && child._case(result)
+        && child._case(result),
     );
   }
 
@@ -131,10 +131,10 @@ export class BasicComponent extends AbstractComponent {
 
         this.store.addListener(
           _bind,
-          handler
+          handler,
         );
 
-        this.storeListener = { path: _bind, handler };
+        this.storeListener = {path: _bind, handler};
       }
     }
   }
@@ -177,7 +177,7 @@ export class BasicComponent extends AbstractComponent {
                 this.updateChild(
                   this.children[(i * this.childrenFactories.length) + c],
                   data[key],
-                  subPath
+                  subPath,
                 );
               }
             }
@@ -195,7 +195,7 @@ export class BasicComponent extends AbstractComponent {
                 this.updateChild(
                   clone,
                   data[key],
-                  subPath
+                  subPath,
                 );
               });
 
@@ -219,10 +219,10 @@ export class BasicComponent extends AbstractComponent {
         this.store.addListener(
           _for,
           handler,
-          { depth: 1 }
+          {depth: 1},
         );
 
-        this.storeListener = { path: _for, handler };
+        this.storeListener = {path: _for, handler};
       }
     }
   }
@@ -262,7 +262,13 @@ export class BasicComponent extends AbstractComponent {
       if (htmlPropMap[i]) {
         value = htmlPropMap[i](this.props[i]);
       }
-      this.element[i] = value;
+
+      if(['className', 'style'].includes(i)) {
+        this.element[i] = value;
+      }
+      else {
+        this.element.setAttribute(i, value);
+      }
     }
   }
 

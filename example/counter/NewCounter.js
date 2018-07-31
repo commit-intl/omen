@@ -1,4 +1,4 @@
-import { omega } from 'omega';
+import { omega } from 'ome';
 import { store } from './_index';
 import styles from './_index.scss';
 import { Input } from './Input';

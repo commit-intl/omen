@@ -1,4 +1,4 @@
-import { omega } from 'omega';
+import { omega } from 'ome';
 import styles from './_index.scss';
 
 export const Button = ({ value, onClick }) => {

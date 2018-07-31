@@ -1,7 +1,8 @@
-import { omega, Store, createStoreViewer } from 'omega';
+import { omega, Store, createStoreViewer } from 'ome';
 import styles from './_index.scss';
 import { Counter } from './Counter';
 import { NewCounter } from './NewCounter';
+import {Headline} from './Headline';
 
 export const store =
   new Store({
@@ -39,6 +40,7 @@ store.addListener('', (data) => console.log('STORE_CHANGE', data));
 
 omega.render(
   <div className={styles.wrapper}>
+    <Headline>Example Counters</Headline>
     <div _for="app" className={styles.for}>
       <div className={styles.group}>
         <h1 className={styles.groupTitles}>{(data, path) => path && path.replace(/^.*\./, '')}</h1>

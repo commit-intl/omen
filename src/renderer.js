@@ -8,7 +8,7 @@ export const Renderer = {
 
     if (typeof tag === 'function') {
       create = (tag, props, children) => {
-        let component = tag({
+        var component = tag({
           ...props,
           children,
         });
@@ -38,7 +38,7 @@ export const Renderer = {
   },
 
   render: (component, appendTo, store) => {
-    let root = component;
+    var root = component;
     while (root && typeof root.create === 'function') {
       root = root.create();
     }

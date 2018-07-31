@@ -1,14 +1,12 @@
 const path = require('path');
-const glob = require('glob');
-const webpack = require('webpack');
-const autoprefixer = require('autoprefixer');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   devServer: {
     contentBase: path.join(__dirname, "dist"),
     compress: true,
     hot: true,
-    port: 8080
+    port: 8080,
   },
   devtool: 'source-map',
   mode: 'production',
@@ -22,15 +20,13 @@ module.exports = {
     filename: 'bundle.js',
   },
   resolveLoader: {
-    moduleExtensions: ['-loader']
+    moduleExtensions: ['-loader'],
+  },
+  optimization: {
+    minimize: true,
   },
   plugins: [
-    new webpack.optimize.UglifyJsPlugin({
-      compressor: {
-        warnings: false,
-      },
-      sourceMap: true,
-    })
+    new HtmlWebpackPlugin(),
   ],
   module: {
     rules: [
@@ -42,8 +38,8 @@ module.exports = {
             loader: "css",
             options: {
               modules: true,
-              localIdentName: '[path][name]__[local]--[hash:base64:5]'
-            }
+              localIdentName: '[path][name]__[local]--[hash:base64:5]',
+            },
           }, // translates CSS into CommonJS
           "sass" // compiles Sass to CSS
         ],
@@ -60,14 +56,14 @@ module.exports = {
           {loader: 'babel'},
         ],
       },
-    ]
+    ],
   },
   resolve: {
     alias: {
-      'omega': path.join(__dirname, 'src/index.js'),
+      'ome': path.join(__dirname, 'src/index.js'),
     },
     modules: [
       "node_modules",
     ],
-  }
+  },
 };

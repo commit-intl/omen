@@ -1,6 +1,6 @@
 {
   "name": "ome",
-  "version": "0.1.1",
+  "version": "0.1.6",
   "description": "data driven JavaScript library, based on JSX",
   "main": "lib/index.js",
   "scripts": {
