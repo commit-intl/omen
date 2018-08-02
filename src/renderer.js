@@ -26,7 +26,9 @@ export const Renderer = {
     }
     else {
       create = (tag, props, children) => new BasicComponent(
-        () => document.createElement(tag),
+        tag === 'svg'
+          ? () => document.createElementNS('http://www.w3.org/2000/svg')
+          : () => document.createElement(tag),
         props,
         children,
       );
@@ -46,9 +48,9 @@ export const Renderer = {
 
     root.init(store);
     appendTo.append(
-      root.render()
+      root.render(),
     );
-  }
+  },
 };
 
 
