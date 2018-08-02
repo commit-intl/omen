@@ -40,7 +40,7 @@ export const flattenDeepArray = (array) => {
   let result = [];
 
   for(let i = 0; i < array.length; i++) {
-    if(array[i].constructor === Array) {
+    if(array[i] && array[i].constructor === Array) {
       result.push(...flattenDeepArray(array[i]));
     }
     else {

@@ -1,7 +1,7 @@
 {
   "name": "ome",
-  "version": "0.3.0",
-  "description": "data driven JavaScript library, based on JSX",
+  "version": "0.3.1",
+  "description": "data driven javascript frontend library, based on JSX",
   "main": "lib/index.js",
   "scripts": {
     "start": "webpack-dev-server --config webpack.develop.config.js --hot --inline",
