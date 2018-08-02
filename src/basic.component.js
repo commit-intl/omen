@@ -7,6 +7,7 @@ export class BasicComponent extends AbstractComponent {
     super(elementFactory, props, childrenFactories, namespace);
     this.boundPath = undefined;
     this.propagateUpdates = true;
+    this.currentProps = {}
   };
 
   init(store) {
@@ -263,12 +264,23 @@ export class BasicComponent extends AbstractComponent {
         value = htmlPropMap[i](this.props[i]);
       }
 
-      if(['className', 'style'].includes(i)) {
-        this.element[i] = value;
+      if (this.currentProps[i] !== value) {
+        if (i === 'style') {
+          this.element[i] = value;
+        }
+        else if (i === 'className') {
+          if (this.namespace) {
+            this.element.setAttribute('class', value);
+          }
+          else {
+            this.element[i] = value;
+          }
+        }
+        else {
+          this.element.setAttribute(i, value);
+        }
       }
-      else {
-        this.element.setAttribute(i, value);
-      }
+      this.currentProps[i] = value;
     }
   }
 
