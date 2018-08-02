@@ -63,7 +63,9 @@ export class AbstractComponent {
           };
           break;
         default:
-          this.element.append(child);
+          if (child != null && child !== false) {
+            this.element.append(child);
+          }
       }
     }
   }
