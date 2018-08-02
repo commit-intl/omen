@@ -1,8 +1,29 @@
 export class Store {
 
-  constructor(state) {
+  constructor(state, binding) {
     this.state = state;
+    this.binding = binding;
     this.subs = {};
+
+    this.load();
+  }
+
+  load() {
+    if(this.binding) {
+      let result = this.binding.load();
+      if(result) {
+        this.state = {
+          ...this.state,
+          ...result,
+        };
+      }
+    }
+  }
+
+  save() {
+    if(this.binding) {
+      this.binding.save(this.state);
+    }
   }
 
   get(path) {
@@ -48,6 +69,8 @@ export class Store {
       this.state = typeof value === 'function' ? value(this.state) : value;
       this.notify(path);
     }
+
+    this.save();
   }
 
   addListener(path, callback, options) {

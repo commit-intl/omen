@@ -66,25 +66,28 @@ styles.object = {
 };
 
 
-const Param = () => {
+const Param = ({middleware}) => {
+  const value = middleware
+    ? ((data, path) => middleware(data, path))
+    : (data => data);
   return (
     <div
       _switch={data => typeof data}
       style={(data, path) => path && /^(.*\.)?_[^.]*$/i.test(path) ? styles.paramHidden : styles.param}
     >
       <span style={styles.paramKey}>{(data, path) => path && path.replace(/^.*\./, '')}</span>
-      <span _case="number" style={styles.number}>{data => data}</span>
-      <span _case="string" style={styles.string}>{data => data}</span>
-      <span _case="boolean" style={styles.boolean}>{data => data}</span>
-      <ObjectTag _case="object" path={(data, path) => path}/>
+      <span _case="number" style={styles.number}>{value}</span>
+      <span _case="string" style={styles.string}>{value}</span>
+      <span _case="boolean" style={styles.boolean}>{value}</span>
+      <ObjectTag _case="object" path={(data, path) => path} middleware={middleware}/>
     </div>
   );
 };
 
-const ObjectTag = ({path}) => {
+const ObjectTag = ({path, middleware}) => {
   return (
     <div _for={path || ''} style={styles.object}>
-      <Param/>
+      <Param middleware={middleware}/>
     </div>
   );
 };
@@ -98,18 +101,18 @@ const OpenCloseButton = ({store}) => {
   );
 };
 
-const StoreViewer = ({store}) => (
+const StoreViewer = ({store, middleware}) => (
   <div _bind="_store-viewer" style={styles.viewer}>
     <OpenCloseButton store={store}/>
     <div _if={(data) => data && data.open} style={styles.wrapper}>
-      <ObjectTag/>
+      <ObjectTag middleware={middleware}/>
     </div>
   </div>
 );
 
-export const createStoreViewer = (appendTo, store) => {
+export const createStoreViewer = (appendTo, store, middleware) => {
   omega.render(
-    <StoreViewer store={store}/>,
+    <StoreViewer store={store} middleware={middleware}/>,
     appendTo,
     store
   );

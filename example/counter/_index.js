@@ -2,41 +2,45 @@ import { omega, Store, createStoreViewer } from 'ome';
 import styles from './_index.scss';
 import { Counter } from './Counter';
 import { NewCounter } from './NewCounter';
-import {Headline} from './Headline';
+import { Headline } from './Headline';
+import LocalStorageBinding from '../../src/store/local-storage-binding';
 
-export const store =
-  new Store({
-    'app': {
-      'Important': {
-        counters: [
-          {
-            name: 'Tempus Count',
-            value: 13,
-          },
-          {
-            name: 'Eternal Size',
-            value: -3,
-          }
-        ],
-        newCounter: '',
-      },
-      'Unnecessary': {
-        counters: [
-          {
-            name: 'Memes Created',
-            value: 13,
-          },
-          {
-            name: 'Lifes Changed',
-            value: 0,
-          }
-        ],
-        newCounter: '',
-      }
+const initialState = {
+  'secret': 'This will not be shown in the store viewer! Thanks to middleware!',
+  'app': {
+    'Important': {
+      counters: [
+        {
+          name: 'Tempus Count',
+          value: 13,
+        },
+        {
+          name: 'Eternal Size',
+          value: -3,
+        }
+      ],
+      newCounter: '',
+    },
+    'Unnecessary': {
+      counters: [
+        {
+          name: 'Memes Created',
+          value: 13,
+        },
+        {
+          name: 'Lifes Changed',
+          value: 0,
+        }
+      ],
+      newCounter: '',
     }
-  });
+  }
+};
 
-store.addListener('', (data) => console.log('STORE_CHANGE', data));
+export const store = new Store(
+  initialState,
+  new LocalStorageBinding('counter', (path) => path !== 'secret')
+);
 
 omega.render(
   <div className={styles.wrapper}>
@@ -62,7 +66,17 @@ omega.render(
   store
 );
 
+
+const storeViewerMiddleware = (data, path) => {
+    console.log(path);
+    if (path && path.indexOf('secret') === 0) {
+      return '[hidden]';
+    }
+    return data;
+  };
+
 createStoreViewer(
   document.body,
-  store
+  store,
+  storeViewerMiddleware,
 );
