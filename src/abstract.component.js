@@ -2,7 +2,7 @@ import {cloneDeep, flattenDeepArray} from './helpers';
 
 
 export class AbstractComponent {
-  constructor(elementFactory, props, childrenFactories) {
+  constructor(elementFactory, props, childrenFactories, namespace) {
     this.parent = undefined;
     this.elementFactory = elementFactory;
     this.initialProps = props;
@@ -10,13 +10,14 @@ export class AbstractComponent {
     this.listeners = [];
     this.childrenFactories = flattenDeepArray(childrenFactories);
     this.children = [];
+    this.namespace = namespace;
     this.currentData = undefined;
     this.currentPath = undefined;
   }
 
   init(store) {
     this.store = store;
-    this.element = this.elementFactory();
+    this.element = this.elementFactory(this.namespace);
   }
 
   initChildren() {
@@ -37,7 +38,7 @@ export class AbstractComponent {
   createNewChildren() {
     return this.childrenFactories
       && this.childrenFactories.map(f => {
-        if (typeof f === 'object' && typeof f.create === 'function') return f.create();
+        if (typeof f === 'object' && typeof f.create === 'function') return f.create(this.namespace);
         return f;
       });
   }

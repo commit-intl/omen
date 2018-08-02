@@ -4,17 +4,18 @@ export const Renderer = {
   create: (tag, props, ...children) => {
     if (!props) props = {};
 
+    let namespace;
     let create;
 
     if (typeof tag === 'function') {
-      create = (tag, props, children) => {
+      create = (tag, props, children, namespace) => {
         var component = tag({
           ...props,
           children,
         });
 
         while (component && typeof component.create === 'function') {
-          component = component.create();
+          component = component.create(namespace);
         }
 
         return component;
@@ -22,20 +23,24 @@ export const Renderer = {
     }
     else if (typeof tag === 'object') {
       console.error('omega.renderer.create', 'Component Type Object not yet Supported!');
-      create = (tag, props, children) => tag;
+      create = (tag, props, children, namespace) => tag;
     }
     else {
-      create = (tag, props, children) => new BasicComponent(
-        tag === 'svg'
-          ? () => document.createElementNS('http://www.w3.org/2000/svg')
-          : () => document.createElement(tag),
+      if (tag === 'svg') {
+        namespace = 'http://www.w3.org/2000/svg';
+      }
+      create = (tag, props, children, namespace) => new BasicComponent(
+        namespace ? (namespace) => document.createElementNS(namespace, tag) : () => document.createElement(tag),
         props,
         children,
+        namespace,
       );
     }
 
     return {
-      create: () => create(tag, props, children),
+      create: namespace
+        ? () => create(tag, props, children, namespace)
+        : (namespace) => create(tag, props, children, namespace),
     };
   },
 

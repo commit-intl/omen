@@ -3,8 +3,8 @@ import {cloneDeep, htmlPropMap} from './helpers';
 
 export class BasicComponent extends AbstractComponent {
 
-  constructor(elementFactory, props, childrenFactories) {
-    super(elementFactory, props, childrenFactories);
+  constructor(elementFactory, props, childrenFactories, namespace) {
+    super(elementFactory, props, childrenFactories, namespace);
     this.boundPath = undefined;
     this.propagateUpdates = true;
   };
