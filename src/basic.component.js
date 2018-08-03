@@ -1,5 +1,5 @@
 import AbstractComponent from './abstract.component';
-import {cloneDeep, htmlPropMap} from './helpers';
+import { cloneDeep, directivePropMap, htmlPropMap } from './helpers';
 
 export class BasicComponent extends AbstractComponent {
 
@@ -7,7 +7,8 @@ export class BasicComponent extends AbstractComponent {
     super(elementFactory, props, childrenFactories, namespace);
     this.boundPath = undefined;
     this.propagateUpdates = true;
-    this.currentProps = {}
+    this.currentProps = {};
+    this.directives = [];
   };
 
   init(store) {
@@ -18,6 +19,8 @@ export class BasicComponent extends AbstractComponent {
       if (attr.indexOf('on') === 0) {
         const eventHandler = (handler) => (event) => handler(event, this.currentData, this.currentPath);
         this.listeners[attr.substr(2).toLowerCase()] = eventHandler(this.props[attr]);
+      } else if (attr[0] === '_' && directivePropMap[attr]) {
+        this.directives.push(new directivePropMap[attr](this));
       } else {
         newProps[attr] = this.props[attr];
       }
@@ -119,9 +122,9 @@ export class BasicComponent extends AbstractComponent {
         };
       }
       else {
-        if (this.storeListener) {
-          this.store.removeListener(this.storeListener.path, this.storeListener.handler);
-          this.storeListener = null;
+        if (this.storeBinding) {
+          this.store.removeListener(this.storeBinding.path, this.storeBinding.handler);
+          this.storeBinding = null;
         }
 
         this.boundPath = _bind;
@@ -135,7 +138,7 @@ export class BasicComponent extends AbstractComponent {
           handler,
         );
 
-        this.storeListener = {path: _bind, handler};
+        this.storeBinding = {path: _bind, handler};
       }
     }
   }
@@ -160,9 +163,9 @@ export class BasicComponent extends AbstractComponent {
         };
       }
       else {
-        if (this.storeListener) {
-          this.store.removeListener(this.storeListener.path, this.storeListener.handler);
-          this.storeListener = null;
+        if (this.storeBinding && this.storeBinding.subscription) {
+          this.store.removeListener(this.storeBinding.subscription.path, this.storeBinding.subscription.handler);
+          this.storeBinding = null;
         }
 
         this.boundPath = _for;
@@ -223,8 +226,13 @@ export class BasicComponent extends AbstractComponent {
           {depth: 1},
         );
 
-        this.storeListener = {path: _for, handler};
-      }
+        this.storeBinding = {
+          update: this._for
+          subscription: {
+            path: _for, handler
+          }
+        };
+      };
     }
   }
 
@@ -233,9 +241,9 @@ export class BasicComponent extends AbstractComponent {
   }
 
   update(data, path, selfCall = false) {
-    if (!this.dontAcceptData) {
-      this.updateProps(data, path);
+    if (!this.storeBinding) {
       super.update(data, path);
+      this.updateProps(data, path);
 
       if (this.storeOnUpdate && !selfCall) {
         this.storeOnUpdate(data, path);
@@ -244,12 +252,11 @@ export class BasicComponent extends AbstractComponent {
       if (this.props._if !== undefined && !selfCall) {
         this._if(data, path);
       }
-
-      if (this.props._switch !== undefined && !selfCall) {
-        this._switch(data, path);
-      }
     }
+    this.updateChildren(selfCall)
+  }
 
+  updateChildren(selfCall) {
     if (this.propagateUpdates || selfCall) {
       for (let i in this.children) {
         this.updateChild(this.children[i], data, path);
@@ -302,9 +309,9 @@ export class BasicComponent extends AbstractComponent {
   destroy(root) {
     super.destroy(root);
 
-    if (this.storeListener) {
-      this.store.removeListener(this.storeListener.path, this.storeListener.handler);
-      this.storeListener = null;
+    if (this.storeBinding) {
+      this.store.removeListener(this.storeBinding.path, this.storeBinding.handler);
+      this.storeBinding = null;
     }
   }
 }

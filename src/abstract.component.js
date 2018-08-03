@@ -1,4 +1,4 @@
-import {cloneDeep, flattenDeepArray} from './helpers';
+import { cloneDeep, flattenDeepArray } from './helpers';
 
 
 export class AbstractComponent {
@@ -35,9 +35,10 @@ export class AbstractComponent {
     }
   }
 
-  createNewChildren() {
-    return this.childrenFactories
-      && this.childrenFactories.map(f => {
+  createNewChildren(childFactories) {
+    let factories = childFactories || this.childrenFactories;
+    return factories
+      && factories.map(f => {
         if (typeof f === 'object' && typeof f.create === 'function') return f.create(this.namespace);
         return f;
       });

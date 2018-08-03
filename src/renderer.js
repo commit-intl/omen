@@ -41,6 +41,7 @@ export const Renderer = {
       create: namespace
         ? () => create(tag, props, children, namespace)
         : (namespace) => create(tag, props, children, namespace),
+      props,
     };
   },
 
