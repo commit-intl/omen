@@ -1,9 +1,14 @@
+import AbstractDirective from './abstract.directive';
+
 export default class SwitchDirective extends AbstractDirective {
 
   constructor(component, value) {
     super(component, value);
     this.currentCase = undefined;
   }
+
+  init() {}
+  destroy() {}
 
   update(data, path, call) {
     if (typeof this.value === 'function') {
@@ -13,7 +18,6 @@ export default class SwitchDirective extends AbstractDirective {
       }
     }
 
-    this.component.update(data, path);
     this.component.updateProps(data, path);
     this.component.updateChildren(data, path);
   }

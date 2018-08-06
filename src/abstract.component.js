@@ -15,8 +15,10 @@ export class AbstractComponent {
     this.currentPath = undefined;
   }
 
-  init(store) {
+  init(data, path, store) {
     this.store = store;
+    this.currentData = data;
+    this.currentPath = path;
     this.element = this.elementFactory(this.namespace);
   }
 
@@ -27,7 +29,7 @@ export class AbstractComponent {
       for (let i in this.children) {
         if (typeof this.children[i] === 'object') {
           if (this.children[i].parent) this.children[i].parent = this;
-          if (this.children[i].init) this.children[i].init(this.store);
+          if (this.children[i].init) this.children[i].init(this.currentData, this.currentPath, this.store);
         }
       }
 

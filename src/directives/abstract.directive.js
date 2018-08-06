@@ -7,7 +7,15 @@ export default class AbstractDirective {
     this.value = value;
   }
 
+  init() {
+    console.warn('init() NOT DEFINED IN DIRECTIVE');
+  }
+
   update(data, path) {
-    console.warn('UPDATE() NOT DEFINED IN DIRECTIVE');
+    console.warn('update() NOT DEFINED IN DIRECTIVE');
+  }
+
+  destroy() {
+    console.warn('destroy() NOT DEFINED IN DIRECTIVE');
   }
 }

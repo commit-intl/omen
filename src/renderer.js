@@ -52,7 +52,7 @@ export const Renderer = {
     }
     root = typeof root === 'function' ? root() : root;
 
-    root.init(store);
+    root.init(undefined, undefined, store);
     appendTo.append(
       root.render(),
     );
