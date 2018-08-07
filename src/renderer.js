@@ -1,86 +1,63 @@
 import BasicComponent from './basic.component';
-import ControlComponent from './control.component';
 
 export const Renderer = {
-  create: (component, props, ...children) => {
-
+  create: (tag, props, ...children) => {
     if (!props) props = {};
 
-    let element;
+    let namespace;
+    let create;
 
-    console.log(component);
+    if (typeof tag === 'function') {
+      create = (tag, props, children, namespace) => {
+        var component = tag({
+          ...props,
+          children,
+        });
 
-    if (typeof component === 'function') {
-      props.children = children;
-      return component(props);
+        while (component && typeof component.create === 'function') {
+          component = component.create(namespace);
+        }
+
+        return component;
+      };
     }
-    else if (typeof component === 'object') {
-      props.children = children;
-      console.log('object', component, props);
-      return component.render(props);
+    else if (typeof tag === 'object') {
+      console.error('omega.renderer.create', 'Component Type Object not yet Supported!');
+      create = (tag, props, children, namespace) => tag;
     }
     else {
-      if (component === '_o') {
-        element = document.createDocumentFragment();
+      if (tag === 'svg') {
+        namespace = 'http://www.w3.org/2000/svg';
       }
-      else {
-        element = document.createElement(component);
-      }
-
-
-      let listeners = [];
-      let elementProps = {};
-      let onRender = [];
-      let directives = {};
-      let childrenElements = [];
-
-      for (let attr in props) {
-        if (attr.indexOf('on') === 0) {
-          listeners[attr.substr(2).toLowerCase()] = props[attr];
-        } else if (attr[0] === '$') {
-          directives[attr] = props[attr];
-        } else {
-          elementProps[attr] = props[attr];
-        }
-      }
-
-      for (let i in children) {
-        switch (typeof children[i]) {
-          case 'string':
-            element.append(children[i]);
-            break;
-          case 'function':
-            let fragment = document.createElement('span');
-            onRender.push((data) => {
-              console.log('jep', data);
-              fragment.innerHTML = children[i](data)
-            });
-            element.appendChild(fragment);
-            break;
-          default:
-            console.log(children[i]);
-            childrenElements.push(children[i]);
-            element.appendChild(children[i].element);
-        }
-      }
-
-
-      if (component === '_o') {
-        return new ControlComponent(element, elementProps, childrenElements);
-      }
-      else {
-        return new BasicComponent(element, elementProps, childrenElements, listeners, onRender);
-      }
+      create = (tag, props, children, namespace) => new BasicComponent(
+        namespace ? (namespace) => document.createElementNS(namespace, tag) : () => document.createElement(tag),
+        props,
+        children,
+        namespace,
+      );
     }
+
+    return {
+      create: namespace
+        ? () => create(tag, props, children, namespace)
+        : (namespace) => create(tag, props, children, namespace),
+      props,
+    };
   },
 
-  render: (component, store) => {
-    document.body.appendChild(
-      component && component.render()
+  render: (component, appendTo, store) => {
+    var root = component;
+    while (root && typeof root.create === 'function') {
+      root = root.create();
+    }
+    root = typeof root === 'function' ? root() : root;
+
+    root.init(undefined, undefined, store);
+    appendTo.append(
+      root.render(),
     );
-    component.init(store);
-  }
+  },
 };
 
 
-export default { ...Renderer };
+export default {...Renderer};
