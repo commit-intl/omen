@@ -1,6 +1,6 @@
 {
   "name": "ome",
-  "version": "0.3.5",
+  "version": "0.4.0",
   "description": "data driven javascript frontend library, based on JSX",
   "main": "lib/index.js",
   "scripts": {
@@ -15,6 +15,24 @@
   },
   "author": "Dustin Hagemeier <dustin@coding.international>",
   "license": "AGPL-3.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/coding-intl/omega.git"
+  },
+  "keywords": [
+    "redux",
+    "effects",
+    "reducers",
+    "mini",
+    "micro",
+    "minified",
+    "javascript",
+    "js"
+  ],
+  "bugs": {
+    "url": "https://github.com/coding-intl/omega/issues"
+  },
+  "homepage": "https://github.com/coding-intl/omega#readme",
   "dependencies": {},
   "devDependencies": {
     "autoprefixer": "^6.7.7",
