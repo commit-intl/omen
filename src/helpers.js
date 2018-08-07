@@ -1,3 +1,9 @@
+import SwitchDirective from './directives/switch.directive';
+import DataDirective from './directives/data.directive';
+import BindDirective from './directives/bind.directive';
+import IfDirective from './directives/if.directive';
+import ForDirective from './directives/for.directive';
+
 export const cloneDeep = (value) => {
   if (typeof value !== 'object') {
     return value;
@@ -26,16 +32,6 @@ export const cloneDeep = (value) => {
   return clone;
 };
 
-export const htmlPropMap = {
-  'style': (value) => {
-    let result = '';
-    for (let i in value) {
-      result += i.replace(/([A-Z])/g, '-$1').toLowerCase() + ':' + value[i] + ';';
-    }
-    return result;
-  }
-};
-
 export const flattenDeepArray = (array) => {
   let result = [];
 
@@ -49,4 +45,22 @@ export const flattenDeepArray = (array) => {
   }
 
   return result;
+};
+
+export const htmlPropMap = {
+  'style': (value) => {
+    let result = '';
+    for (let i in value) {
+      result += i.replace(/([A-Z])/g, '-$1').toLowerCase() + ':' + value[i] + ';';
+    }
+    return result;
+  }
+};
+
+export const directivePropMap = {
+  '_data': DataDirective,
+  '_bind': BindDirective,
+  '_if': IfDirective,
+  '_for': ForDirective,
+  '_switch': SwitchDirective,
 };

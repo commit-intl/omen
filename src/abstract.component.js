@@ -1,4 +1,4 @@
-import {cloneDeep, flattenDeepArray} from './helpers';
+import { cloneDeep, flattenDeepArray } from './helpers';
 
 
 export class AbstractComponent {
@@ -13,31 +13,33 @@ export class AbstractComponent {
     this.namespace = namespace;
     this.currentData = undefined;
     this.currentPath = undefined;
+    this.store = undefined;
   }
 
-  init(store) {
+  init(data, path, store) {
     this.store = store;
+    this.currentData = data;
+    this.currentPath = path;
     this.element = this.elementFactory(this.namespace);
   }
 
-  initChildren() {
-    if (!this.hidden) {
-      this.children = this.createNewChildren();
+  initChildren(data, path, store) {
+    this.children = this.createNewChildren();
 
-      for (let i in this.children) {
-        if (typeof this.children[i] === 'object') {
-          if (this.children[i].parent) this.children[i].parent = this;
-          if (this.children[i].init) this.children[i].init(this.store);
-        }
+    for (let i in this.children) {
+      if (typeof this.children[i] === 'object') {
+        if (!this.children[i].parent) this.children[i].parent = this;
+        if (this.children[i].init) this.children[i].init(data, path, store);
       }
-
-      this.appendChildren();
     }
+
+    this.appendChildren();
   }
 
-  createNewChildren() {
-    return this.childrenFactories
-      && this.childrenFactories.map(f => {
+  createNewChildren(childFactories) {
+    let factories = childFactories || this.childrenFactories;
+    return factories
+      && factories.map(f => {
         if (typeof f === 'object' && typeof f.create === 'function') return f.create(this.namespace);
         return f;
       });
@@ -61,6 +63,7 @@ export class AbstractComponent {
             const result = updateFunction(data, path);
             target.innerHTML = result;
           };
+          this.children[i](this.currentData, this.currentPath);
           break;
         default:
           if (child != null && child !== false) {
@@ -96,17 +99,17 @@ export class AbstractComponent {
   hide() {
     if (!this.hidden) {
       if (this.element) {
-        this.element.hidden = this.hidden = !this.hidden;
+        this.element.hidden = this.hidden = true;
         this.removeAllChildren();
       }
     }
   }
 
   show() {
-    if (this.hidden) {
+    if (this.hidden || this.children.length <= 0) {
       if (this.element) {
-        this.element.hidden = this.hidden = !this.hidden;
-        this.initChildren();
+        this.element.hidden = this.hidden = false;
+        this.initChildren(this.currentData, this.currentPath, this.store);
         this.update(this.currentData, this.currentPath);
       }
     }

@@ -41,6 +41,7 @@ export const Renderer = {
       create: namespace
         ? () => create(tag, props, children, namespace)
         : (namespace) => create(tag, props, children, namespace),
+      props,
     };
   },
 
@@ -51,7 +52,7 @@ export const Renderer = {
     }
     root = typeof root === 'function' ? root() : root;
 
-    root.init(store);
+    root.init(undefined, undefined, store);
     appendTo.append(
       root.render(),
     );
