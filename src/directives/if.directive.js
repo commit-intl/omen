@@ -14,7 +14,6 @@ export default class IfDirective extends AbstractDirective {
 
   update(data, path) {
     const state = typeof this.value === 'function' ? !!this.value(data, path) : this.value === data;
-    console.log('if', this.currentState, state, this.value);
     if (this.currentState !== state) {
       this.currentState = state;
 

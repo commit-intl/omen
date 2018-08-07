@@ -40,7 +40,6 @@ export default class ForDirective extends AbstractDirective {
   }
 
   for(path) {
-    console.log('for', path, this.component.store);
     if (this.component.store) {
       if (this.storeBinding) {
         this.component.store.removeListener(this.storeBinding.path, this.storeBinding.handler);

@@ -70,7 +70,6 @@ omega.render(
 
 
 const storeViewerMiddleware = (data, path) => {
-    console.log(path);
     if (path && path.indexOf('secret') === 0) {
       return '[hidden]';
     }
