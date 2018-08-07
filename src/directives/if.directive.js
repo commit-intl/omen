@@ -27,6 +27,5 @@ export default class IfDirective extends AbstractDirective {
     }
 
     this.component.updateProps(data, path);
-    this.component.updateChildren(data, path);
   }
 }

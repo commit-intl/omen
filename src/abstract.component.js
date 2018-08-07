@@ -99,7 +99,7 @@ export class AbstractComponent {
   hide() {
     if (!this.hidden) {
       if (this.element) {
-        this.element.hidden = this.hidden = !this.hidden;
+        this.element.hidden = this.hidden = true;
         this.removeAllChildren();
       }
     }
@@ -108,7 +108,7 @@ export class AbstractComponent {
   show() {
     if (this.hidden || this.children.length <= 0) {
       if (this.element) {
-        this.element.hidden = this.hidden = !this.hidden;
+        this.element.hidden = this.hidden = false;
         console.log('show', this.currentData, this.currentPath, this.store);
         this.initChildren(this.currentData, this.currentPath, this.store);
         this.update(this.currentData, this.currentPath);

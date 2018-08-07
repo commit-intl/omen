@@ -11,7 +11,8 @@ export default class SwitchDirective extends AbstractDirective {
     this.update(data, path);
   }
 
-  destroy() {}
+  destroy() {
+  }
 
   update(data, path) {
     const newCase = typeof this.value === 'function' ? this.value(data, path) : this.value === data;
@@ -26,27 +27,31 @@ export default class SwitchDirective extends AbstractDirective {
   switch(data, path, newCase) {
     this.currentCase = newCase;
 
-    console.log('switch', path, data, newCase);
     this.component.removeAllChildren();
     if (this.component.childrenFactories) {
       let foundMatch = false;
-      this.component.createNewChildren(
+      let factories =
         this.component.childrenFactories.filter(
           (compConf) => {
-            if(compConf && compConf.props) {
-              if(compConf.props._case === newCase){
-                foundMatch = true;
-                return true;
+            if (compConf && compConf.props) {
+              if (compConf.props._case !== undefined || compConf.props._default) {
+                if (compConf.props._case === newCase) {
+                  foundMatch = true;
+                  return true;
+                }
+                return !foundMatch && compConf.props._default
               }
-              else if(compConf.props._default && !foundMatch) {
-                return true;
-              }
+              return true;
             }
           }
-        )
-      );
+        );
 
-      this.component.children.forEach(child => child.init(data, path, this.component.store));
+      this.component.children = this.component.createNewChildren(factories);
+      this.component.children.forEach(child => {
+        child.parent = this.component;
+        child.init(data, path, this.component.store);
+      });
+      this.component.appendChildren();
     }
   }
 }
