@@ -13,6 +13,7 @@ export class AbstractComponent {
     this.namespace = namespace;
     this.currentData = undefined;
     this.currentPath = undefined;
+    this.store = undefined;
   }
 
   init(data, path, store) {
@@ -22,19 +23,17 @@ export class AbstractComponent {
     this.element = this.elementFactory(this.namespace);
   }
 
-  initChildren() {
-    if (!this.hidden) {
-      this.children = this.createNewChildren();
+  initChildren(data, path, store) {
+    this.children = this.createNewChildren();
 
-      for (let i in this.children) {
-        if (typeof this.children[i] === 'object') {
-          if (this.children[i].parent) this.children[i].parent = this;
-          if (this.children[i].init) this.children[i].init(this.currentData, this.currentPath, this.store);
-        }
+    for (let i in this.children) {
+      if (typeof this.children[i] === 'object') {
+        if (!this.children[i].parent) this.children[i].parent = this;
+        if (this.children[i].init) this.children[i].init(data, path, store);
       }
-
-      this.appendChildren();
     }
+
+    this.appendChildren();
   }
 
   createNewChildren(childFactories) {
@@ -64,6 +63,7 @@ export class AbstractComponent {
             const result = updateFunction(data, path);
             target.innerHTML = result;
           };
+          this.children[i](this.currentData, this.currentPath);
           break;
         default:
           if (child != null && child !== false) {
@@ -106,10 +106,11 @@ export class AbstractComponent {
   }
 
   show() {
-    if (this.hidden) {
+    if (this.hidden || this.children.length <= 0) {
       if (this.element) {
         this.element.hidden = this.hidden = !this.hidden;
-        this.initChildren();
+        console.log('show', this.currentData, this.currentPath, this.store);
+        this.initChildren(this.currentData, this.currentPath, this.store);
         this.update(this.currentData, this.currentPath);
       }
     }

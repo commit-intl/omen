@@ -1,18 +1,5 @@
 import AbstractDirective from './abstract.directive';
 
-const hashCode = function (string) {
-  var hash = 0;
-  for (var i = 0; i < string.length; i++) {
-    var character = string.charCodeAt(i);
-    hash = ((hash << 5) - hash) + character;
-    hash = hash & hash; // Convert to 32bit integer
-  }
-
-  hash &= 0x7FFFFFFF;
-
-  return hash.toString(36);
-};
-
 export default class ForDirective extends AbstractDirective {
 
   constructor(component, value) {
@@ -20,17 +7,15 @@ export default class ForDirective extends AbstractDirective {
     this.storeBinding = undefined;
     this.boundPath = undefined;
     this.combiner = undefined;
-    this.id = hashCode(Date.now()+''+this.value);
   }
 
 
   init() {
-    console.log('for init', this.id, this.value);
     if (typeof this.value === 'function' || (this.value && this.value[0] === '.')) {
       this.combiner =
         typeof this.value === 'function'
           ? (data, path) => this.value(data, path)
-          : (data, path) => path && path + this.value;
+          : (data, path) => path != null && path + this.value;
     }
     else {
       this.combiner = () => this.value;
@@ -39,21 +24,26 @@ export default class ForDirective extends AbstractDirective {
     this.update(this.component.currentData, this.component.currentPath);
   }
 
-  destroy() {
-  }
-
   update(data, path) {
     let newPath = this.combiner(data, path);
     if (this.boundPath !== newPath) {
       this.for(newPath);
     }
+
+    this.component.updateProps(data,path);
   }
 
+  destroy() {
+    if(this.storeBinding) {
+      this.component.store.removeListener(this.storeBinding.path, this.storeBinding.handler);
+    }
+  }
 
   for(path) {
-    if(this.component.store) {
-      if (this.storeBinding && this.storeBinding.subscription) {
-        this.component.store.removeListener(this.storeBinding.subscription.path, this.storeBinding.subscription.handler);
+    console.log('for', path, this.component.store);
+    if (this.component.store) {
+      if (this.storeBinding) {
+        this.component.store.removeListener(this.storeBinding.path, this.storeBinding.handler);
         this.storeBinding = null;
       }
 
@@ -61,7 +51,6 @@ export default class ForDirective extends AbstractDirective {
 
       const handler = (data) => this.forHandler(data, this.boundPath);
 
-      console.log('for listen', this.id, path);
       this.component.store.addListener(
         path,
         handler,
@@ -83,7 +72,6 @@ export default class ForDirective extends AbstractDirective {
       let subPath = path ? path + '.' + key : key;
       if (this.component.children[i * this.component.childrenFactories.length]) {
         for (let c = 0; c < this.component.childrenFactories.length; c++) {
-          console.log('update child', key, data[key]);
           this.component.updateChild(
             this.component.children[(i * this.component.childrenFactories.length) + c],
             data[key],
@@ -98,8 +86,8 @@ export default class ForDirective extends AbstractDirective {
 
         cloned.forEach(clone => {
           if (typeof clone === 'object') {
-            clone.parent = this;
-            clone.init(data[key],subPath,this.store);
+            clone.parent = this.component;
+            clone.init(data[key], subPath, this.component.store);
           }
         });
 

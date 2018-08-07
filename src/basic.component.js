@@ -1,6 +1,19 @@
 import AbstractComponent from './abstract.component';
 import { cloneDeep, directivePropMap, htmlPropMap } from './helpers';
 
+export const hashCode = function (string) {
+  var hash = 0;
+  for (var i = 0; i < string.length; i++) {
+    var character = string.charCodeAt(i);
+    hash = ((hash << 5) - hash) + character;
+    hash = hash & hash; // Convert to 32bit integer
+  }
+
+  hash &= 0x7FFFFFFF;
+
+  return hash.toString(36);
+};
+
 export class BasicComponent extends AbstractComponent {
 
   constructor(elementFactory, props, childrenFactories, namespace) {
@@ -19,6 +32,7 @@ export class BasicComponent extends AbstractComponent {
         this.listeners[attr.substr(2).toLowerCase()] = eventHandler(this.props[attr]);
       } else if (attr[0] === '_' && directivePropMap[attr]) {
         this.directives.push(new directivePropMap[attr](this, this.props[attr]));
+        newProps['data-'+attr.slice(1)] = typeof this.props[attr] === 'function'? hashCode(this.props[attr] + '') : this.props[attr];
       } else {
         newProps[attr] = this.props[attr];
       }
@@ -29,12 +43,12 @@ export class BasicComponent extends AbstractComponent {
       this.element.addEventListener(i, this.listeners[i]);
     }
 
-    if(this.directives.length > 0) {
-      this.directives.forEach(dir => dir.init(this.currentData, this.currentPath, this.store));
+    if (this.directives.length > 0) {
+      this.directives.forEach(dir => dir.init(this.currentData, this.currentPath, store));
     }
     else {
-      this.initChildren();
-      this.updateProps(this.currentData);
+      this.initChildren(this.currentData, this.currentPath, store);
+      this.updateProps(this.currentData, this.currentPath);
     }
   }
 
@@ -45,8 +59,8 @@ export class BasicComponent extends AbstractComponent {
   update(data, path, selfCall = false) {
     super.update(data, path);
 
-    if(this.directives.length > 0) {
-      this.directives.forEach(dir => dir.update(data,path));
+    if (this.directives.length > 0) {
+      this.directives.forEach(dir => dir.update(data, path));
     }
     else {
       this.updateProps(data, path);
@@ -68,7 +82,7 @@ export class BasicComponent extends AbstractComponent {
       }
 
       if (this.currentProps[i] !== value) {
-        if (i === 'style') {
+        if (i === 'style' || i === 'value') {
           this.element[i] = value;
         }
         else if (i === 'className') {
@@ -105,7 +119,7 @@ export class BasicComponent extends AbstractComponent {
   destroy(root) {
     super.destroy(root);
 
-    if(this.directives.length > 0) {
+    if (this.directives.length > 0) {
       this.directives.forEach(dir => dir.destroy());
     }
   }
