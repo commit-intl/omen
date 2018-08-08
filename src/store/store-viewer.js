@@ -2,7 +2,30 @@ import omega from '../renderer';
 
 const styles = {};
 
-styles.viewer = {
+styles.getViewerStyle = (open) => {
+  const style = {
+    position: 'fixed',
+    top: '0',
+    right: '0',
+    bottom: '0',
+    maxWidth: '50%',
+    paddingLeft: '16px',
+    fontFamily: 'monospace',
+    color: 'rgb(255, 255, 255)',
+    overflowY: 'auto',
+    width: '300px',
+    transform: 'translateX(300px)',
+    transition: 'all .3s ease',
+  };
+  if (open) {
+    style.boxShadow = '0 0 8px rgba(0,0,0,0.5)';
+    style.background = 'rgb(51, 51, 51)';
+    style.transform = 'translateX(0)';
+  }
+  return style;
+};
+
+styles.viewerClosed = {
   position: 'fixed',
   top: '0',
   right: '0',
@@ -10,8 +33,6 @@ styles.viewer = {
   maxWidth: '50%',
   paddingLeft: '16px',
   fontFamily: 'monospace',
-  boxShadow: '0 0 8px rgba(0,0,0,0.5)',
-  background: 'rgb(51, 51, 51)',
   color: 'rgb(255, 255, 255)',
   overflowY: 'auto',
 };
@@ -66,7 +87,7 @@ styles.object = {
 };
 
 
-const Param = ({middleware}) => {
+const Param = ({ middleware }) => {
   const value = middleware
     ? ((data, path) => middleware(data, path))
     : (data => data);
@@ -84,7 +105,7 @@ const Param = ({middleware}) => {
   );
 };
 
-const ObjectTag = ({path, middleware}) => {
+const ObjectTag = ({ path, middleware }) => {
   return (
     <div _for={path || ''} style={styles.object}>
       <Param middleware={middleware}/>
@@ -92,8 +113,8 @@ const ObjectTag = ({path, middleware}) => {
   );
 };
 
-const OpenCloseButton = ({store}) => {
-  const onClick = (event, data, path) => store.set(path, (data = {}) => ({...data, open: !data.open}));
+const OpenCloseButton = ({ store }) => {
+  const onClick = (event, data, path) => store.set(path, (data = {}) => ({ ...data, open: !data.open }));
   return (
     <pre style={styles.openCloseButton} onClick={onClick}>
       {data => data && data.open ? '>\n>\n>' : '<\n<\n<'}
@@ -101,8 +122,8 @@ const OpenCloseButton = ({store}) => {
   );
 };
 
-const StoreViewer = ({store, middleware}) => (
-  <div _bind="_store-viewer" style={styles.viewer}>
+const StoreViewer = ({ store, middleware }) => (
+  <div _bind="_store-viewer" style={(data) => styles.getViewerStyle(data && data.open)}>
     <OpenCloseButton store={store}/>
     <div _if={(data) => data && data.open} style={styles.wrapper}>
       <ObjectTag middleware={middleware}/>

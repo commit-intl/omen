@@ -47,6 +47,13 @@ export const flattenDeepArray = (array) => {
   return result;
 };
 
+export const HTML_SPECIAL_ATTRIBUTES = [
+  'styles',
+  'value',
+  'textContent',
+  'innerHTML',
+];
+
 export const htmlPropMap = {
   'style': (value) => {
     let result = '';

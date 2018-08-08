@@ -1,4 +1,4 @@
-import { cloneDeep, flattenDeepArray } from './helpers';
+import { cloneDeep } from './helpers';
 
 
 export class AbstractComponent {
@@ -8,7 +8,7 @@ export class AbstractComponent {
     this.initialProps = props;
     this.props = cloneDeep(props);
     this.listeners = [];
-    this.childrenFactories = flattenDeepArray(childrenFactories);
+    this.childrenFactories = childrenFactories;
     this.children = [];
     this.namespace = namespace;
     this.currentData = undefined;
@@ -53,17 +53,7 @@ export class AbstractComponent {
           this.element.appendChild(child.element);
           break;
         case 'function':
-          let target = this.element;
-          if (this.children.length !== 1) {
-            target = document.createElement('span');
-            this.element.appendChild(target);
-          }
-          const updateFunction = child;
-          this.children[i] = (data, path) => {
-            const result = updateFunction(data, path);
-            target.innerHTML = result;
-          };
-          this.children[i](this.currentData, this.currentPath);
+          this.props.textContent = child;
           break;
         default:
           if (child != null && child !== false) {

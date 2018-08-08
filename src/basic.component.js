@@ -1,5 +1,5 @@
 import AbstractComponent from './abstract.component';
-import { cloneDeep, directivePropMap, htmlPropMap } from './helpers';
+import { cloneDeep, directivePropMap, HTML_SPECIAL_ATTRIBUTES, htmlPropMap } from './helpers';
 
 export const hashCode = function (string) {
   var hash = 0;
@@ -78,11 +78,11 @@ export class BasicComponent extends AbstractComponent {
     for (let i in this.props) {
       let value = typeof this.props[i] === 'function' ? this.props[i](data, path) : this.props[i];
       if (htmlPropMap[i]) {
-        value = htmlPropMap[i](this.props[i]);
+        value = htmlPropMap[i](value);
       }
 
       if (this.currentProps[i] !== value) {
-        if (i === 'style' || i === 'value') {
+        if (HTML_SPECIAL_ATTRIBUTES.indexOf(i) >= 0) {
           this.element[i] = value;
         }
         else if (i === 'className') {

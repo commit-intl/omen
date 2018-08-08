@@ -1,15 +1,18 @@
 import BasicComponent from './basic.component';
+import { flattenDeepArray } from './helpers';
 
 export const Renderer = {
   create: (tag, props, ...children) => {
     if (!props) props = {};
+
+    children = flattenDeepArray(children);
 
     let namespace;
     let create;
 
     if (typeof tag === 'function') {
       create = (tag, props, children, namespace) => {
-        var component = tag({
+        let component = tag({
           ...props,
           children,
         });
@@ -37,6 +40,15 @@ export const Renderer = {
       );
     }
 
+    if(children && children.length > 1) {
+      children = children.map((child) => {
+        if (typeof child === 'function') {
+          return Renderer.create('span', {}, child);
+        }
+        return child;
+      });
+    }
+
     return {
       create: namespace
         ? () => create(tag, props, children, namespace)
@@ -60,4 +72,4 @@ export const Renderer = {
 };
 
 
-export default {...Renderer};
+export default { ...Renderer };
