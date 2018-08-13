@@ -47,6 +47,13 @@ export const flattenDeepArray = (array) => {
   return result;
 };
 
+export const HTML_SPECIAL_ATTRIBUTES = [
+  'styles',
+  'value',
+  'textContent',
+  'innerHTML',
+];
+
 export const htmlPropMap = {
   'style': (value) => {
     let result = '';
@@ -54,6 +61,16 @@ export const htmlPropMap = {
       result += i.replace(/([A-Z])/g, '-$1').toLowerCase() + ':' + value[i] + ';';
     }
     return result;
+  },
+  'className': (names) => {
+    if (typeof names === 'object') {
+      if (Array.isArray(names)) {
+        return names.filter(x => !!x).join(' ');
+      } else {
+        return Object.keys(names).filter(key => !!names[key]).join(' ');
+      }
+    }
+    return names;
   }
 };
 

@@ -6,22 +6,17 @@ export default class DataDirective extends AbstractDirective {
     this.currentData = undefined;
   }
 
-  init() {
-    if(typeof value !== 'function') {
-      this.component.update(value, this.component.currentPath);
-      this.component.updateProps(value, this.component.currentPath);
-    }
+  init(data, path) {
+    this.update(this.component.currentData, this.component.currentPath);
   }
 
-  update(data, path, call) {
-    if (typeof this.value === 'function') {
-      let newData = this.value(data, path);
-      if (this.currentData !== newData) {
-        this.currentData = newData;
-        this.component.updateProps(data, path);
-        this.component.updateChildren(data, path);
-      }
-    }
+  update(data, path) {
+    const newData = typeof this.value === 'function'
+      ? this.value(data, path)
+      : this.value;
+
+    this.component.updateProps(newData,path);
+    this.component.updateChildren(newData,path);
   }
 
   destroy() {}
