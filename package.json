@@ -1,6 +1,6 @@
 {
   "name": "ome",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "data driven javascript frontend library, based on JSX",
   "main": "lib/index.js",
   "scripts": {
