@@ -12,7 +12,7 @@ export const Renderer = {
 
     if (typeof tag === 'function') {
       create = (tag, props, children, namespace) => {
-        let component = tag({
+        var component = tag({
           ...props,
           children,
         });

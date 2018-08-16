@@ -13,8 +13,7 @@ styles.getViewerStyle = (open) => {
     fontFamily: 'monospace',
     color: 'rgb(255, 255, 255)',
     overflowY: 'auto',
-    width: '300px',
-    transform: 'translateX(300px)',
+    transform: 'translateX(100%) translateX(-16px)',
     transition: 'all .3s ease',
   };
   if (open) {

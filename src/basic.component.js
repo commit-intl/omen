@@ -32,7 +32,7 @@ export class BasicComponent extends AbstractComponent {
         this.listeners[attr.substr(2).toLowerCase()] = eventHandler(this.props[attr]);
       } else if (attr[0] === '_' && directivePropMap[attr]) {
         this.directives.push(new directivePropMap[attr](this, this.props[attr]));
-        newProps['data-'+attr.slice(1)] = typeof this.props[attr] === 'function' ? '' : this.props[attr];
+        newProps['data-'+attr.slice(1)] = this.props[attr];
       } else {
         newProps[attr] = this.props[attr];
       }
