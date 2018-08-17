@@ -1,3 +1,5 @@
+import Observable from '../observable/Observable';
+
 export class Store {
 
   constructor(state, binding) {
@@ -9,9 +11,9 @@ export class Store {
   }
 
   load() {
-    if(this.binding) {
+    if (this.binding) {
       let result = this.binding.load();
-      if(result) {
+      if (result) {
         this.state = {
           ...this.state,
           ...result,
@@ -21,7 +23,7 @@ export class Store {
   }
 
   save() {
-    if(this.binding) {
+    if (this.binding) {
       this.binding.save(this.state);
     }
   }
@@ -56,7 +58,7 @@ export class Store {
         }
         else {
           if (Array.isArray(parent)) {
-            parent.splice(path[path.length-1], 1)
+            parent.splice(path[path.length - 1], 1)
           }
           else {
             delete parent[path[path.length - 1]];
@@ -73,20 +75,34 @@ export class Store {
     this.save();
   }
 
-  addListener(path, callback, options) {
-    path = path || '';
+  listen(path, options) {
+    path = (path || '');
     if (!this.subs[path]) {
-      this.subs[path] = [];
+      this.subs[path] = {};
     }
-    this.subs[path].push({ callback, options });
-    if (!options || !options.noInitial) {
-      callback(this.get(path));
+
+    let key = JSON.stringify(options || null);
+    if (!this.subs[path][key]) {
+      let observable = new Observable(
+        () => this.removeListener(path, options)
+      );
+      this.subs[path][key] = {
+        observable,
+        options
+      };
+
+      observable.update(this.get(path));
     }
+
+    return this.subs[path][key].observable;
   }
 
-  removeListener(path, callback) {
+  removeListener(path, options) {
     if (this.subs[path]) {
-      this.subs[path] = this.subs[path].filter((listener) => listener && listener.callback !== callback);
+      let key = JSON.stringify(options || null);
+      if (this.subs[path][key]) {
+        delete this.subs[path][key];
+      }
     }
   }
 
@@ -103,7 +119,7 @@ export class Store {
         !options
         || (options.depth != null && options.depth >= path.length)
       ) {
-        this.subs[''][s].callback(data);
+        this.subs[''][s].observable.update(data);
       }
     }
 
@@ -117,7 +133,7 @@ export class Store {
             !options
             || (options.depth != null && options.depth >= (path.length - i - 1))
           ) {
-            listener.callback(data[path[i]]);
+            listener.observable.update(data[path[i]]);
           }
         }
       }

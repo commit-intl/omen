@@ -9,7 +9,7 @@ export const cloneDeep = (value) => {
     return value;
   }
 
-  if(value instanceof Date) {
+  if (value instanceof Date) {
     return new Date(value.valueOf())
   }
 
@@ -35,8 +35,8 @@ export const cloneDeep = (value) => {
 export const flattenDeepArray = (array) => {
   let result = [];
 
-  for(let i = 0; i < array.length; i++) {
-    if(array[i] && array[i].constructor === Array) {
+  for (let i = 0; i < array.length; i++) {
+    if (array[i] && array[i].constructor === Array) {
       result.push(...flattenDeepArray(array[i]));
     }
     else {
@@ -45,6 +45,11 @@ export const flattenDeepArray = (array) => {
   }
 
   return result;
+};
+export const NAMESPACES = {
+  html: 'http://www.w3.org/1999/xhtml',
+  svg: 'http://www.w3.org/2000/svg',
+  math: 'http://www.w3.org/1998/Math/MathML',
 };
 
 export const HTML_SPECIAL_ATTRIBUTES = [
@@ -81,3 +86,10 @@ export const directivePropMap = {
   '_for': ForDirective,
   '_switch': SwitchDirective,
 };
+
+export const isNode = (o) =>
+  typeof Node === "object"
+    ? o instanceof Node
+    : o && typeof o === "object"
+    && typeof o.nodeType === "number"
+    && typeof o.nodeName === "string";
