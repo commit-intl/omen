@@ -1,5 +1,5 @@
-import { HTML_SPECIAL_ATTRIBUTES, htmlPropMap, isNode, NAMESPACES } from './helpers';
-import Observable from './observable/Observable';
+import {HTML_SPECIAL_ATTRIBUTES, htmlPropMap, isNode, NAMESPACES} from './helpers';
+import Pointer from './store/Pointer';
 
 
 export class ElementProxy {
@@ -24,7 +24,7 @@ export class ElementProxy {
   }
 
   set(key, value) {
-    if (value instanceof Observable) {
+    if (value instanceof Pointer) {
       value.subscribe((result) => this.set(key, result), true);
     }
     else if (key.startsWith('on')) {
@@ -80,37 +80,40 @@ export class ElementProxy {
     }
   }
 
-  removeChildByPos(pos) {
-    if (this.element.hasChildNodes() && this.element.childNodes[pos]) {
-      return this.element.removeChild(this.element.childNodes[pos]);
-    }
-  }
-
   setChild(pos, ...children) {
     let prevIndex = 0;
     for (let i = 0; i < this.childMap.length && i < pos; i++) {
       prevIndex += this.childMap[i] || 0;
     }
 
-    if (this.childMap[pos]) {
-      for (let i = 0; i < this.childMap[pos]; i++) {
-        this.removeChildByPos(prevIndex + i);
-      }
-    }
+    if (this.element.childNodes !== undefined) {
+      let i = 0;
+      while (i < this.childMap[pos]) {
+        const currentNode = this.element.childNodes[prevIndex + i];
+        if (i < children.length) {
+          if (!currentNode.isEqualNode(children[i])) {
+            this.element.replaceChild(children[i], currentNode);
+          }
+        } else {
+          this.element.removeChild(currentNode);
+        }
 
-    this.childMap[pos] = children.length;
-    let injectBefore = this.element.childNodes[prevIndex];
-    for (let i = 0; i < children.length; i++) {
-      if (children[i]) {
-        if (isNode(children[i])) {
-          this.element.insertBefore(children[i], injectBefore);
-        }
-        else {
-          this.element.insertBefore(document.createTextNode(children[i]+''), injectBefore);
-        }
+        i++;
       }
-      else {
-        this.element.insertBefore(document.createTextNode(''), injectBefore);
+
+      const insertBeforeIndex =
+        prevIndex
+        + Math.min(children.length, this.childMap[pos])
+        + 1;
+      const insertBefore = this.element.childNodes[insertBeforeIndex];
+
+      this.childMap[pos] = 0;
+      while (i < children.length) {
+        if(children[i]) {
+          this.element.insertBefore(children[i], insertBefore);
+        }
+        i++;
+        this.childMap[pos]++;
       }
     }
   }

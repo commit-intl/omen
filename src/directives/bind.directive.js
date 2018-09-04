@@ -32,13 +32,13 @@ export default class BindDirective extends AbstractDirective {
 
   destroy() {
     if(this.storeBinding) {
-      this.component.store.removeListener(this.storeBinding.path, this.storeBinding.handler);
+      this.component.store.removePointer(this.storeBinding.path, this.storeBinding.handler);
     }
   }
 
   bind(path) {
     if (this.storeBinding) {
-      this.component.store.removeListener(this.storeBinding.path, this.storeBinding.handler);
+      this.component.store.removePointer(this.storeBinding.path, this.storeBinding.handler);
       this.storeBinding = null;
     }
 

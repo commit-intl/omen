@@ -1,16 +1,28 @@
-export default class Observable {
-  constructor(onDestroy) {
+import {getChild, mergePath} from './path.helper';
+
+export default class Pointer {
+  constructor(store, path, options) {
+    this.store = store;
+    this.path = path;
+    this.options = options;
     this.subs = {};
     this.next = 0;
     this.value = undefined;
-    this.onDestroy = onDestroy;
+  }
+
+  set(value) {
+    this.store.set(this.path, value);
+  }
+
+  get() {
+    return this.value;
   }
 
   update(value) {
     if (this.value !== value) {
       this.value = value;
     }
-    this.notifySubs()
+    this.notifySubs();
   }
 
   notifySubs() {
@@ -18,6 +30,7 @@ export default class Observable {
       sub(this.value);
     }
   }
+
 
   subscribe(callback, instantNotify = false) {
     if (callback) {
@@ -38,68 +51,65 @@ export default class Observable {
   }
 
   transform(callback) {
-    let result = new Observable();
-    let sub = this.subscribe((value) => result.update(callback({ data: value })));
+    let result = new Pointer(this.store, this.path, this.options);
+    let sub = this.subscribe((value) => result.update(callback({_value: value})), true);
     return result;
   }
 
+  child(childPath) {
+    return this.store.getPointer(mergePath(this.path, childPath), this.options);
+  }
+
   map(callback) {
-    let result = new Observable();
+    let pointer = this.store.getPointer(this.path, {depth: 1});
     let children = {};
-    let handler = (value) => {
-      if (typeof value === 'object') {
-        let keys = Object.keys(value);
+    let handler = ({_value}) => {
+      if (typeof _value === 'object') {
+        let keys = Object.keys(_value);
         let childKeys = Object.keys(children);
         let callbackResults = [];
         for (let key of keys) {
           if (!children[key]) {
-            let keyObs = new Observable();
-            let valueObs = new Observable();
+            let keyObs = new Pointer(this.store, this.path + '.' + key, this.options);
+            let valueObs = new Pointer(this.store, this.path + '.' + key, this.options);
             children[key] = {
               key: keyObs,
               value: valueObs,
-              result: callback({key: keyObs, value: valueObs}),
+              result: callback({_key: keyObs, _value: valueObs}),
             };
           }
           children[key].key.update(key);
-          children[key].value.update(value);
+          children[key].value.update(_value[key]);
           callbackResults.push(children[key].result);
           childKeys.slice(childKeys.indexOf(key), 1);
         }
         for (let key of childKeys) {
-          children[key].key.destroy();
-          children[key].value.destroy();
+          // children[key].key.destroy();
+          // children[key].value.destroy();
           delete children[key];
         }
-        return result.update(callbackResults);
+        return callbackResults;
       }
     };
 
-    let sub = this.subscribe(handler, true);
+    const result = pointer.transform(handler);
     return result;
   }
 
   switch(by, callbackMap, defaultCallback) {
-    let result = new Observable();
+    let result = new Pointer(this.store, this.path, this.options);
     let sub = this.subscribe(
       (data) => {
         let key = by(data);
         if (callbackMap[key]) {
-          result.update(callbackMap[key]({ data }));
+          result.update(callbackMap[key]({_value: data}));
         }
         else if (defaultCallback) {
-          result.update(defaultCallback({ data }));
+          result.update(defaultCallback({_value: data}));
         }
-      }
+      },
     );
 
     return result;
-  }
-
-  destroy() {
-    this.subs = undefined;
-    if (this.onDestroy) {
-      this.onDestroy();
-    }
   }
 }

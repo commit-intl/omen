@@ -1,6 +1,6 @@
 import BasicComponent from './basic.component';
 import { directivePropMap, flattenDeepArray, NAMESPACES } from './helpers';
-import Observable from './observable/Observable';
+import Pointer from './store/Pointer';
 import { ElementProxy } from './element.proxy';
 
 export const Renderer = {
@@ -29,8 +29,6 @@ export const Renderer = {
   renderNode(node, store) {
     if (!node) return null;
 
-    console.log('render node', node);
-
     const {
       tag,
       namespace,
@@ -42,15 +40,16 @@ export const Renderer = {
     // DATA =========================================
 
     let data = tag && tag.data;
+    if(typeof data === 'function') {
+      data = data(props);
+    }
+
     data = data
       ? Object.keys(data).reduce(
         (acc, key) => {
-          let path = data[key];
-          if (path === 'function') {
-            acc[key] = store.listen(path(props));
-          } else {
-            acc[key] = store.listen(path);
-          }
+          acc[key] = data[key] instanceof Pointer
+            ? data[key]
+            : store.getPointer(data[key]);
           return acc;
         }, {})
       : {};
@@ -90,10 +89,8 @@ export const Renderer = {
       flatChildren.forEach(
         (child, index) => {
           let childElement = Renderer.createElement(child, namespace, store);
-          console.log(childElement, child);
-          if (!childElement && child && child instanceof Observable) {
+          if (!childElement && child && child instanceof Pointer) {
             child.subscribe((result) => {
-              console.log('map', result);
               if (Array.isArray(result)) {
                 element.setChild(
                   index,
@@ -124,7 +121,7 @@ export const Renderer = {
       case 'function':
         return Renderer.renderNode(src, store);
       case 'object':
-        if (!(src instanceof Observable)) {
+        if (!(src instanceof Pointer)) {
           if (!src.namespace) {
             src = { ...src, namespace };
           }

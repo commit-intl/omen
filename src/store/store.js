@@ -1,11 +1,12 @@
-import Observable from '../observable/Observable';
+import Pointer from './Pointer';
+import {getChild} from './path.helper';
 
 export class Store {
 
   constructor(state, binding) {
     this.state = state;
     this.binding = binding;
-    this.subs = {};
+    this.pointers = {};
 
     this.load();
   }
@@ -29,20 +30,8 @@ export class Store {
   }
 
   get(path) {
-    if (path) {
-      if (typeof path === 'string') {
-        path = path.split('.')
-      }
-      let dataStore = this.state;
-      for (let i in path) {
-        if (!dataStore) {
-          return dataStore;
-        }
-        dataStore = dataStore[path[i]];
-      }
-      return dataStore;
-    }
-    return this.state;
+    return getChild(this.state, path);
+    ;
   }
 
   set(path, value) {
@@ -75,33 +64,31 @@ export class Store {
     this.save();
   }
 
-  listen(path, options) {
+  getPointer(path, options) {
     path = (path || '');
-    if (!this.subs[path]) {
-      this.subs[path] = {};
+    if (!this.pointers[path]) {
+      this.pointers[path] = {};
     }
 
-    let key = JSON.stringify(options || null);
-    if (!this.subs[path][key]) {
-      let observable = new Observable(
-        () => this.removeListener(path, options)
-      );
-      this.subs[path][key] = {
-        observable,
-        options
+    let key = JSON.stringify(options || '');
+    if (!this.pointers[path][key]) {
+      let pointer = new Pointer(this, path, options);
+      this.pointers[path][key] = {
+        pointer,
+        options,
       };
 
-      observable.update(this.get(path));
+      pointer.update(this.get(path));
     }
 
-    return this.subs[path][key].observable;
+    return this.pointers[path][key].pointer;
   }
 
-  removeListener(path, options) {
-    if (this.subs[path]) {
+  removePointer(path, options) {
+    if (this.pointers[path]) {
       let key = JSON.stringify(options || null);
-      if (this.subs[path][key]) {
-        delete this.subs[path][key];
+      if (this.pointers[path][key]) {
+        delete this.pointers[path][key];
       }
     }
   }
@@ -110,30 +97,34 @@ export class Store {
     if (typeof path === 'string') {
       path = path.split('.')
     }
+    console.log('notify path', path, this.pointers);
 
     let data = this.state;
 
-    for (let s in this.subs['']) {
-      const options = this.subs[''][s].options;
+    for (let opts in this.pointers['']) {
+      const options = this.pointers[''][opts].options;
       if (
         !options
         || (options.depth != null && options.depth >= path.length)
       ) {
-        this.subs[''][s].observable.update(data);
+        this.pointers[''][opts].pointer.update(data);
+        console.log('notify path pointer', path);
       }
     }
 
     for (let i = 0; i < path.length; i++) {
       let key = path.slice(0, i + 1).join('.');
-      if (this.subs[key]) {
-        for (let s = 0; s < this.subs[key].length; s++) {
-          const listener = this.subs[key][s];
+      console.log('notify path', key);
+      if (this.pointers[key]) {
+        for (let opts in this.pointers[key]) {
+          const listener = this.pointers[key][opts];
           const options = listener.options;
           if (
             !options
             || (options.depth != null && options.depth >= (path.length - i - 1))
           ) {
-            listener.observable.update(data[path[i]]);
+            listener.pointer.update(data[path[i]]);
+            console.log('notify path pointer', path);
           }
         }
       }

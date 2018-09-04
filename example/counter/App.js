@@ -1,23 +1,18 @@
-import { omega } from 'ome';
-import { store } from './_index';
+import {omega} from 'ome';
+import {store} from './_index';
 import styles from './_index.scss';
-import { Counter } from './Counter';
-import { NewCounter } from './NewCounter';
-import { Headline } from './Headline';
-import { SVG } from './SVG';
+import {Counter} from './Counter';
+import {NewCounter} from './NewCounter';
+import {Headline} from './Headline';
+import {SVG} from './SVG';
 
-const App = (props, { app }) => {
-  console.log(app);
-  let sections = app.map(Section);
-  sections.subscribe(result => console.log(result));
+const App = (props, {app}) => {
   return (
     <div className={styles.wrapper}>
       <SVG/>
       <Headline>Example Counters</Headline>
       <div className={styles.for}>
-        {
-          sections
-        }
+        {app.map(Section)}
       </div>
     </div>
   );
@@ -30,33 +25,30 @@ App.data = {
 export default App;
 
 
-const Section = (props, data) => {
-
-  console.log(props, data);
-
+const Section = ({_value, _key}, data) => {
   return (
     <div className={styles.group}>
-      <h1 className={styles.groupTitles}>{props.key}</h1>
+      <h1 className={styles.groupTitles}>{_key}</h1>
       <div>
         {
-          props.value.map(Entry)
+          _value.child('counters').map(Entry)
         }
       </div>
-      <NewCounter/>
+      <NewCounter list={_value}/>
     </div>
   );
 };
 
-Section.data = {};
 
-
-const Entry = (props, data) => (
-  <div className={styles.entry}>
-    <div className={styles.remove} onClick={(event, data, path) => {
-      store.set(path, undefined)
-    }}>×
+const Entry = ({_value, _key}, data) => {
+  return (
+    <div className={styles.entry}>
+      <div className={styles.remove}
+           onClick={(event) => _value.set(undefined)}
+      >×
+      </div>
+      <h2 className={styles.title}>{_value.child('name')}</h2>
+      <Counter value={_value.child('value')}/>
     </div>
-    <h2 className={styles.title}>{props.key}</h2>
-    <Counter/>
-  </div>
-);
+  );
+};

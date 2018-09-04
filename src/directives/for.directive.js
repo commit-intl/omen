@@ -35,14 +35,14 @@ export default class ForDirective extends AbstractDirective {
 
   destroy() {
     if(this.storeBinding) {
-      this.component.store.removeListener(this.storeBinding.path, this.storeBinding.handler);
+      this.component.store.removePointer(this.storeBinding.path, this.storeBinding.handler);
     }
   }
 
   for(path) {
     if (this.component.store) {
       if (this.storeBinding) {
-        this.component.store.removeListener(this.storeBinding.path, this.storeBinding.handler);
+        this.component.store.removePointer(this.storeBinding.path, this.storeBinding.handler);
         this.storeBinding = null;
       }
 
