@@ -86,18 +86,27 @@ export class ElementProxy {
       prevIndex += this.childMap[i] || 0;
     }
 
+    console.log('setChild start', pos, prevIndex, this.childMap, this.element.childNodes, children);
+
+    let newSize = 0;
+
     if (this.element.childNodes !== undefined) {
       let i = 0;
       while (i < this.childMap[pos]) {
         const currentNode = this.element.childNodes[prevIndex + i];
         if (i < children.length) {
-          if (!currentNode.isEqualNode(children[i])) {
+          if (!currentNode.isSameNode(children[i])) {
+            console.log('setChild replace', i);
             this.element.replaceChild(children[i], currentNode);
           }
+          else {
+            console.log('setChild keep', i);
+          }
+          newSize++;
         } else {
           this.element.removeChild(currentNode);
+          console.log('setChild remove', i);
         }
-
         i++;
       }
 
@@ -107,14 +116,16 @@ export class ElementProxy {
         + 1;
       const insertBefore = this.element.childNodes[insertBeforeIndex];
 
-      this.childMap[pos] = 0;
       while (i < children.length) {
-        if(children[i]) {
+        if (children[i]) {
+          console.log('setChild insert', i);
           this.element.insertBefore(children[i], insertBefore);
+          newSize++;
         }
         i++;
-        this.childMap[pos]++;
       }
+
+      this.childMap[pos] = newSize;
     }
   }
 

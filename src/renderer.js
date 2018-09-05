@@ -1,7 +1,6 @@
-import BasicComponent from './basic.component';
 import { directivePropMap, flattenDeepArray, NAMESPACES } from './helpers';
 import Pointer from './store/Pointer';
-import { ElementProxy } from './element.proxy';
+import {OmegaElement} from './omega.element';
 
 export const Renderer = {
   create: (tag, props, ...children) => {
@@ -20,13 +19,14 @@ export const Renderer = {
   },
 
   render: (root, appendTo, store) => {
-    const node = Renderer.renderNode(root, store);
+    const omegaElement = Renderer.renderOmegaElement(root, store);
+    console.log(omegaElement);
     appendTo.append(
-      node
+      omegaElement.getElement()
     );
   },
 
-  renderNode(node, store) {
+  renderOmegaElement(node, store) {
     if (!node) return null;
 
     const {
@@ -35,9 +35,6 @@ export const Renderer = {
       props,
       children,
     } = node;
-
-
-    // DATA =========================================
 
     let data = tag && tag.data;
     if(typeof data === 'function') {
@@ -54,64 +51,11 @@ export const Renderer = {
         }, {})
       : {};
 
-
-    // ELEMENT =========================================
-
-    let element = null;
-    switch (typeof tag) {
-      case 'string':
-        element = new ElementProxy(
-          namespace && namespace !== NAMESPACES.html
-            ? document.createElementNS(namespace, tag)
-            : document.createElement(tag)
-        );
-        break;
-      case 'function':
-        return Renderer.renderNode(tag({ ...props, children }, data), store);
-      default:
-        console.error('Unknown jsx tag: ' + tag);
-        return null;
+    if (typeof tag === 'function') {
+      return Renderer.renderOmegaElement(tag({...props, children}, data), store);
     }
 
-
-    // PROPS =========================================
-
-    if (props) {
-      for (let attr in props) {
-        element.set(attr, props[attr]);
-      }
-    }
-
-    // CHILDREN =========================================
-
-    if (children) {
-      let flatChildren = flattenDeepArray(children);
-      flatChildren.forEach(
-        (child, index) => {
-          let childElement = Renderer.createElement(child, namespace, store);
-          if (!childElement && child && child instanceof Pointer) {
-            child.subscribe((result) => {
-              if (Array.isArray(result)) {
-                element.setChild(
-                  index,
-                  ...result.map(
-                    child => Renderer.createElement(child, namespace, store)
-                  )
-                );
-              }
-              else {
-                element.setChild(index, Renderer.createElement(result, namespace, store));
-              }
-            }, true);
-          }
-          else {
-            element.setChild(index, childElement);
-          }
-        }
-      )
-    }
-
-    return element.element;
+    return new OmegaElement(tag, namespace, props, data, children && flattenDeepArray(children), store);
   },
 
   createElement(src, namespace, store) {
@@ -119,13 +63,13 @@ export const Renderer = {
       case 'string':
         return document.createTextNode(src);
       case 'function':
-        return Renderer.renderNode(src, store);
+        return Renderer.renderOmegaElement(src, store);
       case 'object':
         if (!(src instanceof Pointer)) {
           if (!src.namespace) {
             src = { ...src, namespace };
           }
-          return Renderer.renderNode(src, store);
+          return Renderer.renderOmegaElement(src, store);
         }
         break;
     }

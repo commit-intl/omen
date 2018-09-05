@@ -60,40 +60,47 @@ export default class Pointer {
     return this.store.getPointer(mergePath(this.path, childPath), this.options);
   }
 
-  map(callback) {
+  map(callback, idCallback = (value, index) => index) {
     let pointer = this.store.getPointer(this.path, {depth: 1});
     let children = {};
     let handler = ({_value}) => {
       if (typeof _value === 'object') {
         let keys = Object.keys(_value);
-        let childKeys = Object.keys(children);
+        let childrenIds = Object.keys(children);
         let callbackResults = [];
         for (let key of keys) {
-          if (!children[key]) {
+          let id = idCallback(_value[key], key);
+          if (!children[id]) {
             let keyObs = new Pointer(this.store, this.path + '.' + key, this.options);
             let valueObs = new Pointer(this.store, this.path + '.' + key, this.options);
-            children[key] = {
+            children[id] = {
               key: keyObs,
               value: valueObs,
-              result: callback({_key: keyObs, _value: valueObs}),
+              result: callback({_value: valueObs, _key: keyObs}),
             };
+            if(children[id].result && children[id].result.props) {
+              children[id].result.props['data-id'] = id;
+            }
           }
-          children[key].key.update(key);
-          children[key].value.update(_value[key]);
-          callbackResults.push(children[key].result);
-          childKeys.slice(childKeys.indexOf(key), 1);
+          children[id].key.update(key);
+          children[id].value.update(_value[key]);
+          callbackResults.push(children[id].result);
+          const index = childrenIds.indexOf(id);
+          if (index >= 0) {
+            childrenIds.splice(index, 1);
+          }
         }
-        for (let key of childKeys) {
-          // children[key].key.destroy();
-          // children[key].value.destroy();
-          delete children[key];
+        for (let id of childrenIds) {
+          delete children[id];
         }
+
+        console.log('Pointer.map', callbackResults, children, idCallback);
+
         return callbackResults;
       }
     };
 
-    const result = pointer.transform(handler);
-    return result;
+    return pointer.transform(handler);
   }
 
   switch(by, callbackMap, defaultCallback) {

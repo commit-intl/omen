@@ -31,7 +31,7 @@ const Section = ({_value, _key}, data) => {
       <h1 className={styles.groupTitles}>{_key}</h1>
       <div>
         {
-          _value.child('counters').map(Entry)
+          _value.child('counters').map(Entry, value => value && value.name)
         }
       </div>
       <NewCounter list={_value}/>
