@@ -1,17 +1,17 @@
-import Pointer from './store/Pointer';
+import Observable from './store/observable';
 import Renderer from './renderer';
 import {ElementProxy} from './element.proxy';
 import {NAMESPACES} from './helpers';
 
 
-export class OmegaElement {
+export default class OmegaElement {
 
   constructor(tag, namespace, props, data, children, store) {
     this.tag = tag;
     this.namespace = namespace;
     this.props = props || {};
     this.data = data || {};
-    this.children = children;
+    this.children = children || [];
     this.store = store;
 
     this.initElement();
@@ -20,7 +20,7 @@ export class OmegaElement {
   }
 
   initElement() {
-    if(typeof this.tag === 'string') {
+    if (typeof this.tag === 'string') {
       this.element = new ElementProxy(
         this.namespace && this.namespace !== NAMESPACES.html
           ? document.createElementNS(this.namespace, this.tag)
@@ -28,7 +28,7 @@ export class OmegaElement {
       );
     }
     else {
-       console.error('Unknown jsx tag: ' + this.tag);
+      console.error('Unknown jsx tag: ' + this.tag);
     }
   }
 
@@ -40,7 +40,7 @@ export class OmegaElement {
 
   initChildren() {
     const setChild = (pos, children) => {
-      if(!Array.isArray(children)) {
+      if (!Array.isArray(children)) {
         children = [children];
       }
 
@@ -56,19 +56,24 @@ export class OmegaElement {
 
     this.children.forEach(
       (child, index) => {
+        if(!child) return;
+
         let childElement = Renderer.createElement(child, this.namespace, this.store);
-        if (!childElement && child && child instanceof Pointer) {
+        if (!childElement && child && child instanceof Observable) {
+          const map = new WeakMap();
           child.subscribe((result) => {
-            console.log('renderer', result);
             if (Array.isArray(result)) {
               setChild(
                 index,
-                result.map(
-                  child => Renderer.createElement(child, this.namespace, this.store),
-                ),
-                result.map(
-                  child => child.key,
-                ),
+                result.map(child => {
+                  let element = map.get(child);
+                  if (!element) {
+                    console.log('WeakMap.create',child);
+                    element = Renderer.createElement(child, this.namespace, this.store);
+                    map.set(child, element);
+                  }
+                  return element
+                }),
               );
             }
             else {

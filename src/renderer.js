@@ -1,6 +1,6 @@
-import { directivePropMap, flattenDeepArray, NAMESPACES } from './helpers';
-import Pointer from './store/Pointer';
-import {OmegaElement} from './omega.element';
+import {flattenDeepArray, NAMESPACES} from './helpers';
+import Observable from './store/observable';
+import OmegaElement from './omega.element';
 
 export const Renderer = {
   create: (tag, props, ...children) => {
@@ -20,14 +20,15 @@ export const Renderer = {
 
   render: (root, appendTo, store) => {
     const omegaElement = Renderer.renderOmegaElement(root, store);
-    console.log(omegaElement);
     appendTo.append(
-      omegaElement.getElement()
+      omegaElement.getElement(),
     );
+
+    console.log(store);
   },
 
   renderOmegaElement(node, store) {
-    if (!node) return null;
+    if (!node || !node.tag) return null;
 
     const {
       tag,
@@ -37,16 +38,16 @@ export const Renderer = {
     } = node;
 
     let data = tag && tag.data;
-    if(typeof data === 'function') {
+    if (typeof data === 'function') {
       data = data(props);
     }
 
     data = data
       ? Object.keys(data).reduce(
         (acc, key) => {
-          acc[key] = data[key] instanceof Pointer
+          acc[key] = data[key] instanceof Observable
             ? data[key]
-            : store.getPointer(data[key]);
+            : store.child(data[key]);
           return acc;
         }, {})
       : {};
@@ -65,15 +66,15 @@ export const Renderer = {
       case 'function':
         return Renderer.renderOmegaElement(src, store);
       case 'object':
-        if (!(src instanceof Pointer)) {
+        if (!(src instanceof Observable)) {
           if (!src.namespace) {
-            src = { ...src, namespace };
+            src = {...src, namespace};
           }
           return Renderer.renderOmegaElement(src, store);
         }
         break;
     }
-  }
+  },
 };
 
 

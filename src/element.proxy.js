@@ -1,5 +1,6 @@
 import {HTML_SPECIAL_ATTRIBUTES, htmlPropMap, isNode, NAMESPACES} from './helpers';
-import Pointer from './store/Pointer';
+import Observable from './store/observable';
+import OmegaElement from './omega.element';
 
 
 export class ElementProxy {
@@ -24,8 +25,9 @@ export class ElementProxy {
   }
 
   set(key, value) {
-    if (value instanceof Pointer) {
-      value.subscribe((result) => this.set(key, result), true);
+    if (value instanceof Observable) {
+      console.log(key, value);
+      value.subscribe((result) => {console.log(key, value, result); this.set(key, result)}, true);
     }
     else if (key.startsWith('on')) {
       let event = key.substr(2).toLowerCase();
@@ -81,12 +83,12 @@ export class ElementProxy {
   }
 
   setChild(pos, ...children) {
+    children.map(child => child instanceof OmegaElement ? child.element.element : child);
+
     let prevIndex = 0;
     for (let i = 0; i < this.childMap.length && i < pos; i++) {
       prevIndex += this.childMap[i] || 0;
     }
-
-    console.log('setChild start', pos, prevIndex, this.childMap, this.element.childNodes, children);
 
     let newSize = 0;
 
@@ -96,16 +98,13 @@ export class ElementProxy {
         const currentNode = this.element.childNodes[prevIndex + i];
         if (i < children.length) {
           if (!currentNode.isSameNode(children[i])) {
-            console.log('setChild replace', i);
             this.element.replaceChild(children[i], currentNode);
           }
           else {
-            console.log('setChild keep', i);
           }
           newSize++;
-        } else {
+        } else if(currentNode) {
           this.element.removeChild(currentNode);
-          console.log('setChild remove', i);
         }
         i++;
       }
@@ -118,7 +117,6 @@ export class ElementProxy {
 
       while (i < children.length) {
         if (children[i]) {
-          console.log('setChild insert', i);
           this.element.insertBefore(children[i], insertBefore);
           newSize++;
         }

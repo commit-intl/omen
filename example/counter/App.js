@@ -12,7 +12,15 @@ const App = (props, {app}) => {
       <SVG/>
       <Headline>Example Counters</Headline>
       <div className={styles.for}>
-        {app.map(Section)}
+        {
+          app.map((value, key) =>
+            <Section
+              name={key}
+              counters={value.child('counters')}
+              newCounter={value.child('newCounter')}
+            />,
+          )
+        }
       </div>
     </div>
   );
@@ -25,30 +33,34 @@ App.data = {
 export default App;
 
 
-const Section = ({_value, _key}, data) => {
+const Section = ({name, counters, newCounter}, data) => {
+  console.log(counters, newCounter);
   return (
     <div className={styles.group}>
-      <h1 className={styles.groupTitles}>{_key}</h1>
+      <h1 className={styles.groupTitles}>{name}</h1>
       <div>
         {
-          _value.child('counters').map(Entry, value => value && value.name)
+          counters.map((value) => <Entry self={value}/>,
+            value => value && value.name
+          )
         }
       </div>
-      <NewCounter list={_value}/>
+      <NewCounter list={newCounter}/>
     </div>
   );
 };
 
 
-const Entry = ({_value, _key}, data) => {
+const Entry = ({self}, data) => {
+  console.log('Entry', self);
   return (
     <div className={styles.entry}>
       <div className={styles.remove}
-           onClick={(event) => _value.set(undefined)}
+           onClick={(event) => self.set(undefined)}
       >×
       </div>
-      <h2 className={styles.title}>{_value.child('name')}</h2>
-      <Counter value={_value.child('value')}/>
+      <h2 className={styles.title}>{self.child('name')}</h2>
+      <Counter value={self.child('value')}/>
     </div>
   );
 };
