@@ -6,7 +6,6 @@ export default class Store extends StoreNode {
     super();
     this.binding = binding;
     this.load(state);
-    console.log(this);
   }
 
   load(value) {

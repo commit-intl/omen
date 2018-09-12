@@ -4,22 +4,21 @@ import styles from './_index.scss';
 import {Input} from './Input';
 import {Button} from './Button';
 
-export const NewCounter = (props, {counters, value}) => {
+export const NewCounter = ({target, value}, data) => {
 
   let inputChange = (event) => {
-    console.log(value);
     value.set(event.target.value);
   };
 
   let addCounter = (event) => {
-    counters.set(
+    target.set(
       (data) => {
-        console.log(data, value, value.get());
+        console.log(event, data, target);
+        const entry = {name: value.get(), value: 0};
         if (!data) {
-          data = [];
+          return [entry];
         }
-        data.push({name: value.get(), value: 0});
-        return data;
+        return [...data, entry];
       });
 
     value.set('');
@@ -33,8 +32,3 @@ export const NewCounter = (props, {counters, value}) => {
     </div>
   );
 };
-
-NewCounter.data = ({list}) => ({
-  counters: list.child('counters'),
-  value: list.child('newCounter'),
-});

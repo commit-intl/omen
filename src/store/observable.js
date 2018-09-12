@@ -6,7 +6,7 @@ export default class Observable {
     this.value = undefined;
   }
 
-  update(value) {
+  set(value) {
     if (this.value !== value) {
       this.value = value;
     }
@@ -15,7 +15,6 @@ export default class Observable {
 
 
   notify() {
-    console.log(this.value, this.subs);
     for (let sub of Object.values(this.subs)) {
       sub(this.value);
     }
@@ -47,7 +46,7 @@ export default class Observable {
 
   transform(callback) {
     let result = new Observable();
-    result.onDestroy = this.subscribe((value) => result.update(callback(value)), true);
+    result.onDestroy = this.subscribe((value) => result.set(callback(value)), true);
     return result;
   }
 
@@ -57,10 +56,10 @@ export default class Observable {
       (data) => {
         let key = by(data);
         if (callbackMap[key]) {
-          result.update(callbackMap[key](data));
+          result.set(callbackMap[key](data));
         }
         else if (defaultCallback) {
-          result.update(defaultCallback(data));
+          result.set(defaultCallback(data));
         }
       },
     );

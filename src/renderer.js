@@ -21,7 +21,7 @@ export const Renderer = {
   render: (root, appendTo, store) => {
     const omegaElement = Renderer.renderOmegaElement(root, store);
     appendTo.append(
-      omegaElement.getElement(),
+      omegaElement.element,
     );
 
     console.log(store);

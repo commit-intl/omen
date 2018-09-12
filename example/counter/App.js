@@ -45,7 +45,10 @@ const Section = ({name, counters, newCounter}, data) => {
           )
         }
       </div>
-      <NewCounter list={newCounter}/>
+      <NewCounter
+        target={counters}
+        value={newCounter}
+      />
     </div>
   );
 };

@@ -46,6 +46,8 @@ omega.render(
   store
 );
 
+store.subscribe((value) => console.log('STATE_CHANGE', value));
+
 
 const storeViewerMiddleware = (data, path) => {
     if (path && path.indexOf('secret') === 0) {

@@ -1,6 +1,6 @@
 import Observable from './observable';
 
-export default class StoreNode extends Observable{
+export default class StoreNode extends Observable {
 
   constructor(name, parent) {
     super();
@@ -16,13 +16,12 @@ export default class StoreNode extends Observable{
   set(value, path = undefined, ignoreParent = false) {
     if (!path) {
       if (value !== this.value) {
-        if(this.parent && !ignoreParent) {
+        if (this.parent && !ignoreParent) {
           this.parent.set(value, this.name);
         }
         else {
           this.value = value;
-          this.notify();
-          this.notifyChildren();
+          this.notify(!ignoreParent);
         }
       }
       return;
@@ -33,25 +32,35 @@ export default class StoreNode extends Observable{
         value = value(this.value && this.value[path]);
       }
 
-      if (typeof this.value === 'object') {
-        this.value[path] = value;
+      if(value === undefined) {
+         if(typeof this.value === 'object') {
+           delete this.value[path];
+         }
+         else {
+           this.value = undefined;
+         }
       }
       else {
-        this.value = {[path]: value};
+        if (typeof this.value === 'object') {
+          this.value[path] = value;
+        }
+        else {
+          this.value = {[path]: value};
+        }
       }
 
-      if(this.children && this.children[path]) {
-        this.children[path].set()
+      if (this.children && this.children[path]) {
+        this.children[path].set(value, undefined, true);
       }
     };
 
     if (Array.isArray(path)) {
       setByString(path[0]);
       if (path.length > 1) {
-        if(!this.children) {
+        if (!this.children) {
           this.children = {};
         }
-        if(!this.children[path[0]]) {
+        if (!this.children[path[0]]) {
           this.children[path[0]] = new StoreNode(path[0], this);
         }
         this.children[path[0]].set(value, path.slice(1));
@@ -64,19 +73,25 @@ export default class StoreNode extends Observable{
     this.notify();
   }
 
-  notifyChildren() {
-    if(this.children) {
+  notify(propagateUp = true, propagateDown = true) {
+    if(this.parent && propagateUp) {
+      this.parent.notify(true, false);
+    }
+
+    super.notify();
+
+    if (this.children && propagateDown) {
       let keys = Object.keys(this.children);
       for (let key of keys) {
         if (this.children[key]) {
-          this.children[key].set(this.value[key], undefined, true);
+          this.children[key].set(this.value && this.value[key], undefined, true);
         }
       }
     }
   }
 
   child(path) {
-    if(!path) return this;
+    if (!path) return this;
 
     if (!this.children) {
       this.children = {};
@@ -88,7 +103,6 @@ export default class StoreNode extends Observable{
       }
       else {
         this.children[path] = new StoreNode(path, this);
-        console.log(this.value, path);
         this.children[path].set(this.value && this.value[path], undefined, true);
         return this.children[path];
       }
@@ -108,6 +122,7 @@ export default class StoreNode extends Observable{
   map(callback, idCallback = (value, index) => index) {
     let children = {};
     let handler = (value) => {
+      console.log('map', this.name, value);
       if (typeof value === 'object') {
         let keys = Object.keys(value);
         let childrenIds = Object.keys(children);
@@ -124,7 +139,7 @@ export default class StoreNode extends Observable{
               children[id].result.props['data-id'] = id;
             }
           }
-          children[id].value.update(value[key]);
+          children[id].value.set(value[key]);
           callbackResults.push(children[id].result);
           const index = childrenIds.indexOf(id);
           if (index >= 0) {
