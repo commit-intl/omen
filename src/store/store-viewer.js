@@ -80,59 +80,77 @@ styles.boolean = {
   color: '#ffff92',
 };
 
+styles.null = {
+  color: '#a6a6a6',
+};
+
 styles.object = {
   paddingLeft: '10px',
   borderLeft: '1px dashed rgba(255, 255, 255, 0.25)',
 };
 
 
-const Param = ({ middleware }) => {
-  const value = middleware
-    ? ((data, path) => middleware(data, path))
-    : (data => data);
+const Param = ({ value, key,  middleware }) => {
+  const valueTransformed = middleware ? value.transform(middleware) : value;
   return (
     <div
-      _switch={data => typeof data}
-      style={(data, path) => path && /^(.*\.)?_[^.]*$/i.test(path) ? styles.paramHidden : styles.param}
+      style={key && /^(.*\.)?_[^.]*$/i.test(key) ? styles.paramHidden : styles.param}
     >
-      <span style={styles.paramKey}>{(data, path) => path && path.replace(/^.*\./, '')}</span>
-      <span _case="number" style={styles.number}>{value}</span>
-      <span _case="string" style={styles.string}>{value}</span>
-      <span _case="boolean" style={styles.boolean}>{value}</span>
-      <ObjectTag _case="object" path={(data, path) => path} middleware={middleware}/>
+      <span style={styles.paramKey}>{key}</span>
+      {
+        value.switch(
+          value => typeof value,
+          {
+            number: value => {console.log(value); return <span style={styles.number}>{value}</span>},
+            string: value => <span style={styles.string}>{value}</span>,
+            boolean: value => <span style={styles.boolean}>{value}</span>,
+            object: value => <ObjectTag value={value} middleware={middleware}/>
+          },
+          value =>  <span style={styles.null}>{value}</span>
+        )
+      }
     </div>
   );
 };
 
-const ObjectTag = ({ path, middleware }) => {
+const ObjectTag = ({ value, middleware }) => {
   return (
-    <div _for={path || ''} style={styles.object}>
-      <Param middleware={middleware}/>
+    <div style={styles.object}>
+      {
+        value && value.map(
+          (value, key) => <Param value={value} key={key} middleware={middleware}/>
+        )
+      }
     </div>
   );
 };
 
-const OpenCloseButton = ({ store }) => {
-  const onClick = (event, data, path) => store.set(path, (data = {}) => ({ ...data, open: !data.open }));
+const OpenCloseButton = ({ open }) => {
+  const onClick = event => open.set(isOpen => !isOpen);
   return (
     <pre style={styles.openCloseButton} onClick={onClick}>
-      {data => data && data.open ? '>\n>\n>' : '<\n<\n<'}
+      {open.transform(open => open ? '>\n>\n>' : '<\n<\n<')}
     </pre>
   );
 };
 
-const StoreViewer = ({ store, middleware }) => (
-  <div _bind="_store-viewer" style={(data) => styles.getViewerStyle(data && data.open)}>
-    <OpenCloseButton store={store}/>
-    <div _if={(data) => data && data.open} style={styles.wrapper}>
-      <ObjectTag middleware={middleware}/>
+const StoreViewer = ({middleware}, { store, open }) => (
+  <div style={open.transform(styles.getViewerStyle)}>
+    <OpenCloseButton open={open}/>
+    <div style={styles.wrapper}>
+      <ObjectTag middleware={middleware} value={store}/>
     </div>
   </div>
 );
 
+StoreViewer.data = {
+  store: '',
+  open: ['_store-viewer', 'open'],
+};
+
 export const createStoreViewer = (appendTo, store, middleware) => {
   omega.render(
-    <StoreViewer store={store} middleware={middleware}/>,
+    <StoreViewer middleware={middleware}/>,
     appendTo,
     store
   );

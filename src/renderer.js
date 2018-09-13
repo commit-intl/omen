@@ -1,5 +1,6 @@
-import BasicComponent from './basic.component';
-import { flattenDeepArray } from './helpers';
+import {flattenDeepArray, NAMESPACES} from './helpers';
+import Observable from './store/observable';
+import OmegaElement from './omega.element';
 
 export const Renderer = {
   create: (tag, props, ...children) => {
@@ -7,69 +8,72 @@ export const Renderer = {
 
     children = flattenDeepArray(children);
 
-    let namespace;
-    let create;
-
-    if (typeof tag === 'function') {
-      create = (tag, props, children, namespace) => {
-        var component = tag({
-          ...props,
-          children,
-        });
-
-        while (component && typeof component.create === 'function') {
-          component = component.create(namespace);
-        }
-
-        return component;
-      };
-    }
-    else if (typeof tag === 'object') {
-      console.error('omega.renderer.create', 'Component Type Object not yet Supported!');
-      create = (tag, props, children, namespace) => tag;
-    }
-    else {
-      if (tag === 'svg') {
-        namespace = 'http://www.w3.org/2000/svg';
-      }
-      create = (tag, props, children, namespace) => new BasicComponent(
-        namespace ? (namespace) => document.createElementNS(namespace, tag) : () => document.createElement(tag),
-        props,
-        children,
-        namespace,
-      );
-    }
-
-    if(children && children.length > 1) {
-      children = children.map((child) => {
-        if (typeof child === 'function') {
-          return Renderer.create('span', {}, child);
-        }
-        return child;
-      });
-    }
+    let namespace = NAMESPACES[tag];
 
     return {
-      create: namespace
-        ? () => create(tag, props, children, namespace)
-        : (namespace) => create(tag, props, children, namespace),
+      tag,
+      namespace,
       props,
+      children,
     };
   },
 
-  render: (component, appendTo, store) => {
-    var root = component;
-    while (root && typeof root.create === 'function') {
-      root = root.create();
-    }
-    root = typeof root === 'function' ? root() : root;
-
-    root.init(undefined, undefined, store);
+  render: (root, appendTo, store) => {
+    const omegaElement = Renderer.renderOmegaElement(root, store);
     appendTo.append(
-      root.render(),
+      omegaElement.element,
     );
+  },
+
+  renderOmegaElement(node, store) {
+    if (!node || !node.tag) return null;
+
+    const {
+      tag,
+      namespace,
+      props,
+      children,
+    } = node;
+
+    let data = tag && tag.data;
+    if (typeof data === 'function') {
+      data = data(props);
+    }
+
+    data = data
+      ? Object.keys(data).reduce(
+        (acc, key) => {
+          acc[key] = data[key] instanceof Observable
+            ? data[key]
+            : store.child(data[key]);
+          return acc;
+        }, {})
+      : {};
+
+    if (typeof tag === 'function') {
+      return Renderer.renderOmegaElement(tag({...props, children}, data), store);
+    }
+
+    return new OmegaElement(tag, namespace, props, data, children && flattenDeepArray(children), store);
+  },
+
+  createElement(src, namespace, store) {
+    switch (typeof src) {
+      case 'function':
+        return Renderer.renderOmegaElement(src, store);
+      case 'object':
+        if (!(src instanceof Observable)) {
+          if (!src.namespace) {
+            src = {...src, namespace};
+          }
+          return Renderer.renderOmegaElement(src, store);
+        }
+        break;
+      default:
+        return document.createTextNode(src);
+    }
   },
 };
 
 
-export default { ...Renderer };
+export default Renderer;
