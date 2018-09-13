@@ -2,9 +2,7 @@ import Observable from './store/observable';
 import Renderer from './renderer';
 import {HTML_SPECIAL_ATTRIBUTES, NAMESPACES, htmlPropMap} from './helpers';
 
-
 export default class OmegaElement {
-
   constructor(tag, namespace, props, data, children, store) {
     this.tag = tag;
     this.namespace = namespace;
@@ -12,6 +10,7 @@ export default class OmegaElement {
     this.data = data || {};
     this.children = children || [];
     this.store = store;
+    this.subscriptions = [];
 
     this.elementProps = {};
     this.elementListeners = {};
@@ -45,13 +44,6 @@ export default class OmegaElement {
         children = [children];
       }
 
-      children = children.map((child) => {
-        if (child instanceof OmegaElement) {
-          return child.element;
-        }
-        return child;
-      });
-
       this.setChild(pos, ...children);
     };
 
@@ -62,25 +54,27 @@ export default class OmegaElement {
         let childElement = Renderer.createElement(child, this.namespace, this.store);
         if (!childElement && child && child instanceof Observable) {
           const map = new WeakMap();
-          child.subscribe((result) => {
-            if (!result) return;
-            if (Array.isArray(result)) {
-              setChild(
-                index,
-                result.map(child => {
-                  let element = map.get(child);
-                  if (!element) {
-                    element = Renderer.createElement(child, this.namespace, this.store);
-                    map.set(child, element);
-                  }
-                  return element
-                }),
-              );
-            }
-            else {
-              setChild(index, Renderer.createElement(result, this.namespace, this.store));
-            }
-          }, true);
+          this.subscriptions.push(
+            child.subscribe((result) => {
+              if (!result) return;
+              if (Array.isArray(result)) {
+                setChild(
+                  index,
+                  result.map(child => {
+                    let element = map.get(child);
+                    if (!element) {
+                      element = Renderer.createElement(child, this.namespace, this.store);
+                      map.set(child, element);
+                    }
+                    return element
+                  }),
+                );
+              }
+              else {
+                setChild(index, Renderer.createElement(result, this.namespace, this.store));
+              }
+            }, true),
+          );
         }
         else {
           setChild(index, childElement);
@@ -91,7 +85,9 @@ export default class OmegaElement {
 
   setAttribute(key, value) {
     if (value instanceof Observable) {
-      value.subscribe((result) => this.setAttribute(key, result), true);
+      this.subscriptions.push(
+        value.subscribe((result) => this.setAttribute(key, result), true)
+      );
     }
     else if (key.startsWith('on')) {
       let event = key.substr(2).toLowerCase();
@@ -136,9 +132,10 @@ export default class OmegaElement {
   }
 
   removeAllChidren() {
+    let c = 0;
     for (let pos = 0; pos < this.children.length; pos++) {
       for (let i = 0; i < this.children[pos].length; i++) {
-        let node = this.element.childNodes[pos];
+        let node = this.element.childNodes[c++];
         if (node) {
           return this.element.removeChild(node);
         }
@@ -147,7 +144,6 @@ export default class OmegaElement {
   }
 
   setChild(pos, ...children) {
-
     const getNode = (child) => child instanceof OmegaElement ? child.element : child;
 
     let prevIndex = 0;
@@ -200,5 +196,18 @@ export default class OmegaElement {
 
   appendChild(...children) {
     this.setChild(this.elementChildren.length, ...children);
+  }
+
+  destroy() {
+    this.subscriptions.forEach(sub => sub());
+    this.subscriptions = [];
+
+    for (let group of this.elementChildren) {
+      for (let child of group) {
+        if(child && child.destroy) {
+          child.destroy();
+        }
+      }
+    }
   }
 }
