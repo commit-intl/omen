@@ -59,8 +59,6 @@ export const Renderer = {
 
   createElement(src, namespace, store) {
     switch (typeof src) {
-      case 'string':
-        return document.createTextNode(src);
       case 'function':
         return Renderer.renderOmegaElement(src, store);
       case 'object':
@@ -71,6 +69,8 @@ export const Renderer = {
           return Renderer.renderOmegaElement(src, store);
         }
         break;
+      default:
+        return document.createTextNode(src);
     }
   },
 };

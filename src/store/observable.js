@@ -56,12 +56,13 @@ export default class Observable {
       (data) => {
         let key = by(data);
         if (callbackMap[key]) {
-          result.set(callbackMap[key](data));
+          result.set(callbackMap[key](this));
         }
         else if (defaultCallback) {
-          result.set(defaultCallback(data));
+          result.set(defaultCallback(this));
         }
       },
+      true
     );
     return result;
   }

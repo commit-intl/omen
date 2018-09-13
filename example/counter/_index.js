@@ -49,15 +49,14 @@ omega.render(
 store.subscribe((value) => console.log('STATE_CHANGE', value));
 
 
-const storeViewerMiddleware = (data, path) => {
-    if (path && path.indexOf('secret') === 0) {
+const storeViewerMiddleware = (data, key) => {
+    if (key === 'secret') {
       return '[hidden]';
     }
     return data;
   };
 
-// createStoreViewer(
-//   document.body,
-//   store,
-//   storeViewerMiddleware,
-// );
+createStoreViewer(
+  document.body,
+  store,
+);

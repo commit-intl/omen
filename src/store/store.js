@@ -12,7 +12,7 @@ export default class Store extends StoreNode {
     if (this.binding) {
       let result = this.binding.load();
       if (result) {
-        this.set({
+        return this.set({
           ...value,
           ...result,
         });
@@ -22,13 +22,14 @@ export default class Store extends StoreNode {
   }
 
   save() {
+    console.log('save', this.value);
     if (this.binding) {
       this.binding.save(this.value);
     }
   }
 
-  set(value, path = undefined, ignoreParent = false) {
-    super.set(value, path, ignoreParent);
+  notify(propagateUp = true, propagateDown = true) {
+    super.notify(propagateUp, propagateDown);
     this.save();
   }
 }
