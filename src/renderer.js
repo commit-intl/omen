@@ -23,8 +23,6 @@ export const Renderer = {
     appendTo.append(
       omegaElement.element,
     );
-
-    console.log(store);
   },
 
   renderOmegaElement(node, store) {

@@ -13,7 +13,6 @@ export const NewCounter = ({target, value}, data) => {
   let addCounter = (event) => {
     target.set(
       (data) => {
-        console.log(event, data, target);
         const entry = {name: value.get(), value: 0};
         if (!data) {
           return [entry];

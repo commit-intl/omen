@@ -154,8 +154,7 @@ export default class OmegaElement {
     for (let i = 0; i < this.elementChildren.length && i < pos; i++) {
       prevIndex += this.elementChildren[i] ? this.elementChildren[i].length : 0;
     }
-    console.log('setChild start', this.tag, pos, prevIndex, [...children], [...this.elementChildren], [...this.children]);
-    
+
     let group = this.elementChildren[pos] || [];
 
     if (this.element.childNodes !== undefined) {
@@ -165,7 +164,6 @@ export default class OmegaElement {
         const newNode = getNode(children[i]);
         if (i < children.length) {
           if (!currentNode.isSameNode(newNode)) {
-            console.log('setChild replace', pos, i, prevIndex+i);
             this.element.replaceChild(newNode, currentNode);
             if (group[i] && group[i].destroy) {
               group[i].destroy();
@@ -175,7 +173,6 @@ export default class OmegaElement {
           else {
           }
         } else if (currentNode) {
-          console.log('setChild remove', pos, i, prevIndex+i);
           this.element.removeChild(currentNode);
           if (group[i] && group[i].destroy) {
             group[i].destroy();
@@ -191,10 +188,8 @@ export default class OmegaElement {
       while (i < children.length) {
         const newNode = getNode(children[i]);
         if (newNode) {
-          console.log('setChild insert', pos, i, prevIndex+i);
           this.element.insertBefore(newNode, insertBefore);
           group[i] = children[i];
-          console.log(i, group);
         }
         i++;
       }

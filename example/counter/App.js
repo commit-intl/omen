@@ -34,15 +34,12 @@ export default App;
 
 
 const Section = ({name, counters, newCounter}, data) => {
-  console.log(counters, newCounter);
   return (
     <div className={styles.group}>
       <h1 className={styles.groupTitles}>{name}</h1>
       <div>
         {
-          counters.map((value) => <Entry self={value}/>,
-            value => value && value.name
-          )
+          counters.map((value) => <Entry self={value}/>)
         }
       </div>
       <NewCounter
@@ -55,7 +52,6 @@ const Section = ({name, counters, newCounter}, data) => {
 
 
 const Entry = ({self}, data) => {
-  console.log('Entry', self);
   return (
     <div className={styles.entry}>
       <div className={styles.remove}

@@ -34,7 +34,12 @@ export default class StoreNode extends Observable {
 
       if(value === undefined) {
          if(typeof this.value === 'object') {
-           delete this.value[path];
+           if(Array.isArray(this.value)) {
+             this.value.splice(path, 1);
+           }
+           else {
+             delete this.value[path];
+           }
          }
          else {
            this.value = undefined;
@@ -122,7 +127,6 @@ export default class StoreNode extends Observable {
   map(callback, idCallback = (value, index) => index) {
     let children = {};
     let handler = (value) => {
-      console.log('map', this.name, value);
       if (typeof value === 'object') {
         let keys = Object.keys(value);
         let childrenIds = Object.keys(children);
