@@ -4,30 +4,33 @@ import styles from './_index.scss';
 import {Input} from './Input';
 import {Button} from './Button';
 
-export const NewCounter = ({target, value}, data) => {
+export const NewCounter = ({target}, state, data) => {
 
   let inputChange = (event) => {
-    value.set(event.target.value);
+    state.set(event.target.value);
   };
 
   let addCounter = (event) => {
     target.set(
       (data) => {
-        const entry = {name: value.get(), value: 0};
+        const entry = {name: state.get(), value: 0};
         if (!data) {
           return [entry];
         }
         return [...data, entry];
       });
 
-    value.set('');
+    state.set('');
   };
 
 
   return (
     <div className={styles.newCounter}>
-      <Input type="text" value={value} onChange={inputChange}/>
+      <Input type="text" value={state} onChange={inputChange}/>
       <Button value="add counter" onClick={addCounter}/>
     </div>
   );
 };
+
+
+NewCounter.initialState = '';

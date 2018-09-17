@@ -2,6 +2,8 @@ import { omega, Store, createStoreViewer } from 'ome';
 import styles from './_index.scss';
 import App from './App';
 import LocalStorageBinding from '../../src/store/local-storage-binding';
+import StoreNode from '../../src/store/store-node';
+import Observable from '../../src/store/observable';
 
 const initialState = {
   'secret': 'This will not be shown in the store viewer! Thanks to middleware!',
@@ -17,7 +19,6 @@ const initialState = {
           value: -3,
         }
       ],
-      newCounter: '',
     },
     'Unnecessary': {
       counters: [
@@ -30,7 +31,6 @@ const initialState = {
           value: 0,
         }
       ],
-      newCounter: '',
     }
   }
 };
@@ -59,4 +59,5 @@ const storeViewerMiddleware = (data, key) => {
 createStoreViewer(
   document.body,
   store,
+  storeViewerMiddleware
 );

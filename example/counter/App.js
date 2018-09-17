@@ -6,7 +6,7 @@ import {NewCounter} from './NewCounter';
 import {Headline} from './Headline';
 import {SVG} from './SVG';
 
-const App = (props, {app}) => {
+const App = (props, state, {app}) => {
   return (
     <div className={styles.wrapper}>
       <SVG/>
@@ -33,7 +33,7 @@ App.data = {
 export default App;
 
 
-const Section = ({name, counters, newCounter}, data) => {
+const Section = ({name, counters, newCounter}) => {
   return (
     <div className={styles.group}>
       <h1 className={styles.groupTitles}>{name}</h1>
@@ -51,7 +51,7 @@ const Section = ({name, counters, newCounter}, data) => {
 };
 
 
-const Entry = ({self}, data) => {
+const Entry = ({self}) => {
   return (
     <div className={styles.entry}>
       <div className={styles.remove}

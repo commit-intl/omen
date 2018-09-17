@@ -1,6 +1,7 @@
 import {flattenDeepArray, NAMESPACES} from './helpers';
 import Observable from './store/observable';
 import OmegaElement from './omega.element';
+import StoreNode from './store/store-node';
 
 export const Renderer = {
   create: (tag, props, ...children) => {
@@ -50,8 +51,13 @@ export const Renderer = {
         }, {})
       : {};
 
+    let state = tag && tag.initialState;
+    if (typeof state === 'function') {
+      state = state(props);
+    }
+
     if (typeof tag === 'function') {
-      return Renderer.renderOmegaElement(tag({...props, children}, data), store);
+      return Renderer.renderOmegaElement(tag({...props, children}, state !== undefined && new StoreNode(state), data), store);
     }
 
     return new OmegaElement(tag, namespace, props, data, children && flattenDeepArray(children), store);
