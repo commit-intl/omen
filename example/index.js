@@ -1,1 +1,2 @@
-import './counter/_index';
+import './counter/index';
+// import './simple/index';

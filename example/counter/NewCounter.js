@@ -1,6 +1,6 @@
 import {omega} from 'ome';
-import {store} from './_index';
-import styles from './_index.scss';
+import {store} from './index';
+import styles from './index.scss';
 import {Input} from './Input';
 import {Button} from './Button';
 
