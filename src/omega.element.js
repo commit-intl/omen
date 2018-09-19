@@ -86,7 +86,7 @@ export default class OmegaElement {
   setAttribute(key, value) {
     if (value instanceof Observable) {
       this.subscriptions.push(
-        value.subscribe((result) => this.setAttribute(key, result), true)
+        value.subscribe((result) => this.setAttribute(key, result), true),
       );
     }
     else if (key.startsWith('on')) {
@@ -199,15 +199,19 @@ export default class OmegaElement {
   }
 
   destroy() {
-    this.subscriptions.forEach(sub => sub());
+    if (this.subscriptions) {
+      this.subscriptions.forEach(sub => sub());
+    }
     this.subscriptions = [];
 
-    for (let group of this.elementChildren) {
-      for (let child of group) {
-        if(child && child.destroy) {
-          child.destroy();
-        }
-      }
+    if (this.elementChildren) {
+      this.elementChildren.forEach(
+        group => group && group.forEach(
+          child => child && child.destroy && child.destroy()
+        )
+      );
     }
+
+    this.elementChildren = [];
   }
 }
