@@ -1,31 +1,36 @@
-import { omega } from 'ome';
-import { store } from './_index';
-import styles from './_index.scss';
-import { Input } from './Input';
-import { Button } from './Button';
+import {omega} from 'ome';
+import {store} from './index';
+import styles from './index.scss';
+import {Input} from './Input';
+import {Button} from './Button';
 
-export const NewCounter = () => {
+export const NewCounter = ({target}, state, data) => {
 
-  let inputChange = (event, data, path) => {
-    store.set(path, event.target.value)
+  let inputChange = (event) => {
+    state.set(event.target.value);
   };
 
-  let addCounter = (event, data, path) => {
-    let newCounter = store.get(path);
-    store.set(
-      path.replace('newCounter','counters'),
+  let addCounter = (event) => {
+    target.set(
       (data) => {
-        data.push({ name: newCounter, value: 0 });
-        return data;
+        const entry = {name: state.get(), value: 0};
+        if (!data) {
+          return [entry];
+        }
+        return [...data, entry];
       });
 
-    store.set(path, '');
+    state.set('');
   };
 
+
   return (
-    <div _bind=".newCounter" className={styles.newCounter}>
-      <Input type="text" value={data => data} onChange={inputChange}/>
+    <div className={styles.newCounter}>
+      <Input type="text" value={state} onChange={inputChange}/>
       <Button value="add counter" onClick={addCounter}/>
     </div>
   );
 };
+
+
+NewCounter.initialState = '';

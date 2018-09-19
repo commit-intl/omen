@@ -1,5 +1,5 @@
 import { omega } from 'ome';
-import styles from './_index.scss';
+import styles from './index.scss';
 
 export const Input = ({ type, value, onChange }) => {
   return (

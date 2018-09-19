@@ -1,19 +1,3 @@
-# omega
-
-**ONE STATE, ONE APP!**
-
-A simple data driven frontend library using JSX.
-
-There are some major differences to render based libraries like React:
-- no render cycle, no shadow DOM, no complicated change detection
-- data is set with observables
-
-``` cmd
-npm i -S ome
-```
-
-example:
-``` javascript
 import {omega, Store} from 'ome';
 
 const App = (props, state, data) => {
@@ -53,4 +37,3 @@ omega.render(
   document.body,
   store,
 );
-```
