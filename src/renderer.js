@@ -56,8 +56,14 @@ export const Renderer = {
       state = state(props);
     }
 
+    if (state != null) {
+      let initialState = state;
+      state = new StoreNode();
+      state.value = initialState;
+    }
+
     if (typeof tag === 'function') {
-      return Renderer.renderOmegaElement(tag({...props, children}, state !== undefined && new StoreNode(state), data), store);
+      return Renderer.renderOmegaElement(tag({...props, children}, state, data), store);
     }
 
     return new OmegaElement(tag, namespace, props, data, children && flattenDeepArray(children), store);
