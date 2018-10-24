@@ -1,4 +1,4 @@
-# omega
+# omen
 
 **ONE STATE, ONE APP!**
 
@@ -8,6 +8,8 @@ There are some major differences to render based libraries like React:
 - no render cycle, no shadow DOM, no complicated change detection
 - data is set with observables
 
+
+## install
 ``` cmd
 npm i -S ome
 ```

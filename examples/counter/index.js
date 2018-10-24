@@ -1,7 +1,7 @@
 import { omega, Store, createStoreViewer } from 'ome';
 import styles from './index.scss';
 import App from './App';
-import LocalStorageBinding from '../../src/store/local-storage-binding';
+import LocalStorageBinding from '../../core/src/store/local-storage-binding';
 
 const initialState = {
   'secret': 'This will not be shown in the store viewer! Thanks to middleware!',
