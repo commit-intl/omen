@@ -1,6 +1,6 @@
 import {flattenDeepArray, NAMESPACES} from './helpers';
 import Observable from './store/observable';
-import OmegaElement from './omega.element';
+import OmenElement from './omen.element';
 import StoreNode from './store/store-node';
 
 export const Renderer = {
@@ -20,13 +20,13 @@ export const Renderer = {
   },
 
   render: (root, appendTo, store) => {
-    const omegaElement = Renderer.renderOmegaElement(root, store);
+    const omenElement = Renderer.renderOmenElement(root, store);
     appendTo.append(
-      omegaElement.element,
+      omenElement.element,
     );
   },
 
-  renderOmegaElement(node, store) {
+  renderOmenElement(node, store) {
     if (!node || !node.tag) return null;
 
     const {
@@ -63,22 +63,22 @@ export const Renderer = {
     }
 
     if (typeof tag === 'function') {
-      return Renderer.renderOmegaElement(tag({...props, children}, state, data), store);
+      return Renderer.renderOmenElement(tag({...props, children}, state, data), store);
     }
 
-    return new OmegaElement(tag, namespace, props, data, children && flattenDeepArray(children), store);
+    return new OmenElement(tag, namespace, props, data, children && flattenDeepArray(children), store);
   },
 
   createElement(src, namespace, store) {
     switch (typeof src) {
       case 'function':
-        return Renderer.renderOmegaElement(src, store);
+        return Renderer.renderOmenElement(src, store);
       case 'object':
         if (!(src instanceof Observable)) {
           if (!src.namespace) {
             src = {...src, namespace};
           }
-          return Renderer.renderOmegaElement(src, store);
+          return Renderer.renderOmenElement(src, store);
         }
         break;
       default:

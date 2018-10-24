@@ -1,7 +1,7 @@
-import { omega, Store, createStoreViewer } from 'ome';
+import { omen, Store, createStoreViewer } from '@omen/core';
 import styles from './index.scss';
 import App from './App';
-import LocalStorageBinding from '../../core/src/store/local-storage-binding';
+import LocalStorageBinding from '../../../core/src/store/local-storage-binding';
 
 const initialState = {
   'secret': 'This will not be shown in the store viewer! Thanks to middleware!',
@@ -38,7 +38,7 @@ export const store = new Store(
   new LocalStorageBinding('counter', (path) => path !== 'secret')
 );
 
-omega.render(
+omen.render(
   <App/>,
   document.body,
   store

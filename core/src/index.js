@@ -4,7 +4,7 @@ import LocalStorageBinding from './store/local-storage-binding';
 import { Renderer } from './renderer';
 
 module.exports = {
-  omega: Renderer,
+  omen: Renderer,
   Store,
   LocalStorageBinding,
   createStoreViewer,

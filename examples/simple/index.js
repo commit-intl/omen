@@ -1,4 +1,4 @@
-import {omega, Store} from 'ome';
+import {omen, Store} from 'ome';
 
 const App = (props, state, data) => {
   const entries = data.entries.map(
@@ -33,7 +33,7 @@ const initialState = {
 export const store = new Store(initialState);
 
 omega.render(
-  <App title="Omega is awesome!"/>,
+  <App title="Omen is awesome!"/>,
   document.body,
   store,
 );

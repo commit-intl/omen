@@ -2,12 +2,8 @@
   "name": "@omen/examples",
   "description": "data driven javascript frontend library, based on JSX",
   "scripts": {
-    "start": "npm run start:counter",
-    "start:simple": "set EXAMPLE=simple&&webpack-dev-server --config webpack.develop.config.js --hot --inline",
-    "start:counter": "set EXAMPLE=counter&&webpack-dev-server --config webpack.develop.config.js --hot --inline",
-    "build": "npm run build:counter",
-    "build:simple": "set EXAMPLE=simple&&set NODE_ENV=production&& webpack -p --config webpack.production.config.js",
-    "build:counter": "set EXAMPLE=counter&&set NODE_ENV=production&& webpack -p --config webpack.production.config.js",
+    "start": "webpack-dev-server --config webpack.develop.config.js --hot --inline",
+    "build": "set NODE_ENV=production&& webpack -p --config webpack.production.config.js",
     "test": "echo  NO TESTS DEFINED! TODO: define some",
     "lint": "eslint src"
   },
@@ -15,7 +11,7 @@
   "license": "AGPL-3.0",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/commit-intl/omega.git"
+    "url": "git+https://github.com/commit-intl/omen.git"
   },
   "keywords": [
     "redux",
@@ -28,11 +24,12 @@
     "js"
   ],
   "bugs": {
-    "url": "https://github.com/commit-intl/omega/issues"
+    "url": "https://github.com/commit-intl/omen/issues"
   },
-  "homepage": "https://github.com/commit-intl/omega#readme",
+  "homepage": "https://github.com/commit-intl/omen#readme",
   "dependencies": {},
   "devDependencies": {
+    "@omen/core": "^0.5.4",
     "autoprefixer": "^6.7.7",
     "babel-core": "^6.26.3",
     "babel-eslint": "^8.2.6",

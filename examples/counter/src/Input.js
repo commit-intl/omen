@@ -1,4 +1,4 @@
-import { omega } from 'ome';
+import { omen } from '@omen/core';
 import styles from './index.scss';
 
 export const Input = ({ type, value, onChange }) => {

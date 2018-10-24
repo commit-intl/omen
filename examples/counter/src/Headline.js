@@ -1,4 +1,4 @@
-import {omega} from 'ome';
+import {omen} from '@omen/core';
 
 export const Headline = ({children}) => (
   <h1

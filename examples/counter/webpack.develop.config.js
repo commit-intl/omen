@@ -13,7 +13,7 @@ module.exports = {
   context: __dirname,
   entry: [
     //'webpack-dev-server/client?http://localhost:3000',
-    './' + process.env.EXAMPLE + '/index',
+    './src/index',
   ],
   output: {
     path: path.join(__dirname, 'dist'),
@@ -56,9 +56,6 @@ module.exports = {
     ]
   },
   resolve: {
-    alias: {
-      'ome': path.join(__dirname, 'src/index.js'),
-    },
     modules: [
       "node_modules",
     ],

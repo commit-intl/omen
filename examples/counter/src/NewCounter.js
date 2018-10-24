@@ -1,4 +1,4 @@
-import {omega} from 'ome';
+import {omen} from '@omen/core';
 import {store} from './index';
 import styles from './index.scss';
 import {Input} from './Input';

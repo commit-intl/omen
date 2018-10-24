@@ -2,7 +2,7 @@ import Observable from './store/observable';
 import Renderer from './renderer';
 import {HTML_SPECIAL_ATTRIBUTES, NAMESPACES, htmlPropMap} from './helpers';
 
-export default class OmegaElement {
+export default class OmenElement {
   constructor(tag, namespace, props, data, children, store) {
     this.tag = tag;
     this.namespace = namespace;
@@ -144,7 +144,7 @@ export default class OmegaElement {
   }
 
   setChild(pos, ...children) {
-    const getNode = (child) => child instanceof OmegaElement ? child.element : child;
+    const getNode = (child) => child instanceof OmenElement ? child.element : child;
 
     let prevIndex = 0;
     for (let i = 0; i < this.elementChildren.length && i < pos; i++) {

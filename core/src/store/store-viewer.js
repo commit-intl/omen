@@ -1,4 +1,4 @@
-import omega from '../renderer';
+import omen from '../renderer';
 
 const styles = {};
 
@@ -159,7 +159,7 @@ StoreViewer.initialState = {
 };
 
 export const createStoreViewer = (appendTo, store, middleware) => {
-  omega.render(
+  omen.render(
     <StoreViewer middleware={middleware}/>,
     appendTo,
     store,

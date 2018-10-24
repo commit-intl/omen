@@ -1,6 +1,6 @@
 {
   "name": "@omen/core",
-  "version": "0.5.2",
+  "version": "0.5.4",
   "description": "data driven javascript frontend library, based on JSX",
   "main": "lib/index.js",
   "scripts": {
