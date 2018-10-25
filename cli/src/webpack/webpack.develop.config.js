@@ -23,7 +23,6 @@ module.exports = {
     moduleExtensions: ['-loader'],
   },
   plugins: [
-    new HtmlWebpackPlugin(),
   ],
   module: {
     rules: [

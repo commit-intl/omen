@@ -1,0 +1,69 @@
+{
+  "name": "@omen/cli",
+  "description": "all in one CLI for omen",
+  "version": "0.1.2",
+  "author": "Dustin Hagemeier <dustin@commit.international>",
+  "bin": {
+    "omen": "./bin/run"
+  },
+  "bugs": "https://github.com/commit-intl/omen/issues",
+  "dependencies": {
+    "@babel/core": "^7.1.2",
+    "@oclif/command": "^1.5.4",
+    "@oclif/config": "^1.8.8",
+    "@oclif/plugin-help": "^2.1.3",
+    "@omen/core": "^0.5.4",
+    "babel-core": "^6.26.3",
+    "babel-loader": "^8.0.4",
+    "babel-plugin-transform-react-jsx": "^6.24.1",
+    "babel-preset-babili": "^0.1.4",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-minify": "^0.4.3",
+    "babel-preset-stage-0": "^6.24.1",
+    "cli-ux": "^4.9.1",
+    "colors": "^1.3.2",
+    "css-loader": "^1.0.0",
+    "extract-text-webpack-plugin": "^3.0.2",
+    "html-loader": "^0.5.5",
+    "html-webpack-plugin": "^3.2.0",
+    "node-sass": "^4.9.4",
+    "sass-loader": "^7.1.0",
+    "style-loader": "^0.23.1",
+    "webpack": "^4.22.0",
+    "webpack-dev-server": "^3.1.10"
+  },
+  "devDependencies": {
+    "@oclif/dev-cli": "^1.19.4",
+    "globby": "^8.0.1",
+    "rimraf": "^2.6.2"
+  },
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "files": [
+    "/bin",
+    "/npm-shrinkwrap.json",
+    "/oclif.manifest.json",
+    "/src"
+  ],
+  "homepage": "https://github.com/commit-intl/omen",
+  "keywords": [
+    "oclif"
+  ],
+  "license": "AGPL-3.0",
+  "main": "src/index.js",
+  "oclif": {
+    "commands": "./src/commands",
+    "bin": "omen",
+    "plugins": [
+      "@oclif/plugin-help"
+    ]
+  },
+  "repository": "commit-intl/omen",
+  "scripts": {
+    "postpack": "rimraf oclif.manifest.json",
+    "prepack": "oclif-dev manifest && oclif-dev readme",
+    "test": "echo NO TESTS",
+    "version": "oclif-dev readme && git add README.md"
+  }
+}
