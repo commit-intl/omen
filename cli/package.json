@@ -1,7 +1,7 @@
 {
   "name": "@omen/cli",
   "description": "all in one CLI for omen",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "author": "Dustin Hagemeier <dustin@commit.international>",
   "bin": {
     "omen": "./bin/run"
@@ -9,17 +9,13 @@
   "bugs": "https://github.com/commit-intl/omen/issues",
   "dependencies": {
     "@babel/core": "^7.1.2",
+    "@babel/preset-env": "^7.1.0",
     "@oclif/command": "^1.5.4",
     "@oclif/config": "^1.8.8",
     "@oclif/plugin-help": "^2.1.3",
     "@omen/core": "^0.5.4",
-    "babel-core": "^6.26.3",
     "babel-loader": "^8.0.4",
     "babel-plugin-transform-react-jsx": "^6.24.1",
-    "babel-preset-babili": "^0.1.4",
-    "babel-preset-es2015": "^6.24.1",
-    "babel-preset-minify": "^0.4.3",
-    "babel-preset-stage-0": "^6.24.1",
     "cli-ux": "^4.9.1",
     "colors": "^1.3.2",
     "css-loader": "^1.0.0",

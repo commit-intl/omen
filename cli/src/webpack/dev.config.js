@@ -18,7 +18,7 @@ module.exports = {
         test: /\.jsx?$/,
         loader: "babel-loader",
         options: {
-          presets: ["es2015", "stage-0", "stage-2"],
+          presets: ["@babel/preset-env"],
           plugins: [
             ["transform-react-jsx", { "pragma": "omen.create" }]
           ],
