@@ -1,13 +1,14 @@
 {
   "name": "@omen/cli",
   "description": "all in one CLI for omen",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "author": "Dustin Hagemeier <dustin@commit.international>",
   "bin": {
     "omen": "./bin/run"
   },
   "bugs": "https://github.com/commit-intl/omen/issues",
   "dependencies": {
+    "@babel/core": "^7.1.2",
     "@oclif/command": "^1.5.4",
     "@oclif/config": "^1.8.8",
     "@oclif/plugin-help": "^2.1.3",
