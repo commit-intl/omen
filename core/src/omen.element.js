@@ -1,6 +1,6 @@
 import Observable from './store/observable';
 import Renderer from './renderer';
-import {HTML_SPECIAL_ATTRIBUTES, NAMESPACES, htmlPropMap} from './helpers';
+import {htmlPropSet, NAMESPACES, htmlPropMap} from './helpers';
 
 export default class OmenElement {
   constructor(tag, namespace, props, data, children, store) {
@@ -107,7 +107,7 @@ export default class OmenElement {
       }
 
       if (this.elementProps[key] !== value) {
-        if (HTML_SPECIAL_ATTRIBUTES.indexOf(key) >= 0) {
+        if (htmlPropSet.indexOf(key) >= 0) {
           this.element[key] = value;
         }
         else if (key === 'className') {

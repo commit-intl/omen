@@ -1,5 +1,5 @@
 import { omen } from '@omen/core';
-import styles from './index.scss';
+import styles from '../index.scss';
 
 export const Input = ({ type, value, onChange }) => {
   return (

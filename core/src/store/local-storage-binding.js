@@ -1,34 +1,28 @@
-
-export class LocalStorageBinding {
-  constructor(storageKey, filter, stringifier, reviver) {
-    this.storageKey = storageKey;
-    this.filter = filter;
-    this.stringifier = stringifier;
-    this.reviver = reviver;
-  }
-
-  save(state) {
-    if(window.localStorage) {
-      let saveState;
-      if(this.filter) {
-        saveState = Object.keys(state).filter(this.filter).reduce((acc, key) => {
-          acc[key] = state[key];
-          return acc;
-        }, {});
+const LocalStorageBinding = (storageKey, filter, stringifier, reviver) => {
+  return {
+    save(state) {
+      if (window.localStorage) {
+        let saveState;
+        if (filter) {
+          saveState = Object.keys(state).filter(filter).reduce((acc, key) => {
+            acc[key] = state[key];
+            return acc;
+          }, {});
+        }
+        else {
+          saveState = state;
+        }
+        window.localStorage.setItem(storageKey, JSON.stringify(saveState, stringifier));
       }
-      else {
-        saveState = state;
-      }
-      window.localStorage.setItem(this.storageKey, JSON.stringify(saveState, this.stringifier));
-    }
-  }
+    },
 
-  load() {
-    if(window.localStorage) {
-      let storedState = window.localStorage.getItem(this.storageKey);
-      return storedState && JSON.parse(storedState, this.reviver);
-    }
-  }
-}
+    load() {
+      if (window.localStorage) {
+        let storedState = window.localStorage.getItem(storageKey);
+        return storedState && JSON.parse(storedState, reviver);
+      }
+    },
+  };
+};
 
 export default LocalStorageBinding;

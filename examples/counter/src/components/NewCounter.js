@@ -1,6 +1,6 @@
 import {omen} from '@omen/core';
-import {store} from './index';
-import styles from './index.scss';
+import {store} from '../index';
+import styles from '../index.scss';
 import {Input} from './Input';
 import {Button} from './Button';
 

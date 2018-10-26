@@ -1,10 +1,10 @@
 import {omen} from '@omen/core';
 import {store} from './index';
 import styles from './index.scss';
-import {Counter} from './Counter';
-import {NewCounter} from './NewCounter';
-import {Headline} from './Headline';
-import {SVG} from './SVG';
+import {Counter} from './components/Counter';
+import {NewCounter} from './components/NewCounter';
+import {Headline} from './components/Headline';
+import {SVG} from './components/SVG';
 
 const App = (props, state, {app}) => {
   return (

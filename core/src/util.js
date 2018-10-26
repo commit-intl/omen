@@ -126,12 +126,4 @@ export const prepareEnvironment = () => {
   }
 };
 
-export const renderToString = (root, store) => {
-  if (typeof document === 'undefined') prepareEnvironment();
-
-  const omegaElement = Renderer.renderOmegaElement(root, store);
-  console.log(omegaElement.element);
-  return omegaElement.element.outerHTML;
-};
-
 prepareEnvironment();

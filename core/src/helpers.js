@@ -56,7 +56,7 @@ export const NAMESPACES = {
   math: 'http://www.w3.org/1998/Math/MathML',
 };
 
-export const HTML_SPECIAL_ATTRIBUTES = [
+export const htmlPropSet = [
   'styles',
   'value',
   'textContent',

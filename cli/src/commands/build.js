@@ -2,29 +2,29 @@ const { Command, flags } = require('@oclif/command');
 const colors = require('colors');
 const WebpackHelper = require('../webpack/webpack.helper');
 
-class ServeCommand extends Command {
+class BuildCommand extends Command {
   async run() {
-    const { flags } = this.parse(ServeCommand);
+    const { flags } = this.parse(BuildCommand);
     const environment = flags.prod ? 'prod' : 'dev';
     this.log(`starting omen dev server`.green);
 
     const executionDir = process.cwd();
-    const server = new WebpackHelper.DevServer(environment, executionDir, {});
-    server.listen(4000, 'localhost', (err) => {
+    const webpack = WebpackHelper.createWebpack(environment, executionDir, {});
+
+    webpack.run((err, stats) => {
       if (err) {
-        throw err;
+        this.log(colors.red(err));
       }
-      this.log(`dev server running at http://localhost:4000`.green);
     });
   }
 }
 
-ServeCommand.description = `start a dev server that renders your app
+BuildCommand.description = `build your app
 ...
 `;
 
-ServeCommand.flags = {
+BuildCommand.flags = {
   prod: flags.boolean({ char: 'p', description: 'run in production mode' }),
 };
 
-module.exports = ServeCommand;
+module.exports = BuildCommand;

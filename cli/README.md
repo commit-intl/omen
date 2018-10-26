@@ -19,7 +19,7 @@ $ npm install -g @omen/cli
 $ omen COMMAND
 running command...
 $ omen (-v|--version|version)
-@omen/cli/0.1.3 win32-x64 node-v8.9.3
+@omen/cli/0.1.4 win32-x64 node-v8.9.3
 $ omen --help [COMMAND]
 USAGE
   $ omen COMMAND
@@ -28,8 +28,26 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
+* [`omen build`](#omen-build)
 * [`omen help [COMMAND]`](#omen-help-command)
 * [`omen serve`](#omen-serve)
+
+## `omen build`
+
+build your app
+
+```
+USAGE
+  $ omen build
+
+OPTIONS
+  -p, --prod  run in production mode
+
+DESCRIPTION
+  ...
+```
+
+_See code: [src\commands\build.js](https://github.com/commit-intl/omen/blob/v0.1.4/src\commands\build.js)_
 
 ## `omen help [COMMAND]`
 
@@ -50,19 +68,18 @@ _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.1.3
 
 ## `omen serve`
 
-Describe the command here
+start a dev server that renders your app
 
 ```
 USAGE
   $ omen serve
 
 OPTIONS
-  -n, --name=name  name to print
+  -p, --prod  run in production mode
 
 DESCRIPTION
   ...
-  Extra documentation goes here
 ```
 
-_See code: [src\commands\serve.js](https://github.com/commit-intl/omen/blob/v0.1.3/src\commands\serve.js)_
+_See code: [src\commands\serve.js](https://github.com/commit-intl/omen/blob/v0.1.4/src\commands\serve.js)_
 <!-- commandsstop -->

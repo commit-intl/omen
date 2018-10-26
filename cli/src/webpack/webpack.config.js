@@ -2,11 +2,9 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
-const executionDir = process.cwd();
-
-module.exports = {
-  mode: "development",
-  entry: "./src/index",
+module.exports = (executionDir, isProd, build = false) => ({
+  mode: isProd ? "production" : "development",
+  entry: ["./src/index"],
   output: {
     path: path.resolve(executionDir, "dist"),
     filename: "bundle.js",
@@ -16,33 +14,28 @@ module.exports = {
     rules: [
       {
         test: /\.jsx?$/,
-        loader: "babel-loader",
-        options: {
-          presets: ["@babel/preset-env"],
-          plugins: [
-            ["transform-react-jsx", { "pragma": "omen.create" }]
-          ],
-          env: {
-            publish: {
-              presets: [
-                [
-                  "minify",
-                  {
-                    mangle: false,
-                    evaluate: false
-                  }
-                ]
-              ]
-            }
-          }
-        },
-      },
-      {
-        test: /\.html$/,
         use: [
           {
-            loader: "html-loader",
-            options: {}
+            loader: "babel-loader",
+            options: {
+              presets: [require.resolve("@babel/preset-env")],
+              plugins: [
+                [require.resolve("babel-plugin-transform-react-jsx"), { "pragma": "omen.create" }]
+              ],
+              env: {
+                publish: {
+                  presets: [
+                    [
+                      "minify",
+                      {
+                        mangle: isProd,
+                        evaluate: isProd,
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
           }
         ]
       },
@@ -56,7 +49,7 @@ module.exports = {
             loader: "css-loader",
             options: {
               modules: true,
-              localIdentName: '[path][name]__[local]--[hash:base64:5]'
+              localIdentName: isProd ? '[hash:base64:8]' : '[path][name]__[local]--[hash:base64:5]'
             }
           },
           {
@@ -69,10 +62,17 @@ module.exports = {
   resolve: {
     modules: [
       "node_modules",
-      path.resolve(executionDir, "app")
+      path.resolve(__dirname, "../../node_modules"),
+      path.resolve(executionDir, "src")
     ],
     extensions: [".js", ".json", ".jsx", ".css", ".scss", ".sass"],
     alias: {},
+  },
+  resolveLoader: {
+    modules: [
+      'node_modules',
+      path.resolve(__dirname, "../../node_modules"),
+    ],
   },
   performance: {
     hints: "warning",
@@ -93,4 +93,4 @@ module.exports = {
     new HtmlWebpackPlugin(),
     new MiniCssExtractPlugin(),
   ],
-};
+});

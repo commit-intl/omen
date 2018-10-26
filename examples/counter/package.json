@@ -29,9 +29,6 @@
   "homepage": "https://github.com/commit-intl/omen#readme",
   "dependencies": {},
   "devDependencies": {
-    "@babel/core": "^7.1.2",
-    "@omen/cli": "0.1.0",
-    "ajv": "^6.5.4",
-    "webpack": "^4.22.0"
+    "@omen/cli": "0.1.3"
   }
 }
