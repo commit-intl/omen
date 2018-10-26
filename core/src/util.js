@@ -18,7 +18,6 @@ export const prepareEnvironment = () => {
             element['on' + name] = undefined;
           },
           insertBefore: (newChild, before) => {
-            console.log('insertBefore');
             const index = element.childNodes.indexOf(before);
             if (index >= 0) {
               element.childNodes.splice(index, 0, newChild);
@@ -28,11 +27,9 @@ export const prepareEnvironment = () => {
             }
           },
           appendChild: (node) => {
-            console.log('appendChild');
             element.childNodes.push(node);
           },
           replaceChild: (newChild, oldChild) => {
-            console.log('replaceChild');
             const index = element.childNodes.indexOf(oldChild);
             if (index >= 0) {
               element.childNodes.splice(index, 1, newChild);

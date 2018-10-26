@@ -44,7 +44,7 @@ omen.render(
   store
 );
 
-store.subscribe((value) => console.log('STATE_CHANGE', value));
+store.subscribe((value) => console.log('STATE_CHANGE', value), true);
 
 //
 // const storeViewerMiddleware = (data, key) => {

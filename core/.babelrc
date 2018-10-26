@@ -6,13 +6,13 @@
   "env": {
     "publish": {
       "presets": [
-        [
-          "minify",
-          {
-            "mangle": false,
-            "evaluate": false
-          }
-        ]
+//        [
+//          "minify",
+//          {
+//            "mangle": false,
+//            "evaluate": false
+//          }
+//        ]
       ]
     }
   }
