@@ -1,4 +1,4 @@
-import {omen, Store} from 'ome';
+import {omen, Store} from '@omen/core';
 
 const App = (props, state, data) => {
   const entries = data.entries.map(
@@ -32,7 +32,7 @@ const initialState = {
 
 export const store = new Store(initialState);
 
-omega.render(
+omen.render(
   <App title="Omen is awesome!"/>,
   document.body,
   store,
