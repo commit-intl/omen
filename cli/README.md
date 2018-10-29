@@ -19,7 +19,7 @@ $ npm install -g @omen/cli
 $ omen COMMAND
 running command...
 $ omen (-v|--version|version)
-@omen/cli/0.1.4 win32-x64 node-v8.9.3
+@omen/cli/0.5.6 win32-x64 node-v8.9.3
 $ omen --help [COMMAND]
 USAGE
   $ omen COMMAND
@@ -47,7 +47,7 @@ DESCRIPTION
   ...
 ```
 
-_See code: [src\commands\build.js](https://github.com/commit-intl/omen/blob/v0.1.4/src\commands\build.js)_
+_See code: [src\commands\build.js](https://github.com/commit-intl/omen/blob/v0.5.6/src\commands\build.js)_
 
 ## `omen help [COMMAND]`
 
@@ -81,5 +81,5 @@ DESCRIPTION
   ...
 ```
 
-_See code: [src\commands\serve.js](https://github.com/commit-intl/omen/blob/v0.1.4/src\commands\serve.js)_
+_See code: [src\commands\serve.js](https://github.com/commit-intl/omen/blob/v0.5.6/src\commands\serve.js)_
 <!-- commandsstop -->
