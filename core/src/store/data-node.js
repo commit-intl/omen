@@ -150,14 +150,18 @@ const DataNode = (initName, parentNode) => {
 
     switch(by, callbackMap, defaultCallback) {
       let result = DataNode();
+      let prevKey = undefined;
       result.onDestroy = self.subscribe(
         (data) => {
           let key = by(data);
-          if (callbackMap[key]) {
-            result.set(callbackMap[key](self));
-          }
-          else if (defaultCallback) {
-            result.set(defaultCallback(self));
+          if(prevKey !== key) {
+            if (callbackMap[key]) {
+              result.set(callbackMap[key](self));
+            }
+            else if (defaultCallback) {
+              result.set(defaultCallback(self));
+            }
+            prevKey = key;
           }
         },
         true
