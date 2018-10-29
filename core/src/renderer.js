@@ -1,7 +1,6 @@
 import {flattenDeepArray, NAMESPACES} from './helpers';
-import Observable from './store/observable';
 import OmenElement from './omen.element';
-import StoreNode from './store/store-node';
+import DataNode from './store/data-node';
 
 const renderOmenElement = (node, store) => {
   if (!node || !node.tag) return null;
@@ -21,9 +20,7 @@ const renderOmenElement = (node, store) => {
   data = data
     ? Object.keys(data).reduce(
       (acc, key) => {
-        acc[key] = data[key] instanceof Observable
-          ? data[key]
-          : store.child(data[key]);
+        acc[key] = store.child(data[key]);
         return acc;
       }, {})
     : {};
@@ -35,8 +32,8 @@ const renderOmenElement = (node, store) => {
 
   if (state != null) {
     let initialState = state;
-    state = new StoreNode();
-    state.value = initialState;
+    state = DataNode();
+    state.set(initialState);
   }
 
   if (typeof tag === 'function') {
@@ -72,7 +69,6 @@ export const Renderer = {
 
   renderToString(root, store) {
     const omegaElement = renderOmegaElement(root, store);
-    console.log(omegaElement.element);
     return omegaElement.element.outerHTML;
   },
 
@@ -81,7 +77,7 @@ export const Renderer = {
       case 'function':
         return renderOmenElement(src, store);
       case 'object':
-        if (!(src instanceof Observable)) {
+        if (!src.__isDataNode) {
           if (!src.namespace) {
             src = {...src, namespace};
           }

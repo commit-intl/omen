@@ -6,7 +6,7 @@ import {NewCounter} from './components/NewCounter';
 import {Headline} from './components/Headline';
 import {SVG} from './components/SVG';
 
-const App = (props, state, {app}) => {
+const App = (props, state, {app, secret}) => {
   return (
     <div className={styles.wrapper}>
       <SVG/>
@@ -28,6 +28,7 @@ const App = (props, state, {app}) => {
 
 App.data = {
   app: 'app',
+  secret: 'secret',
 };
 
 export default App;

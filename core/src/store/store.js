@@ -1,35 +1,36 @@
-import {getChild} from './path.helper';
-import StoreNode from './store-node';
+import DataNode from './data-node';
 
-export default class Store extends StoreNode {
-  constructor(state, binding) {
-    super();
-    this.binding = binding;
-    this.load(state);
-  }
+const Store = (state, binding) => {
+  const root = DataNode();
+  const notify = root.notify;
+  root.binding = binding;
 
-  load(value) {
-    if (this.binding) {
-      let result = this.binding.load();
+  root.load = (value) => {
+    if (root.binding) {
+      let result = root.binding.load();
       if (result) {
-        return this.set({
+        return root.set({
           ...value,
           ...result,
         });
       }
     }
-    return this.set(value);
-  }
+    return root.set(value);
+  };
 
-  save() {
-    console.log('save', this.value);
-    if (this.binding) {
-      this.binding.save(this.value);
+  root.save = () => {
+    if (root.binding) {
+      root.binding.save(root.get());
     }
-  }
+  };
 
-  notify(propagateUp = true, propagateDown = true) {
-    super.notify(propagateUp, propagateDown);
-    this.save();
-  }
-}
+  root.notify = (propagateUp = true, propagateDown = true) => {
+    notify(propagateUp, propagateDown);
+    root.save();
+  };
+
+  root.load(state);
+  return root;
+};
+
+export default Store;

@@ -1,6 +1,6 @@
-import Observable from './store/observable';
 import Renderer from './renderer';
 import {htmlPropSet, NAMESPACES, htmlPropMap} from './helpers';
+import DataNode from './store/data-node';
 
 export default class OmenElement {
   constructor(tag, namespace, props, data, children, store) {
@@ -51,8 +51,7 @@ export default class OmenElement {
       (child, index) => {
         if (!child) return;
 
-        let childElement = Renderer.createElement(child, this.namespace, this.store);
-        if (!childElement && child && child instanceof Observable) {
+        if (child.__isDataNode) {
           const map = new WeakMap();
           this.subscriptions.push(
             child.subscribe((result) => {
@@ -77,6 +76,7 @@ export default class OmenElement {
           );
         }
         else {
+          let childElement = Renderer.createElement(child, this.namespace, this.store);
           setChild(index, childElement);
         }
       },
@@ -84,7 +84,7 @@ export default class OmenElement {
   }
 
   setAttribute(key, value) {
-    if (value instanceof Observable) {
+    if (value && value.__isDataNode) {
       this.subscriptions.push(
         value.subscribe((result) => this.setAttribute(key, result), true),
       );
@@ -111,7 +111,7 @@ export default class OmenElement {
           this.element[key] = value;
         }
         else if (key === 'className') {
-          if (this.element.namespaceURI !== NAMESPACES) {
+          if (this.element.namespaceURI !== NAMESPACES.html) {
             this.element.setAttribute('class', value);
           }
           else {
@@ -159,7 +159,7 @@ export default class OmenElement {
         const currentNode = this.element.childNodes[prevIndex + i];
         const newNode = getNode(children[i]);
         if (i < children.length) {
-          if (!currentNode.isSameNode(newNode)) {
+          if (!currentNode || !currentNode.isSameNode(newNode)) {
             this.element.replaceChild(newNode, currentNode);
             if (group[i] && group[i].destroy) {
               group[i].destroy();
