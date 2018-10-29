@@ -111,7 +111,7 @@ export default class OmenElement {
           this.element[key] = value;
         }
         else if (key === 'className') {
-          if (this.element.namespaceURI !== NAMESPACES) {
+          if (this.element.namespaceURI !== NAMESPACES.html) {
             this.element.setAttribute('class', value);
           }
           else {
@@ -159,7 +159,7 @@ export default class OmenElement {
         const currentNode = this.element.childNodes[prevIndex + i];
         const newNode = getNode(children[i]);
         if (i < children.length) {
-          if (!currentNode.isSameNode(newNode)) {
+          if (!currentNode || !currentNode.isSameNode(newNode)) {
             this.element.replaceChild(newNode, currentNode);
             if (group[i] && group[i].destroy) {
               group[i].destroy();

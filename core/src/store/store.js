@@ -15,7 +15,7 @@ const Store = (state, binding) => {
         });
       }
     }
-    return self.set(value);
+    return root.set(value);
   };
 
   root.save = () => {

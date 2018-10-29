@@ -105,7 +105,7 @@ const DataNode = (initName, parentNode) => {
           callback(value);
         }
 
-        return () => unsubscribe(id);
+        return () => self.unsubscribe(id);
       }
     },
 
