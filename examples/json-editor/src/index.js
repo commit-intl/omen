@@ -8,6 +8,11 @@ const initialState = {
     {title: 'World', color: '#333333'},
     {title: 123, color: true},
   ],
+  'not app': [
+    {title: 'Hello', color: null},
+    {title: 'World', color: '#333333'},
+    {title: 123, color: true},
+  ],
 };
 
 export const store = new Store(initialState);

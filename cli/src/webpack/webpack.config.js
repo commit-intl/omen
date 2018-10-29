@@ -88,6 +88,7 @@ module.exports = (executionDir, isProd, build = false) => ({
     hot: true,
     https: false,
     noInfo: true,
+    clientLogLevel: 'warning'
   },
   plugins: [
     new HtmlWebpackPlugin(),

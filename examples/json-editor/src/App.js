@@ -1,5 +1,5 @@
 import {omen} from '@omen/core';
-import Attribute from './componentes/Attribute';
+import Attribute from './componentes/Attribute/Attribute';
 import styles from './App.scss';
 
 const App = (props, state, { store }) => (

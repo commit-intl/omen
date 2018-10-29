@@ -1,5 +1,5 @@
 import { omen } from '@omen/core';
-import Attribute from './Attribute';
+import Attribute from '../Attribute/Attribute';
 import styles from './Object.scss';
 
 const Object = ({ value }) =>

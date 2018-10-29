@@ -9,6 +9,9 @@ all in one CLI for omen
 [![License](https://img.shields.io/npm/l/omen.svg)](https://github.com/commit-intl/omen/blob/master/package.json)
 
 <!-- toc -->
+* [Usage](#usage)
+* [Commands](#commands)
+<!-- tocstop -->
 * [Usage](#usage)
 * [Commands](#commands)
 <!-- tocstop -->
@@ -26,8 +29,77 @@ USAGE
 ...
 ```
 <!-- usagestop -->
+```sh-session
+$ npm install -g @omen/cli
+$ omen COMMAND
+running command...
+$ omen (-v|--version|version)
+@omen/cli/0.5.6 win32-x64 node-v8.9.3
+$ omen --help [COMMAND]
+USAGE
+  $ omen COMMAND
+...
+```
+<!-- usagestop -->
 # Commands
 <!-- commands -->
+* [`omen build`](#omen-build)
+* [`omen help [COMMAND]`](#omen-help-command)
+* [`omen serve`](#omen-serve)
+
+## `omen build`
+
+build your app
+
+```
+USAGE
+  $ omen build
+
+OPTIONS
+  -p, --prod  run in production mode
+
+DESCRIPTION
+  ...
+```
+
+_See code: [src\commands\build.js](https://github.com/commit-intl/omen/blob/v0.5.6/src\commands\build.js)_
+
+## `omen help [COMMAND]`
+
+display help for omen
+
+```
+USAGE
+  $ omen help [COMMAND]
+
+ARGUMENTS
+  COMMAND  command to show help for
+
+OPTIONS
+  --all  see all commands in CLI
+```
+
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.1.3/src\commands\help.ts)_
+
+## `omen serve`
+
+start a dev server that renders your app
+
+```
+USAGE
+  $ omen serve
+
+OPTIONS
+  -H, --host=host  start server on host
+  -P, --port=port  start server on port
+  -p, --prod       run in production mode
+
+DESCRIPTION
+  ...
+```
+
+_See code: [src\commands\serve.js](https://github.com/commit-intl/omen/blob/v0.5.6/src\commands\serve.js)_
+<!-- commandsstop -->
 * [`omen build`](#omen-build)
 * [`omen help [COMMAND]`](#omen-help-command)
 * [`omen serve`](#omen-serve)

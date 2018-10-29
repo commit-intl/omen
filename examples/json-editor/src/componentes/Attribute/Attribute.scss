@@ -1,0 +1,51 @@
+
+.host {
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: row;
+
+  .header {
+    display: flex;
+    flex-direction: column;
+    flex: 0 0 auto;
+    margin: 5px 0;
+    font-weight: bold;
+    font-size: 16px;
+    color: #4444ff;
+
+    > label {
+      display: block;
+    }
+
+    &.string { color: #00cc00 }
+    &.number { color: #9999ff }
+    &.boolean { color: #ff8800 }
+    &.object { color: #4444ff }
+    &.array { color: #8844ff }
+    &.null { color: #771177 }
+
+    .delete {
+      color: #ffcccc;
+      display: inline-block;
+      cursor: pointer;
+      font-size: 12px;
+      user-select: none;
+
+      &:hover {
+        color: red
+      }
+    }
+  }
+
+  .content {
+    font-size: 16px;
+    .null {
+      display: inline-block;
+      margin: 5px 0;
+      padding: 0 2px;
+      border-radius: 4px;
+      background-color: #771177;
+      color: #ffffff;
+    }
+  }
+}
