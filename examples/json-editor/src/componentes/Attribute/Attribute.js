@@ -1,4 +1,4 @@
-import { omen } from '@omen/core';
+import {omen} from '@omen/core';
 import styles from './Attribute.scss';
 import InputText from '../InputText/InputText';
 import InputNumber from '../InputNumber/InputNumber';
@@ -6,7 +6,7 @@ import Object from '../Object/Object';
 import TypeSelect from '../TypeSelect/TypeSelect';
 import InputBoolean from '../InputBoolean/InputBoolean';
 
-const Attribute = ({ key, value }, state, data) => {
+const Attribute = ({key, value}, state, data) => {
   const getType = v => {
     let type = v != null ? typeof v : v + '';
     if (type === 'object') {
@@ -16,16 +16,20 @@ const Attribute = ({ key, value }, state, data) => {
   };
   const type = value.transform(getType);
 
+  console.log(key, value.get());
+
   return (
-    <div className={styles.host}>
+    <div className={value.transform(v => [styles.host, v && typeof v === 'object' ? styles.object : styles.primitive])}>
       <div className={styles.header}>
-        <label>{key}</label>
-        <TypeSelect value={value} type={type}/>
-        <div
-          className={styles.delete}
-          onClick={() => value.set(undefined)}
-        >
-          [delete]
+        <label>{/\s/.test(key) ? `'${key}'` : key}</label>
+        <div className={styles.actions}>
+          <TypeSelect value={value} type={type}/>
+          <div
+            className={styles.delete}
+            onClick={() => value.set(undefined)}
+          >
+            [delete]
+          </div>
         </div>
       </div>
       <div className={styles.content}>
@@ -45,6 +49,6 @@ const Attribute = ({ key, value }, state, data) => {
       </div>
     </div>
   );
-}
+};
 
 export default Attribute;
