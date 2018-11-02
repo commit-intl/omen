@@ -1,4 +1,4 @@
-import {omen} from '@omen/core';
+import { omen } from '@omen/core';
 import styles from './Attribute.scss';
 import InputText from '../InputText/InputText';
 import InputNumber from '../InputNumber/InputNumber';
@@ -6,7 +6,7 @@ import Object from '../Object/Object';
 import TypeSelect from '../TypeSelect/TypeSelect';
 import InputBoolean from '../InputBoolean/InputBoolean';
 
-const Attribute = ({key, value}, state, data) => {
+const Attribute = ({ key, value, onKeyChange }, state, data) => {
   const getType = v => {
     let type = v != null ? typeof v : v + '';
     if (type === 'object') {
@@ -16,12 +16,24 @@ const Attribute = ({key, value}, state, data) => {
   };
   const type = value.transform(getType);
 
-  console.log(key, value.get());
+  const handleKeyInput = (event, v, key) => {
+    if (event.keyCode === 13) {
+      event.preventDefault();
+      event.target.blur();
+      return true;
+    }
+  };
 
   return (
     <div className={value.transform(v => [styles.host, v && typeof v === 'object' ? styles.object : styles.primitive])}>
       <div className={styles.header}>
-        <label>{/\s/.test(key) ? `'${key}'` : key}</label>
+        <label
+          contentEditable={!!onKeyChange}
+          onKeyPress={handleKeyInput}
+          onBlur={onKeyChange}
+        >
+          {key}
+        </label>
         <div className={styles.actions}>
           <TypeSelect value={value} type={type}/>
           <div

@@ -2,3 +2,16 @@
 .host {
 
 }
+
+.add {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border: none;
+  font-size: 12px;
+  font-weight: bold;
+  color: #000000;
+  border-radius: 0 100px 100px 100px;
+  background-color: #ccffcc;
+  cursor: pointer;
+}
