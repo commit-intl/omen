@@ -60,8 +60,9 @@ export const Renderer = {
     };
   },
 
-  render(root, appendTo, store) {
+  render(root, appendTo, store, options) {
     const omenElement = renderOmenElement(root, store);
+    omenElement.init(options && options.mode);
     appendTo.append(
       omenElement.element,
     );

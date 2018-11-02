@@ -15,10 +15,31 @@ export default class OmenElement {
     this.elementProps = {};
     this.elementListeners = {};
     this.elementChildren = [];
+  }
 
-    this.initElement();
+  init(mode, id) {
+    if (mode === 'client') {
+      this.rehydrateElement(id);
+    }
+    else {
+      this.initElement();
+    }
+
+    if(mode === 'server') {
+      this.props['data-oid'] = id;
+    }
+
     this.initProps();
-    this.initChildren();
+    this.initChildren(id);
+  }
+
+  rehydrateElement(id) {
+    const result = document.querySelector(`[data-oid="${id}"]`);
+    this.element = result && result[0];
+
+    if(!this.element) {
+      this.initElement();
+    }
   }
 
   initElement() {
@@ -38,7 +59,7 @@ export default class OmenElement {
     }
   }
 
-  initChildren() {
+  initChildren(mode, id) {
     const setChild = (pos, children) => {
       if (!Array.isArray(children)) {
         children = [children];
@@ -59,10 +80,11 @@ export default class OmenElement {
               if (Array.isArray(result)) {
                 setChild(
                   index,
-                  result.map(child => {
+                  result.map((child,childIndex) => {
                     let element = map.get(child);
                     if (!element) {
                       element = Renderer.createElement(child, this.namespace, this.store);
+                      element.init(mode, `${id}.${index}-${childIndex}`);
                       map.set(child, element);
                     }
                     return element;
@@ -70,14 +92,17 @@ export default class OmenElement {
                 );
               }
               else {
-                setChild(index, Renderer.createElement(result, this.namespace, this.store));
+                let element = Renderer.createElement(result, this.namespace, this.store);
+                element.init(mode, `${id}.${index}`);
+                setChild(index, element);
               }
             }, true),
           );
         }
         else {
-          let childElement = Renderer.createElement(child, this.namespace, this.store);
-          setChild(index, childElement);
+          let element = Renderer.createElement(child, this.namespace, this.store);
+          element.init(mode, `${id}.${index}`);
+          setChild(index, element);
         }
       },
     )
