@@ -5,7 +5,8 @@
   "main": "lib/index.js",
   "scripts": {
     "test": "echo  NO TESTS DEFINED! TODO: define some",
-    "prepublish": "rm -Rf lib && set BABEL_ENV=publish&&  babel src --out-dir lib"
+    "build": "rm -Rf lib && set BABEL_ENV=publish&&  babel src --out-dir lib",
+    "prepublishOnly": "npm run build"
   },
   "author": "Dustin Hagemeier <dustin@commit.international>",
   "license": "AGPL-3.0",

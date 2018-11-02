@@ -22,7 +22,7 @@ const DataNode = (initName, parentNode) => {
             parent.set(v, name);
           }
           else {
-            value = v;
+            value = typeof v === 'function' ? v(value) : v;
             this.notify(propagateUp);
           }
         }
@@ -78,7 +78,8 @@ const DataNode = (initName, parentNode) => {
     },
 
     notify(propagateUp = true, propagateDown = true) {
-      if(parent && propagateUp) {
+      console.log(name, propagateUp, propagateDown, value);
+      if (parent && propagateUp) {
         parent.notify(true, false);
       }
 
@@ -151,7 +152,7 @@ const DataNode = (initName, parentNode) => {
       result.onDestroy = self.subscribe(
         (data) => {
           let key = by(data);
-          if(prevKey !== key) {
+          if (prevKey !== key) {
             if (callbackMap[key]) {
               result.set(callbackMap[key](self));
             }

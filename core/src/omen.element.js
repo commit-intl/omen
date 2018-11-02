@@ -1,5 +1,5 @@
 import Renderer from './renderer';
-import {htmlPropSet, NAMESPACES, htmlPropMap} from './helpers';
+import { htmlPropSet, NAMESPACES, htmlPropMap } from './helpers';
 import DataNode from './store/data-node';
 
 export default class OmenElement {
@@ -65,7 +65,7 @@ export default class OmenElement {
                       element = Renderer.createElement(child, this.namespace, this.store);
                       map.set(child, element);
                     }
-                    return element
+                    return element;
                   }),
                 );
               }
@@ -159,14 +159,17 @@ export default class OmenElement {
         const currentNode = this.element.childNodes[prevIndex + i];
         const newNode = getNode(children[i]);
         if (i < children.length) {
-          if (!currentNode || !currentNode.isSameNode(newNode)) {
-            this.element.replaceChild(newNode, currentNode);
-            if (group[i] && group[i].destroy) {
-              group[i].destroy();
+          if (currentNode) {
+            if (!currentNode.isSameNode(newNode)) {
+              this.element.replaceChild(newNode, currentNode);
+              if (group[i] && group[i].destroy) {
+                group[i].destroy();
+              }
+              group[i] = children[i];
             }
-            group[i] = children[i];
           }
           else {
+            this.element.insertBefore(newNode, null);
           }
         } else if (currentNode) {
           this.element.removeChild(currentNode);
@@ -178,7 +181,7 @@ export default class OmenElement {
         i++;
       }
 
-      const insertBeforeIndex = prevIndex + group.length + 1;
+      const insertBeforeIndex = prevIndex + group.length;
       const insertBefore = this.element.childNodes[insertBeforeIndex];
 
       while (i < children.length) {
