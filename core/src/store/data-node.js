@@ -78,7 +78,6 @@ const DataNode = (initName, parentNode) => {
     },
 
     notify(propagateUp = true, propagateDown = true) {
-      console.log(name, propagateUp, propagateDown, value);
       if (parent && propagateUp) {
         parent.notify(true, false);
       }

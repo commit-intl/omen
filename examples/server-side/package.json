@@ -1,13 +1,11 @@
 {
-  "name": "@omen/core",
-  "version": "0.5.7",
+  "name": "@omen/examples",
   "description": "data driven javascript frontend library, based on JSX",
-  "main": "lib/index.js",
   "scripts": {
+    "start": "omen serve",
+    "build": "omen build",
     "test": "echo  NO TESTS DEFINED! TODO: define some",
-    "build": "cp -Rf src lib",
-    "build:min": "rm -Rf lib && set BABEL_ENV=publish&&  babel src --out-dir lib",
-    "prepublishOnly": "npm run build"
+    "lint": "eslint src"
   },
   "author": "Dustin Hagemeier <dustin@commit.international>",
   "license": "AGPL-3.0",
@@ -31,14 +29,6 @@
   "homepage": "https://github.com/commit-intl/omen#readme",
   "dependencies": {},
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-core": "^6.26.3",
-    "babel-eslint": "^8.2.6",
-    "babel-plugin-transform-react-jsx": "^6.24.1",
-    "babel-preset-babili": "^0.1.4",
-    "babel-preset-es2015": "^6.24.1",
-    "babel-preset-minify": "^0.4.3",
-    "babel-preset-stage-0": "^6.24.1",
-    "eslint": "^3.2.2"
+    "@omen/cli": "0.5.6"
   }
 }

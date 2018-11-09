@@ -46,18 +46,16 @@ omen.render(
 
 store.subscribe((value) => console.log('STATE_CHANGE', value), true);
 
-console.log(store);
 
-//
-// const storeViewerMiddleware = (data, key) => {
-//     if (key === 'secret') {
-//       return '[hidden]';
-//     }
-//     return data;
-//   };
-//
-// createStoreViewer(
-//   document.body,
-//   store,
-//   storeViewerMiddleware
-// );
+const storeViewerMiddleware = (data, key) => {
+    if (key === 'secret') {
+      return '[hidden]';
+    }
+    return data;
+  };
+
+createStoreViewer(
+  document.body,
+  store,
+  storeViewerMiddleware
+);

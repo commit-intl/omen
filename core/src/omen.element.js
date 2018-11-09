@@ -1,6 +1,5 @@
 import Renderer from './renderer';
 import { htmlPropSet, NAMESPACES, htmlPropMap } from './helpers';
-import DataNode from './store/data-node';
 
 export default class OmenElement {
   constructor(tag, namespace, props, data, children, store) {
@@ -30,7 +29,7 @@ export default class OmenElement {
     }
 
     this.initProps();
-    this.initChildren(id);
+    this.initChildren(mode, id);
   }
 
   rehydrateElement(id) {
@@ -60,6 +59,14 @@ export default class OmenElement {
   }
 
   initChildren(mode, id) {
+    const createChild = (child, childId) => {
+      let element = Renderer.createElement(child, this.namespace, this.store);
+      if(element && element.init) {
+        element.init(mode, `${id}.${childId}`);
+      }
+      return element;
+    };
+
     const setChild = (pos, children) => {
       if (!Array.isArray(children)) {
         children = [children];
@@ -76,6 +83,7 @@ export default class OmenElement {
           const map = new WeakMap();
           this.subscriptions.push(
             child.subscribe((result) => {
+              console.log(result);
               if (!result) return;
               if (Array.isArray(result)) {
                 setChild(
@@ -83,8 +91,7 @@ export default class OmenElement {
                   result.map((child,childIndex) => {
                     let element = map.get(child);
                     if (!element) {
-                      element = Renderer.createElement(child, this.namespace, this.store);
-                      element.init(mode, `${id}.${index}-${childIndex}`);
+                      element = createChild(child, `${index}-${childIndex}`);
                       map.set(child, element);
                     }
                     return element;
@@ -92,16 +99,14 @@ export default class OmenElement {
                 );
               }
               else {
-                let element = Renderer.createElement(result, this.namespace, this.store);
-                element.init(mode, `${id}.${index}`);
+                let element = createChild(child, index);
                 setChild(index, element);
               }
             }, true),
           );
         }
         else {
-          let element = Renderer.createElement(child, this.namespace, this.store);
-          element.init(mode, `${id}.${index}`);
+          let element = createChild(child, index);
           setChild(index, element);
         }
       },

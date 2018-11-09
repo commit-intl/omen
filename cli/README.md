@@ -12,6 +12,9 @@ all in one CLI for omen
 * [Usage](#usage)
 * [Commands](#commands)
 <!-- tocstop -->
+* [Usage](#usage)
+* [Commands](#commands)
+<!-- tocstop -->
 * [Usage](#usage)
 * [Commands](#commands)
 <!-- tocstop -->
@@ -44,6 +47,7 @@ USAGE
 # Commands
 <!-- commands -->
 * [`omen build`](#omen-build)
+* [`omen export`](#omen-export)
 * [`omen help [COMMAND]`](#omen-help-command)
 * [`omen serve`](#omen-serve)
 
@@ -63,6 +67,24 @@ DESCRIPTION
 ```
 
 _See code: [src\commands\build.js](https://github.com/commit-intl/omen/blob/v0.5.6/src\commands\build.js)_
+
+## `omen export`
+
+Describe the command here
+
+```
+USAGE
+  $ omen export
+
+OPTIONS
+  -n, --name=name  name to print
+
+DESCRIPTION
+  ...
+  Extra documentation goes here
+```
+
+_See code: [src\commands\export.js](https://github.com/commit-intl/omen/blob/v0.5.6/src\commands\export.js)_
 
 ## `omen help [COMMAND]`
 

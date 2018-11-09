@@ -10,7 +10,7 @@ const App = (props, state, {app, secret}) => {
   return (
     <div className={styles.wrapper}>
       <SVG/>
-      <Headline>Example Counters</Headline>
+      <Headline>{secret}</Headline>
       <div className={styles.for}>
         {
           app.map((value, key) =>
