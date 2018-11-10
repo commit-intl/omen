@@ -2,15 +2,13 @@ import { omen, Store } from '@omen/core';
 import App from './App';
 import './index.scss';
 
-const isServer = typeof process === 'undefined';
+console.log(document.isServer, document.initialState);
 
-const state = document.initialState;
-
-export const store = new Store(state);
+export const store = new Store(document.initialState);
 
 omen.render(
   <App/>,
   document.body,
   store,
-  { mode: isServer ? 'client' : 'server' }
+  { mode: document.isServer ? 'server' : 'client' }
 );

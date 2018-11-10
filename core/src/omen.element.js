@@ -99,7 +99,7 @@ export default class OmenElement {
                 );
               }
               else {
-                let element = createChild(child, index);
+                let element = createChild(result, index);
                 setChild(index, element);
               }
             }, true),

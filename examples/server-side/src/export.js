@@ -1,7 +1,4 @@
-/*
- * !!! IMPORTANT !!!
- * The render process is not started, until this function is resolved
- */
+
 module.exports = {
   pages: [
     '/',
