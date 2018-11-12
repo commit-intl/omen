@@ -24,7 +24,7 @@ export default class OmenElement {
       this.initElement();
     }
 
-    if(mode === 'server') {
+    if (mode === 'server') {
       this.props['data-oid'] = id;
     }
 
@@ -36,7 +36,38 @@ export default class OmenElement {
     const result = document.querySelector(`[data-oid="${id}"]`);
     this.element = result && result[0];
 
-    if(!this.element) {
+
+    if (this.element) {
+      const nodes = this.element.childNodes;
+      let i = 0;
+      let childId = 0;
+      let groupId = 0;
+      while (i < nodes.length) {
+        let newId;
+        if (nodes[i].nodeName === '#comment') {
+          newId = parseInt(nodes[i].nodeValue.replace(/(\d+)(-\d+)?$/i, '$1'));
+        }
+        else if (nodes[i].nodeName !== '#text') {
+          newId = nodes[i].getAttribute('data-oid');
+        }
+
+        let match = newId && newId.match(/(\d+)(?:-(\d+))?$/i);
+        if (match) {
+          groupId = parseInt(match[1]);
+          childId = match[2] ? parseInt(match[2]) : 0;
+        }
+        else {
+          childId++;
+        }
+
+        if (!this.elementChildren[groupId]) {
+          this.elementChildren[groupId] = [];
+        }
+
+        this.elementChildren[groupId][childId] = nodes[i];
+      }
+    }
+    else {
       this.initElement();
     }
   }
@@ -61,8 +92,16 @@ export default class OmenElement {
   initChildren(mode, id) {
     const createChild = (child, childId) => {
       let element = Renderer.createElement(child, this.namespace, this.store);
-      if(element && element.init) {
-        element.init(mode, `${id}.${childId}`);
+      if (element) {
+        if (element.init) {
+          element.init(mode, `${id}.${childId}`);
+        }
+        else if (mode === 'server' && element.nodeName === '#text') {
+          element = [
+            document.createComment(`${id}.${childId}`),
+            element,
+          ];
+        }
       }
       return element;
     };
@@ -83,12 +122,11 @@ export default class OmenElement {
           const map = new WeakMap();
           this.subscriptions.push(
             child.subscribe((result) => {
-              console.log(result);
               if (!result) return;
               if (Array.isArray(result)) {
                 setChild(
                   index,
-                  result.map((child,childIndex) => {
+                  result.map((child, childIndex) => {
                     let element = map.get(child);
                     if (!element) {
                       element = createChild(child, `${index}-${childIndex}`);
