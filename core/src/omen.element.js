@@ -17,8 +17,9 @@ export default class OmenElement {
   }
 
   init(mode, id) {
+    let newElement = true;
     if (mode === 'client') {
-      this.rehydrateElement(id);
+      newElement = this.rehydrateElement(id);
     }
     else {
       this.initElement();
@@ -30,19 +31,19 @@ export default class OmenElement {
 
     this.initProps();
     this.initChildren(mode, id);
+    return newElement;
   }
 
   rehydrateElement(id) {
-    const result = document.querySelector(`[data-oid="${id}"]`);
-    this.element = result && result[0];
-
+    this.element = document.querySelector(`[data-oid="${id}"]`);
+    console.log(`[data-oid="${id}"]`, this.element);
 
     if (this.element) {
       const nodes = this.element.childNodes;
       let i = 0;
       let childId = 0;
       let groupId = 0;
-      while (i < nodes.length) {
+      for (let i = 0; i < nodes.length; i++) {
         let newId;
         if (nodes[i].nodeName === '#comment') {
           newId = parseInt(nodes[i].nodeValue.replace(/(\d+)(-\d+)?$/i, '$1'));
@@ -66,9 +67,12 @@ export default class OmenElement {
 
         this.elementChildren[groupId][childId] = nodes[i];
       }
+
+      return false;
     }
     else {
       this.initElement();
+      return true;
     }
   }
 
@@ -87,6 +91,54 @@ export default class OmenElement {
     for (let attr in this.props) {
       this.setAttribute(attr, this.props[attr]);
     }
+  }
+
+  setAttribute(key, value) {
+    if (value && value.__isDataNode) {
+      this.subscriptions.push(
+        value.subscribe((result) => this.setAttribute(key, result), true),
+      );
+    }
+    else if (key.startsWith('on')) {
+      let event = key.substr(2).toLowerCase();
+      if (this.elementListeners[event]) {
+        if (value !== this.elementListeners[event]) {
+          this.element.removeEventListener(this.listeners[event]);
+          this.element.addEventListener(event, value);
+        }
+      }
+      else {
+        this.element.addEventListener(event, value);
+      }
+    }
+    else {
+      if (htmlPropMap[key]) {
+        value = htmlPropMap[key](value);
+      }
+
+      if (this.elementProps[key] !== value) {
+        if (htmlPropSet.indexOf(key) >= 0) {
+          this.element[key] = value;
+        }
+        else if (key === 'className') {
+          if (this.element.namespaceURI !== NAMESPACES.html) {
+            this.element.setAttribute('class', value);
+          }
+          else {
+            this.element[key] = value;
+          }
+        }
+        else {
+          this.element.setAttribute(key, value);
+        }
+      }
+
+      this.elementProps[key] = value;
+    }
+  }
+
+  get(key, value) {
+    return this.elementProps[key];
   }
 
   initChildren(mode, id) {
@@ -137,6 +189,7 @@ export default class OmenElement {
                 );
               }
               else {
+                console.log(result);
                 let element = createChild(result, index);
                 setChild(index, element);
               }
@@ -149,54 +202,6 @@ export default class OmenElement {
         }
       },
     )
-  }
-
-  setAttribute(key, value) {
-    if (value && value.__isDataNode) {
-      this.subscriptions.push(
-        value.subscribe((result) => this.setAttribute(key, result), true),
-      );
-    }
-    else if (key.startsWith('on')) {
-      let event = key.substr(2).toLowerCase();
-      if (this.elementListeners[event]) {
-        if (value !== this.elementListeners[event]) {
-          this.element.removeEventListener(this.listeners[event]);
-          this.element.addEventListener(event, value);
-        }
-      }
-      else {
-        this.element.addEventListener(event, value);
-      }
-    }
-    else {
-      if (htmlPropMap[key]) {
-        value = htmlPropMap[key](value);
-      }
-
-      if (this.elementProps[key] !== value) {
-        if (htmlPropSet.indexOf(key) >= 0) {
-          this.element[key] = value;
-        }
-        else if (key === 'className') {
-          if (this.element.namespaceURI !== NAMESPACES.html) {
-            this.element.setAttribute('class', value);
-          }
-          else {
-            this.element[key] = value;
-          }
-        }
-        else {
-          this.element.setAttribute(key, value);
-        }
-      }
-
-      this.elementProps[key] = value;
-    }
-  }
-
-  get(key, value) {
-    return this.elementProps[key];
   }
 
   removeAllChidren() {

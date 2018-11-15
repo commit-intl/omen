@@ -24,24 +24,23 @@ class ExportCommand extends Command {
         throw (err);
       }
 
-      this.log(`initial build (${(Date.now() - timeStarted) / 1000}s)`.green);
-      timeStarted = Date.now();
+      this.log(`initial build (${((-timeStarted + (timeStarted = Date.now()))) / 1000}s)`.green);
 
       const bundleRaw = fs.readFileSync(path.join(webpack.config.output.path, webpack.config.output.filename));
       const bundleScript = new Script(bundleRaw);
-      this.log(`bundle.js loaded (${(Date.now() - timeStarted) / 1000}s)`.green);
-      timeStarted = Date.now();
+      this.log(`bundle.js loaded (${((-timeStarted + (timeStarted = Date.now()))) / 1000}s)`.green);
       const exportConf = require(path.join(executionDir, 'src/export.js'));
-      this.log(`export.js loaded (${(Date.now() - timeStarted) / 1000}s)`.green);
+      this.log(`export.js loaded (${((-timeStarted + (timeStarted = Date.now()))) / 1000}s)`.green);
 
       const domRaw = fs.readFileSync(path.join(webpack.config.output.path, 'index.html'));
 
       for (let pathString of exportConf.pages) {
+        this.log(`exporting '${pathString}'`.green);
         const canonical = pathString.replace(/^\/|\/([#?].*)?$/, '');
-        console.log(canonical);
         const filePathOut = canonical ? `${canonical}.html` : 'index.html';
-        console.log(filePathOut);
+        this.log(`  load initial state`);
         const initialState = await exportConf.getInitialState(pathString);
+        this.log(`  received initial state (${((-timeStarted + (timeStarted = Date.now()))) / 1000}s)`);
         const dom = new JSDOM(domRaw, {
           url: 'http://localhost/',
           referrer: 'http://localhost/',
@@ -56,14 +55,14 @@ class ExportCommand extends Command {
         dom.window.document.initialState = initialState;
         dom.window.document.isServer = true;
 
-        this.log(`index.html loaded (${(Date.now() - timeStarted) / 1000}s)`.green);
-        timeStarted = Date.now();
+        this.log(`  index.html loaded (${((-timeStarted + (timeStarted = Date.now()))) / 1000}s)`);
         dom.runVMScript(bundleScript);
         fs.writeFileSync(path.join(webpack.config.output.path, filePathOut), dom.serialize());
-        this.log(`${pathString} (${filePathOut}) rendered (${(Date.now() - timeStarted) / 1000}s)`.green);
+        dom.window.close();
+        this.log(`  rendered '${filePathOut}' (${((-timeStarted + (timeStarted = Date.now()))) / 1000}s)`);
         timeStarted = Date.now();
       }
-      this.log(`SUCCESS (${(Date.now() - timeStarted) / 1000}s)`.green);
+      this.log(`SUCCESS (${((-timeStarted + (timeStarted = Date.now()))) / 1000}s)`.green);
     });
   }
 }

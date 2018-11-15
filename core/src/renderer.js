@@ -62,10 +62,21 @@ export const Renderer = {
 
   render(root, appendTo, store, options) {
     const omenElement = renderOmenElement(root, store);
-    omenElement.init(options && options.mode, '');
-    appendTo.append(
-      omenElement.element,
-    );
+    const init = () => {
+      console.log('init');
+      if (omenElement.init(options && options.mode, 'o')) {
+        appendTo.append(
+          omenElement.element,
+        );
+      }
+    };
+
+    if(options && options.mode === 'client') {
+      document.addEventListener('DOMContentLoaded', init);
+    }
+    else {
+      init();
+    }
   },
 
   renderToString(root, store) {

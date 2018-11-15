@@ -91,7 +91,9 @@ module.exports = (executionDir, isProd, build = false) => ({
     clientLogLevel: 'warning'
   },
   plugins: [
-    new HtmlWebpackPlugin(),
+    new HtmlWebpackPlugin({
+      template: path.join(executionDir, 'src/index.html'),
+    }),
     new MiniCssExtractPlugin(),
   ],
 });
