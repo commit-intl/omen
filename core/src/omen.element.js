@@ -87,16 +87,16 @@ export default class OmenElement {
     }
   }
 
-  initProps() {
+  initProps(mode) {
     for (let attr in this.props) {
-      this.setAttribute(attr, this.props[attr]);
+      this.setAttribute(attr, this.props[attr], mode);
     }
   }
 
-  setAttribute(key, value) {
+  setAttribute(key, value, mode) {
     if (value && value.__isDataNode) {
       this.subscriptions.push(
-        value.subscribe((result) => this.setAttribute(key, result), true),
+        value.subscribe((result) => this.setAttribute(key, result), mode !== 'client'),
       );
     }
     else if (key.startsWith('on')) {
@@ -189,11 +189,10 @@ export default class OmenElement {
                 );
               }
               else {
-                console.log(result);
                 let element = createChild(result, index);
                 setChild(index, element);
               }
-            }, true),
+            }, mode !== 'client'),
           );
         }
         else {

@@ -63,7 +63,6 @@ export const Renderer = {
   render(root, appendTo, store, options) {
     const omenElement = renderOmenElement(root, store);
     const init = () => {
-      console.log('init');
       if (omenElement.init(options && options.mode, 'o')) {
         appendTo.append(
           omenElement.element,

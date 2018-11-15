@@ -5,7 +5,6 @@ const App = (props, state, { headline, link }) => {
 
   setInterval(() => {
     headline.set((headline) => headline+'!', null, true);
-    console.log(headline.get());
   }, 5000);
   return (
     <div className={styles.host}>

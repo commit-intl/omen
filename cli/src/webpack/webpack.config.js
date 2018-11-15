@@ -82,12 +82,12 @@ module.exports = (executionDir, isProd, build = false) => ({
   target: "web",
   stats: "errors-only",
   devServer: {
+    index: 'index.html',
     contentBase: path.join(executionDir, "dist"),
     compress: true,
     historyApiFallback: true,
     hot: true,
     https: false,
-    noInfo: true,
     clientLogLevel: 'warning'
   },
   plugins: [

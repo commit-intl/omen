@@ -16,7 +16,7 @@ const WebpackHelper = {
   DevServer: function (env = 'dev', executionDir, config = {}) {
     try {
       const webpack = WebpackHelper.createWebpack(env, executionDir, config);
-      return new Server(webpack.compiler);
+      return new Server(webpack.compiler, webpack.config.devServer);
     } catch (err) {
       if (err.name === 'ValidationError') {
         log.error(colors.error(options.stats.colors, err.message));
