@@ -1,5 +1,5 @@
 import Renderer from './renderer';
-import { htmlPropSet, NAMESPACES, htmlPropMap } from './helpers';
+import { htmlPropSet, NAMESPACES, htmlPropMap, REHYDRATE, DEHYDRATE } from './helpers';
 
 export default class OmenElement {
   constructor(tag, namespace, props, data, children, store) {
@@ -18,14 +18,14 @@ export default class OmenElement {
 
   init(mode, id) {
     let newElement = true;
-    if (mode === 'client') {
+    if (mode === REHYDRATE) {
       newElement = this.rehydrateElement(id);
     }
     else {
       this.initElement();
     }
 
-    if (mode === 'server') {
+    if (mode === DEHYDRATE) {
       this.props['data-oid'] = id;
     }
 
@@ -36,7 +36,6 @@ export default class OmenElement {
 
   rehydrateElement(id) {
     this.element = document.querySelector(`[data-oid="${id}"]`);
-    console.log(`[data-oid="${id}"]`, this.element);
 
     if (this.element) {
       const nodes = this.element.childNodes;
@@ -96,7 +95,7 @@ export default class OmenElement {
   setAttribute(key, value, mode) {
     if (value && value.__isDataNode) {
       this.subscriptions.push(
-        value.subscribe((result) => this.setAttribute(key, result), mode !== 'client'),
+        value.subscribe((result) => this.setAttribute(key, result), mode !== REHYDRATE),
       );
     }
     else if (key.startsWith('on')) {
@@ -148,7 +147,7 @@ export default class OmenElement {
         if (element.init) {
           element.init(mode, `${id}.${childId}`);
         }
-        else if (mode === 'server' && element.nodeName === '#text') {
+        else if (mode === DEHYDRATE && element.nodeName === '#text') {
           element = [
             document.createComment(`${id}.${childId}`),
             element,
@@ -192,7 +191,7 @@ export default class OmenElement {
                 let element = createChild(result, index);
                 setChild(index, element);
               }
-            }, mode !== 'client'),
+            }, mode !== REHYDRATE),
           );
         }
         else {

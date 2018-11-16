@@ -1,6 +1,7 @@
-import {flattenDeepArray, NAMESPACES} from './helpers';
+import { flattenDeepArray, NAMESPACES } from './helpers';
 import OmenElement from './omen.element';
 import DataNode from './store/data-node';
+import Store from './store/store';
 
 const renderOmenElement = (node, store) => {
   if (!node || !node.tag) return null;
@@ -37,7 +38,7 @@ const renderOmenElement = (node, store) => {
   }
 
   if (typeof tag === 'function') {
-    return renderOmenElement(tag({...props, children}, state, data), store);
+    return renderOmenElement(tag({ ...props, children }, state, data), store);
   }
 
   return new OmenElement(tag, namespace, props, data, children && flattenDeepArray(children), store);
@@ -60,24 +61,6 @@ export const Renderer = {
     };
   },
 
-  render(root, appendTo, store, options) {
-    const omenElement = renderOmenElement(root, store);
-    const init = () => {
-      if (omenElement.init(options && options.mode, 'o')) {
-        appendTo.append(
-          omenElement.element,
-        );
-      }
-    };
-
-    if(options && options.mode === 'client') {
-      document.addEventListener('DOMContentLoaded', init);
-    }
-    else {
-      init();
-    }
-  },
-
   renderToString(root, store) {
     const omegaElement = renderOmegaElement(root, store);
     return omegaElement.element.outerHTML;
@@ -90,7 +73,7 @@ export const Renderer = {
       case 'object':
         if (!src.__isDataNode) {
           if (!src.namespace) {
-            src = {...src, namespace};
+            src = { ...src, namespace };
           }
           return renderOmenElement(src, store);
         }
@@ -99,6 +82,40 @@ export const Renderer = {
         return document.createTextNode(src);
     }
   },
+
+  render(appendTo, root, router, storageBinding) {
+    const init = () => {
+      let store;
+      if (document.isServer) {
+        let initialState = router.getCurrentState();
+        const scriptInitialState = document.createElement('script');
+        scriptInitialState.innerHTML = initialState;
+        document.head.appendChild(scriptInitialState);
+        store = new Store(initialState, storageBinding);
+      }
+      else {
+        let initialState = document.initialState;
+        store = new Store(initialState, storageBinding);
+        router.getCurrentState()
+          .then(state => store.set(state))
+          .catch(error => console.error('Failed to get initial state!', error));
+      }
+
+      const omenElement = renderOmenElement(root, store);
+      if (omenElement.init(options && options.mode, 'o')) {
+        appendTo.append(
+          omenElement.element,
+        );
+      }
+    };
+
+    if (!document.isServer) {
+      document.addEventListener('DOMContentLoaded', init);
+    }
+    else {
+      init();
+    }
+  }
 };
 
 

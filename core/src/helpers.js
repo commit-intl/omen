@@ -82,3 +82,7 @@ export const htmlPropMap = {
     return names;
   }
 };
+
+export const DEHYDRATE = 0;
+export const HYDRATED = 1;
+export const REHYDRATE = 2;
