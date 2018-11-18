@@ -41,15 +41,6 @@ export const flattenDeepArray = (array) => {
   return result;
 };
 
-/**
- * concatenates and de-duplicates the arrays
- */
-export const mergeArrays = (arrayA, arrayB) => {
-  let result = arrayA.concat(arrayB);
-  return result.filter((key, index) => result.indexOf(key) === index);
-};
-
-
 export const NAMESPACES = {
   html: 'http://www.w3.org/1999/xhtml',
   svg: 'http://www.w3.org/2000/svg',

@@ -86,7 +86,7 @@ export const Renderer = {
   render(appendTo, root, router, storageBinding) {
     const init = () => {
       let store;
-      if (document.isServer) {
+      if (document.__omen__isServer) {
         let initialState = router.getCurrentState();
         const scriptInitialState = document.createElement('script');
         scriptInitialState.innerHTML = initialState;
@@ -94,7 +94,7 @@ export const Renderer = {
         store = new Store(initialState, storageBinding);
       }
       else {
-        let initialState = document.initialState;
+        let initialState = document.__omen__initialState;
         store = new Store(initialState, storageBinding);
         router.getCurrentState()
           .then(state => store.set(state))
@@ -109,7 +109,7 @@ export const Renderer = {
       }
     };
 
-    if (!document.isServer) {
+    if (!document.__omen__isServer) {
       document.addEventListener('DOMContentLoaded', init);
     }
     else {

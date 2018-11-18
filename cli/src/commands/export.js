@@ -52,8 +52,8 @@ class ExportCommand extends Command {
         const stateScript = dom.window.document.createElement('script');
         dom.window.document.head.appendChild(stateScript);
         stateScript.innerHTML = `document.initialState=${JSON.stringify(initialState)};`;
-        dom.window.document.initialState = initialState;
-        dom.window.document.isServer = true;
+        dom.window.document.__omen__initialState = initialState;
+        dom.window.document.__omen__isServer = true;
 
         this.log(`  index.html loaded (${((-timeStarted + (timeStarted = Date.now()))) / 1000}s)`);
         dom.runVMScript(bundleScript);

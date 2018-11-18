@@ -1,5 +1,4 @@
-import {omen, Store} from '@omen/core';
-import LocalStorageBinding from '@omen/core/local-storage-binding'
+import {omen, LocalStorageBinding} from '@omen/core';
 import App from './App';
 import './index.scss';
 
@@ -21,21 +20,9 @@ const getInitialState = (url) => new Promise((resolve) => setTimeout(() => {
   50
 ));
 
-export const store = new Store(document.initialState);
-
-if (!document.initialState) {
-  getInitialState(
-    document.location.pathname
-    + document.location.search
-    + document.location.hash
-  ).then((state) => {
-    store.set(state);
-  });
-}
-
-omen.renderApp(
+omen.render(
   app.render(document.getElementById('app')),
   <App/>,
-  new Router(getInitialState, 'options'),
+  new Router({getInitialState, /* OPTIONS */}),
   new LocalStorageBinding('omen-ssr')
 );
