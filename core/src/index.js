@@ -1,7 +1,4 @@
-import LocalStorageBinding from './store/local-storage-binding';
-import { Renderer } from './renderer';
+import Renderer from './renderer';
 
-module.exports = {
-  omen: Renderer,
-  LocalStorageBinding,
-};
+export const omen = Renderer;
+export default omen;

@@ -20,7 +20,7 @@ module.exports = (executionDir, isProd, build = false) => ({
             options: {
               presets: [require.resolve("@babel/preset-env")],
               plugins: [
-                [require.resolve("babel-plugin-transform-react-jsx"), { "pragma": "omen.create" }]
+                [require.resolve("babel-plugin-transform-react-jsx"), { "pragma": "omen.create" }],
               ],
               env: {
                 publish: {

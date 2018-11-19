@@ -1,4 +1,4 @@
-import { flattenDeepArray, NAMESPACES } from './helpers';
+import { DEHYDRATE, flattenDeepArray, NAMESPACES, REHYDRATE } from './helpers';
 import OmenElement from './omen.element';
 import DataNode from './store/data-node';
 import Store from './store/store';
@@ -45,7 +45,7 @@ const renderOmenElement = (node, store) => {
 };
 
 
-export const Renderer = {
+const Renderer = {
   create(tag, props, ...children) {
     if (!props) props = {};
 
@@ -83,30 +83,42 @@ export const Renderer = {
     }
   },
 
-  render(appendTo, root, router, storageBinding) {
+  render(appendTo, root, routingManager, storageBinding) {
     const init = () => {
-      let store;
+      let promise;
       if (document.__omen__isServer) {
-        let initialState = router.getCurrentState();
-        const scriptInitialState = document.createElement('script');
-        scriptInitialState.innerHTML = initialState;
-        document.head.appendChild(scriptInitialState);
-        store = new Store(initialState, storageBinding);
+        promise = routingManager.getInitialState()
+          .then(initialState => {
+            const scriptInitialState = document.createElement('script');
+            scriptInitialState.innerHTML = `document.__omen__initialState=${JSON.stringify(initialState)};`;
+            document.head.appendChild(scriptInitialState);
+            return new Store(initialState, storageBinding);
+          });
       }
       else {
         let initialState = document.__omen__initialState;
-        store = new Store(initialState, storageBinding);
-        router.getCurrentState()
-          .then(state => store.set(state))
-          .catch(error => console.error('Failed to get initial state!', error));
+        promise = new Promise(resolve => resolve(new Store(initialState, storageBinding)));
+        if (!initialState) {
+          promise
+            .then(() => {routingManager.getInitialState()})
+            .then(state => store.set(state))
+            .catch(error => console.error('Failed to get initial state!', error));
+        }
       }
 
-      const omenElement = renderOmenElement(root, store);
-      if (omenElement.init(options && options.mode, 'o')) {
-        appendTo.append(
-          omenElement.element,
-        );
-      }
+      promise
+        .then((store) => {
+          const omenElement = renderOmenElement(root, store);
+          if (omenElement.init(document.__omen__isServer ? DEHYDRATE : REHYDRATE, 'o')) {
+            appendTo.append(
+              omenElement.element,
+            );
+          }
+          document.dispatchEvent(new Event('__omen__ready'));
+        })
+        .catch(error => console.error('Failed to initialize omen!', error));
+
+      return promise;
     };
 
     if (!document.__omen__isServer) {

@@ -1,4 +1,7 @@
-import {omen, LocalStorageBinding} from '@omen/core';
+import omen from '@omen/core';
+import RoutingManager from '@omen/core/lib/routing-manager';
+import LocalStorageBinding from '@omen/core/lib/store/local-storage-binding';
+
 import App from './App';
 import './index.scss';
 
@@ -21,8 +24,8 @@ const getInitialState = (url) => new Promise((resolve) => setTimeout(() => {
 ));
 
 omen.render(
-  app.render(document.getElementById('app')),
+  document.getElementById('app'),
   <App/>,
-  new Router({getInitialState, /* OPTIONS */}),
-  new LocalStorageBinding('omen-ssr')
+  RoutingManager({getInitialState, /* OPTIONS */}),
+  LocalStorageBinding('omen-ssr'),
 );
