@@ -1,11 +1,10 @@
 import {omen} from '@omen/core';
 import styles from './App.scss';
 
-const App = (props, state, { headline, link }) => {
+const App = (props, state, { headline, link, store }) => {
 
-  setInterval(() => {
-    headline.set((headline) => headline+'!', null, true);
-  }, 5000);
+  store.subscribe((v) => console.log('STATE_CHANGED', v));
+
   return (
     <div className={styles.host}>
       <h1 className={headline}>{headline}</h1>
@@ -17,6 +16,7 @@ const App = (props, state, { headline, link }) => {
 App.data = {
   headline: 'headline',
   link: 'link',
+  store: '',
 };
 
 export default App;

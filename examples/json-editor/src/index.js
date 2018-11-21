@@ -20,7 +20,7 @@ const initialState = {
 export const store = new Store(initialState);
 
 omen.render(
-  <App/>,
   document.body,
-  store,
+  <App/>,
+  { getInitialState: () => Promise.resolve(initialState) }
 );

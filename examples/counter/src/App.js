@@ -6,11 +6,11 @@ import {NewCounter} from './components/NewCounter';
 import {Headline} from './components/Headline';
 import {SVG} from './components/SVG';
 
-const App = (props, state, {app, secret}) => {
+const App = (props, state, {app}) => {
   return (
     <div className={styles.wrapper}>
       <SVG/>
-      <Headline>{secret}</Headline>
+      <Headline>Omen Example: Counter</Headline>
       <div className={styles.for}>
         {
           app.map((value, key) =>

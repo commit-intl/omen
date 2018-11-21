@@ -80,6 +80,27 @@ export default class OmenElement {
       this.element = this.namespace && this.namespace !== NAMESPACES.html
         ? document.createElementNS(this.namespace, this.tag)
         : document.createElement(this.tag);
+
+      // ENABLE INTERNAL ROUTING
+      if (this.tag === 'a') {
+        const originalOnclick = this.props.onClick;
+        this.props.onClick = (event) => {
+          let result = true;
+          if (typeof originalOnclick === 'function') {
+            result = originalOnclick(event);
+          }
+
+          if (result
+            && (!event.target.target || event.target.target === '_self')
+            && document.__omen__isInternalUrl(event.target.href)
+          ) {
+            document.__omen__navigateTo(event.target.href);
+            result = false;
+            event.preventDefault('');
+          }
+          return result;
+        }
+      }
     }
     else {
       console.error('Unknown jsx tag: ' + this.tag);
@@ -101,14 +122,10 @@ export default class OmenElement {
     else if (key.startsWith('on')) {
       let event = key.substr(2).toLowerCase();
       if (this.elementListeners[event]) {
-        if (value !== this.elementListeners[event]) {
-          this.element.removeEventListener(this.listeners[event]);
-          this.element.addEventListener(event, value);
-        }
+        this.element.removeEventListener(this.listeners[event]);
       }
-      else {
-        this.element.addEventListener(event, value);
-      }
+
+      this.element.addEventListener(event, value);
     }
     else {
       if (htmlPropMap[key]) {

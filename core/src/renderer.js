@@ -1,7 +1,8 @@
-import { DEHYDRATE, flattenDeepArray, NAMESPACES, REHYDRATE } from './helpers';
+import { DEHYDRATE, flattenDeepArray, HYDRATED, NAMESPACES, REHYDRATE } from './helpers';
 import OmenElement from './omen.element';
 import DataNode from './store/data-node';
 import Store from './store/store';
+import RoutingManager from './routing-manager';
 
 const renderOmenElement = (node, store) => {
   if (!node || !node.tag) return null;
@@ -83,14 +84,16 @@ const Renderer = {
     }
   },
 
-  render(appendTo, root, routingManager, storageBinding) {
+  render(appendTo, root, routingOptions, storageBinding) {
     const init = () => {
+      const routingManager = RoutingManager(routingOptions);
       let promise;
       if (document.__omen__isServer) {
         promise = routingManager.getInitialState()
           .then(initialState => {
             const scriptInitialState = document.createElement('script');
             scriptInitialState.innerHTML = `document.__omen__initialState=${JSON.stringify(initialState)};`;
+            document.__omen__initialState = initialState;
             document.head.appendChild(scriptInitialState);
             return new Store(initialState, storageBinding);
           });
@@ -98,18 +101,16 @@ const Renderer = {
       else {
         let initialState = document.__omen__initialState;
         promise = new Promise(resolve => resolve(new Store(initialState, storageBinding)));
-        if (!initialState) {
-          promise
-            .then(() => {routingManager.getInitialState()})
-            .then(state => store.set(state))
-            .catch(error => console.error('Failed to get initial state!', error));
-        }
       }
 
       promise
         .then((store) => {
+          routingManager.init(store);
           const omenElement = renderOmenElement(root, store);
-          if (omenElement.init(document.__omen__isServer ? DEHYDRATE : REHYDRATE, 'o')) {
+          const mode = document.__omen__isServer
+            ? DEHYDRATE
+            : (document.__omen__initialState ? REHYDRATE : HYDRATED);
+          if (omenElement.init(mode, 'o')) {
             appendTo.append(
               omenElement.element,
             );

@@ -1,7 +1,4 @@
 import omen from '@omen/core';
-import RoutingManager from '@omen/core/lib/routing-manager';
-import LocalStorageBinding from '@omen/core/lib/store/local-storage-binding';
-
 import App from './App';
 import './index.scss';
 
@@ -26,6 +23,9 @@ const getInitialState = (url) => new Promise((resolve) => setTimeout(() => {
 omen.render(
   document.getElementById('app'),
   <App/>,
-  RoutingManager({getInitialState, /* OPTIONS */}),
-  LocalStorageBinding('omen-ssr'),
+  /* ROUTING OPTIONS */
+  {
+    getInitialState,
+    shouldLoadInitialState: (prevUrl, newUrl) => prevUrl.pathname !== newUrl.pathname
+  }
 );
