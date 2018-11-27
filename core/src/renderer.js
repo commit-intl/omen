@@ -1,8 +1,9 @@
-import { DEHYDRATE, flattenDeepArray, HYDRATED, NAMESPACES, REHYDRATE } from './helpers';
+import {DEHYDRATE, flattenDeepArray, HYDRATED, NAMESPACES, REHYDRATE} from './helpers';
 import OmenElement from './omen.element';
 import DataNode from './store/data-node';
 import Store from './store/store';
-import RoutingManager from './routing-manager';
+import config from './config';
+import Routing from './routing';
 
 const renderOmenElement = (node, store) => {
   if (!node || !node.tag) return null;
@@ -39,7 +40,7 @@ const renderOmenElement = (node, store) => {
   }
 
   if (typeof tag === 'function') {
-    return renderOmenElement(tag({ ...props, children }, state, data), store);
+    return renderOmenElement(tag({...props, children}, state, data), store);
   }
 
   return new OmenElement(tag, namespace, props, data, children && flattenDeepArray(children), store);
@@ -74,7 +75,7 @@ const Renderer = {
       case 'object':
         if (!src.__isDataNode) {
           if (!src.namespace) {
-            src = { ...src, namespace };
+            src = {...src, namespace};
           }
           return renderOmenElement(src, store);
         }
@@ -85,31 +86,32 @@ const Renderer = {
   },
 
   render(appendTo, root, routingOptions, storageBinding) {
+    document.__omen =  document.__omen || {};
+
     const init = () => {
-      const routingManager = RoutingManager(routingOptions);
+      const routing = Routing({...config.routing, ...routingOptions});
       let promise;
-      if (document.__omen__isServer) {
-        promise = routingManager.getInitialState()
+      if (document.__omen.isServer) {
+        promise = routing.getInitialState()
           .then(initialState => {
             const scriptInitialState = document.createElement('script');
-            scriptInitialState.innerHTML = `document.__omen__initialState=${JSON.stringify(initialState)};`;
-            document.__omen__initialState = initialState;
+            scriptInitialState.innerHTML = `document.__omen.initialState=${JSON.stringify(initialState)};`;
+            document.__omen.initialState = initialState;
             document.head.appendChild(scriptInitialState);
             return new Store(initialState, storageBinding);
           });
-      }
-      else {
-        let initialState = document.__omen__initialState;
+      } else {
+        let initialState = document.__omen.initialState;
         promise = new Promise(resolve => resolve(new Store(initialState, storageBinding)));
       }
 
       promise
         .then((store) => {
-          routingManager.init(store);
+          routing.init(store);
           const omenElement = renderOmenElement(root, store);
-          const mode = document.__omen__isServer
+          const mode = document.__omen.isServer
             ? DEHYDRATE
-            : (document.__omen__initialState ? REHYDRATE : HYDRATED);
+            : (document.__omen.initialState ? REHYDRATE : HYDRATED);
           if (omenElement.init(mode, 'o')) {
             appendTo.append(
               omenElement.element,
@@ -122,14 +124,14 @@ const Renderer = {
       return promise;
     };
 
-    if (!document.__omen__isServer) {
+    if (!document.__omen.isServer) {
       document.addEventListener('DOMContentLoaded', init);
-    }
-    else {
+    } else {
       init();
     }
-  }
+  },
 };
 
+export const omen = Renderer;
 
 export default Renderer;

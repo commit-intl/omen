@@ -1,10 +1,9 @@
 import { omen, Store, createStoreViewer } from '@omen/core';
 import styles from './index.scss';
 import App from './App';
-import LocalStorageBinding from '@omen/core/lib/store/local-storage-binding';
 
-const initialState = {
-  'secret': 'This will not be shown in the store viewer! Thanks to middleware!',
+let saved = window.localStorage.getItem('omen_counter');
+const initialState = saved ? {app: JSON.parse(saved)} : {
   'app': {
     'Important': {
       counters: [
@@ -38,6 +37,7 @@ const initialState = {
 omen.render(
   document.body,
   <App/>,
-  { getInitialState: () => Promise.resolve(initialState) },
-  new LocalStorageBinding('counter', (path) => path !== 'secret')
+  {
+    getInitialState: () => Promise.resolve(initialState),
+  },
 );

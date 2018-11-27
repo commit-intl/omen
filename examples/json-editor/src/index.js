@@ -1,4 +1,4 @@
-import { omen, Store } from '@omen/core';
+import { omen } from '@omen/core';
 import App from './App';
 import './index.scss';
 
@@ -17,10 +17,10 @@ const initialState = {
     { title: 'Hello', color: null },
 };
 
-export const store = new Store(initialState);
-
 omen.render(
   document.body,
   <App/>,
-  { getInitialState: () => Promise.resolve(initialState) }
+  {
+    getInitialState: () => Promise.resolve(initialState)
+  }
 );

@@ -92,9 +92,9 @@ export default class OmenElement {
 
           if (result
             && (!event.target.target || event.target.target === '_self')
-            && document.__omen__isInternalUrl(event.target.href)
+            && document.__omen.isInternalUrl(event.target.href)
           ) {
-            document.__omen__navigateTo(event.target.href);
+            document.__omen.navigate(event.target.href);
             result = false;
             event.preventDefault('');
           }

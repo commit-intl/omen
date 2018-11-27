@@ -7,6 +7,10 @@ import {Headline} from './components/Headline';
 import {SVG} from './components/SVG';
 
 const App = (props, state, {app}) => {
+  app.subscribe((appState) => {
+    window.localStorage.setItem('omen_counter', JSON.stringify(appState))
+  });
+
   return (
     <div className={styles.wrapper}>
       <SVG/>

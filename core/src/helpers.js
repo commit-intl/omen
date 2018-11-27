@@ -77,3 +77,31 @@ export const htmlPropMap = {
 export const DEHYDRATE = 0;
 export const HYDRATED = 1;
 export const REHYDRATE = 2;
+
+
+
+export const convertURLtoObject = (url) => {
+  if (!url) return null;
+
+  if (typeof url === 'string') {
+    url = new URL(url);
+  }
+
+  return ({
+    href: url.href,
+    origin: url.origin,
+    hostname: url.hostname,
+    protocol: url.protocol,
+    pathname: url.pathname,
+    search: url.search,
+    hash: url.hash,
+    query: url.search
+      && url.search
+        .slice(1)
+        .split('&')
+        .reduce((acc, val) => {
+          let v = val.split('=');
+          acc[v[0]] = v[1] || true;
+        }, {}),
+  });
+};

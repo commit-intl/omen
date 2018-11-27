@@ -1,16 +1,16 @@
-const { Command, flags } = require('@oclif/command');
+const {Command, flags} = require('@oclif/command');
 const path = require('path');
 const fs = require('fs');
-const { Script } = require('vm');
+const {Script} = require('vm');
 const colors = require('colors');
 const WebpackHelper = require('../webpack/webpack.helper');
 
 const jsdom = require('jsdom');
-const { JSDOM } = jsdom;
+const {JSDOM} = jsdom;
 
 class ExportCommand extends Command {
   async run() {
-    const { flags } = this.parse(ExportCommand);
+    const {flags} = this.parse(ExportCommand);
     const file = flags.file || 'src/pages.json';
     const environment = flags.prod ? 'prod' : 'dev';
 
@@ -46,10 +46,9 @@ class ExportCommand extends Command {
             referrer: 'http://localhost/',
             contentType: 'text/html',
             includeNodeLocations: false,
-            runScripts: 'outside-only'
+            runScripts: 'outside-only',
           });
-
-          dom.window.document.__omen__isServer = true;
+          dom.window.document.__omen = {isServer: true};
 
           this.log(`  index.html loaded (${((-timeStarted + (timeStarted = Date.now()))) / 1000}s)`);
 
@@ -80,8 +79,8 @@ ExportCommand.description = `export pre-rendered pages by your ./src/pages.json
 `;
 
 ExportCommand.flags = {
-  file: flags.string({ char: 'f', description: 'load pages from another file' }),
-  prod: flags.boolean({ char: 'p', description: 'run in production mode' }),
+  file: flags.string({char: 'f', description: 'load pages from another file'}),
+  prod: flags.boolean({char: 'p', description: 'run in production mode'}),
 };
 
 module.exports = ExportCommand;

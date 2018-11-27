@@ -2,7 +2,7 @@
   "name": "@omen/core",
   "version": "0.5.7",
   "description": "data driven javascript frontend library, based on JSX",
-  "main": "lib/index.js",
+  "main": "lib/renderer.js",
   "scripts": {
     "test": "echo  NO TESTS DEFINED! TODO: define some",
     "build": "rm -Rf lib && cp -Rf src lib",
