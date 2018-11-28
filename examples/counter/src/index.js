@@ -1,4 +1,4 @@
-import { omen, Store, createStoreViewer } from '@omen/core';
+import { omen } from '@omen/core';
 import styles from './index.scss';
 import App from './App';
 
@@ -35,7 +35,7 @@ const initialState = saved ? {app: JSON.parse(saved)} : {
 
 
 omen.render(
-  document.body,
+  document.getElementById('app'),
   <App/>,
   {
     getInitialState: () => Promise.resolve(initialState),

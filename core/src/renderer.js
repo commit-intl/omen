@@ -95,7 +95,7 @@ const Renderer = {
         promise = routing.getInitialState()
           .then(initialState => {
             const scriptInitialState = document.createElement('script');
-            scriptInitialState.innerHTML = `document.__omen.initialState=${JSON.stringify(initialState)};`;
+            scriptInitialState.innerHTML = `document.__omen={initialState:${JSON.stringify(initialState)}};`;
             document.__omen.initialState = initialState;
             document.head.appendChild(scriptInitialState);
             return new Store(initialState, storageBinding);

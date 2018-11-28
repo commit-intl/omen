@@ -17,6 +17,7 @@ export default class OmenElement {
   }
 
   init(mode, id) {
+    console.log('init', mode, id);
     let newElement = true;
     if (mode === REHYDRATE) {
       newElement = this.rehydrateElement(id);
@@ -29,7 +30,8 @@ export default class OmenElement {
       this.props['data-oid'] = id;
     }
 
-    this.initProps();
+    this.initProps(mode);
+    console.log('initChildren', this.element, this.children);
     this.initChildren(mode, id);
     return newElement;
   }
@@ -38,6 +40,7 @@ export default class OmenElement {
     this.element = document.querySelector(`[data-oid="${id}"]`);
 
     if (this.element) {
+      console.log('rehydrated:', this.element);
       const nodes = this.element.childNodes;
       let i = 0;
       let childId = 0;
@@ -116,7 +119,7 @@ export default class OmenElement {
   setAttribute(key, value, mode) {
     if (value && value.__isDataNode) {
       this.subscriptions.push(
-        value.subscribe((result) => this.setAttribute(key, result), mode !== REHYDRATE),
+        value.subscribe((result) => this.setAttribute(key, result, mode), mode !== REHYDRATE),
       );
     }
     else if (key.startsWith('on')) {
@@ -133,7 +136,11 @@ export default class OmenElement {
       }
 
       if (this.elementProps[key] !== value) {
-        if (htmlPropSet.indexOf(key) >= 0) {
+        if (mode !== DEHYDRATE && htmlPropSet.indexOf(key) >= 0) {
+          console.log(mode, key, value);
+          if (mode === REHYDRATE) {
+            this.element.setAttribute(key, undefined);
+          }
           this.element[key] = value;
         }
         else if (key === 'className') {
@@ -160,6 +167,7 @@ export default class OmenElement {
   initChildren(mode, id) {
     const createChild = (child, childId) => {
       let element = Renderer.createElement(child, this.namespace, this.store);
+      console.log('createElement', child);
       if (element) {
         if (element.init) {
           element.init(mode, `${id}.${childId}`);
@@ -208,7 +216,7 @@ export default class OmenElement {
                 let element = createChild(result, index);
                 setChild(index, element);
               }
-            }, mode !== REHYDRATE),
+            }, true),
           );
         }
         else {
@@ -217,18 +225,6 @@ export default class OmenElement {
         }
       },
     )
-  }
-
-  removeAllChidren() {
-    let c = 0;
-    for (let pos = 0; pos < this.children.length; pos++) {
-      for (let i = 0; i < this.children[pos].length; i++) {
-        let node = this.element.childNodes[c++];
-        if (node) {
-          return this.element.removeChild(node);
-        }
-      }
-    }
   }
 
   setChild(pos, ...children) {
