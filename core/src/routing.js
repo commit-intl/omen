@@ -12,10 +12,10 @@ const Routing = function (options) {
           .then((state) => store.set((current) => ({...current, ...state})))
           .catch(error => console.error('Failed to load new initial state!', error));
 
-      let currentLocation = convertURLtoObject(document.location);
+      let currentLocation = undefined;
 
       const updateLoctaion = (url) => {
-        if (options.shouldLoadInitialState(currentLocation, url)) {
+        if (options.shouldLoadInitialState(url, currentLocation, document.__omen.isServer)) {
           loadInitialState(url)
         }
         routerNode.set(url);
@@ -45,6 +45,9 @@ const Routing = function (options) {
           updateLoctaion(event.state);
         }
       });
+
+      // check if should load initialState on init
+      updateLoctaion(convertURLtoObject(document.location));
     },
   }
 };

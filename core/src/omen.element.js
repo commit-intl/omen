@@ -1,5 +1,5 @@
 import Renderer from './renderer';
-import { htmlPropSet, NAMESPACES, htmlPropMap, REHYDRATE, DEHYDRATE } from './helpers';
+import { htmlPropSet, NAMESPACES, htmlPropMap, REHYDRATE, DEHYDRATE, HYDRATED} from './helpers';
 
 export default class OmenElement {
   constructor(tag, namespace, props, data, children, store) {
@@ -17,10 +17,12 @@ export default class OmenElement {
   }
 
   init(mode, id) {
-    console.log('init', mode, id);
     let newElement = true;
     if (mode === REHYDRATE) {
       newElement = this.rehydrateElement(id);
+      if (!newElement) {
+        mode = HYDRATED;
+      }
     }
     else {
       this.initElement();
@@ -31,7 +33,6 @@ export default class OmenElement {
     }
 
     this.initProps(mode);
-    console.log('initChildren', this.element, this.children);
     this.initChildren(mode, id);
     return newElement;
   }
@@ -40,7 +41,6 @@ export default class OmenElement {
     this.element = document.querySelector(`[data-oid="${id}"]`);
 
     if (this.element) {
-      console.log('rehydrated:', this.element);
       const nodes = this.element.childNodes;
       let i = 0;
       let childId = 0;
@@ -167,7 +167,6 @@ export default class OmenElement {
   initChildren(mode, id) {
     const createChild = (child, childId) => {
       let element = Renderer.createElement(child, this.namespace, this.store);
-      console.log('createElement', child);
       if (element) {
         if (element.init) {
           element.init(mode, `${id}.${childId}`);

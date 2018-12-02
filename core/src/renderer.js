@@ -85,7 +85,7 @@ const Renderer = {
     }
   },
 
-  render(appendTo, root, routingOptions, storageBinding) {
+  render(appendTo, root, routingOptions) {
     document.__omen =  document.__omen || {};
 
     const init = () => {
@@ -98,11 +98,11 @@ const Renderer = {
             scriptInitialState.innerHTML = `document.__omen={initialState:${JSON.stringify(initialState)}};`;
             document.__omen.initialState = initialState;
             document.head.appendChild(scriptInitialState);
-            return new Store(initialState, storageBinding);
+            return new Store(initialState);
           });
       } else {
         let initialState = document.__omen.initialState;
-        promise = new Promise(resolve => resolve(new Store(initialState, storageBinding)));
+        promise = new Promise(resolve => resolve(new Store(initialState)));
       }
 
       promise

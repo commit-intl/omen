@@ -26,6 +26,6 @@ omen.render(
   /* ROUTING OPTIONS */
   {
     getInitialState,
-    shouldLoadInitialState: (newUrl, prevUrl) => { console.log(newUrl, prevUrl); return prevUrl.pathname !== newUrl.pathname},
+    shouldLoadInitialState: (newUrl, prevUrl, isServer) => isServer || (prevUrl && prevUrl.pathname !== newUrl.pathname),
   }
 );

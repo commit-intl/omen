@@ -39,5 +39,6 @@ omen.render(
   <App/>,
   {
     getInitialState: () => Promise.resolve(initialState),
+    shouldLoadInitialState: (newUrl, prevUrl, isServer) => (prevUrl == null || isServer)
   },
 );

@@ -1,22 +1,9 @@
 import DataNode from './data-node';
 
-const Store = (state, binding) => {
+const Store = (state) => {
   const root = DataNode();
   const notify = root.notify;
-  root.binding = binding;
 
-  root.load = (value) => {
-    if (root.binding) {
-      let result = root.binding.load();
-      if (result) {
-        return root.set({
-          ...value,
-          ...result,
-        });
-      }
-    }
-    return root.set(value);
-  };
 
   root.save = () => {
     if (root.binding) {
@@ -29,7 +16,7 @@ const Store = (state, binding) => {
     root.save();
   };
 
-  root.load(state);
+  root.set(state);
   return root;
 };
 
