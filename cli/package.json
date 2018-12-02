@@ -1,7 +1,7 @@
 {
   "name": "@omen/cli",
   "description": "all in one CLI for omen",
-  "version": "0.5.6",
+  "version": "0.6.0",
   "author": "Dustin Hagemeier <dustin@commit.international>",
   "bin": {
     "omen": "./bin/run"

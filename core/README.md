@@ -9,14 +9,15 @@ There are some major differences to render based libraries like React:
 - data is set with observables
 
 
-## install
+## install and run
 ``` cmd
-npm i -S @omen/core
+npm i -S @omen/cli
+omen serve
 ```
 
 example:
 ``` javascript
-import {omen, Store} from '@omen/core';
+import omen from '../../../core/lib/renderer';
 
 const App = (props, state, data) => {
   const entries = data.entries.map(
@@ -48,11 +49,11 @@ const initialState = {
   ],
 };
 
-export const store = new Store(initialState);
-
 omen.render(
-  <App title="Omen is awesome!"/>,
-  document.body,
-  store,
+  document.getElementById('app'),
+  <App/>,
+  {
+    getInitialState: () => Promise.resolve(initialState)
+  },
 );
 ```
