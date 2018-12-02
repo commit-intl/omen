@@ -1,0 +1,88 @@
+
+.host {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 21px;
+    left: 0;
+    bottom: 0;
+    border-left: 2px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .header {
+    flex: 0 0 auto;
+    font-weight: bold;
+    font-size: 16px;
+    color: #4444ff;
+
+    > label {
+      display: block;
+    }
+
+    &.string {
+      color: #00cc00
+    }
+    &.number {
+      color: #9999ff
+    }
+    &.boolean {
+      color: #ff8800
+    }
+    &.object {
+      color: #4444ff
+    }
+    &.array {
+      color: #8844ff
+    }
+    &.null {
+      color: #771177
+    }
+
+    .actions {
+      display: none;
+      .delete {
+        color: #ffcccc;
+        display: inline-block;
+        cursor: pointer;
+        font-size: 12px;
+        user-select: none;
+
+        &:hover {
+          color: red
+        }
+      }
+    }
+  }
+
+  &.primitive {
+    > .header > label::after {
+      content: ':';
+      margin-right: 5px;
+    }
+  }
+
+  &.object {
+    flex-direction: column;
+
+    > .content {
+      padding-left: 30px;
+    }
+  }
+
+  .content {
+    flex: 1 1 auto;
+    font-size: 16px;
+    .null {
+      display: inline-block;
+      padding: 0 2px;
+      border-radius: 4px;
+      background-color: #771177;
+      color: #ffffff;
+      font-size: 11px;
+    }
+  }
+}

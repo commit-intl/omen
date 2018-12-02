@@ -1,0 +1,15 @@
+
+.host {
+  display: flex;
+  flex-direction: row;
+}
+
+.editor {
+  flex: 1 1 auto;
+  padding: 10px;
+}
+
+.json {
+  flex: 0 0 auto;
+  padding: 10px;
+}

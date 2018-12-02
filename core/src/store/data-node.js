@@ -16,14 +16,13 @@ const DataNode = (initName, parentNode) => {
     },
 
     set(v, path = undefined, propagateUp = true) {
-      console.log('set', name, path, v, propagateUp);
       if (!path) {
         if (v !== value) {
           if (parent && propagateUp) {
             parent.set(v, name);
           }
           else {
-            value = v;
+            value = typeof v === 'function' ? v(value) : v;
             this.notify(propagateUp);
           }
         }
@@ -79,7 +78,7 @@ const DataNode = (initName, parentNode) => {
     },
 
     notify(propagateUp = true, propagateDown = true) {
-      if(parent && propagateUp) {
+      if (parent && propagateUp) {
         parent.notify(true, false);
       }
 
@@ -120,13 +119,11 @@ const DataNode = (initName, parentNode) => {
 
       const childByString = (path) => {
         if (children[path]) {
-          console.log(self,'child',path,children[path]);
           return children[path];
         }
         else {
           children[path] = DataNode(path, self);
           children[path].set(value && value[path], undefined, false);
-          console.log(self,'child',path,children[path]);
           return children[path];
         }
       };
@@ -154,7 +151,7 @@ const DataNode = (initName, parentNode) => {
       result.onDestroy = self.subscribe(
         (data) => {
           let key = by(data);
-          if(prevKey !== key) {
+          if (prevKey !== key) {
             if (callbackMap[key]) {
               result.set(callbackMap[key](self));
             }
@@ -174,7 +171,6 @@ const DataNode = (initName, parentNode) => {
       let handler = (value) => {
         if (typeof value === 'object') {
           let keys = Object.keys(value);
-          console.log(value, keys);
           let childrenIds = Object.keys(children);
           let callbackResults = [];
           for (let key of keys) {

@@ -6,12 +6,17 @@ const webpackConfig = require('./webpack.config');
 const WebpackHelper = {
 
   createWebpack(env = 'dev', executionDir, config = {}) {
-    return webpack({ ...webpackConfig(executionDir, env === 'prod'), ...config })
+    const finalConfig = { ...webpackConfig(executionDir, env === 'prod'), ...config };
+    return {
+      config: finalConfig,
+      compiler: webpack(finalConfig),
+    }
   },
 
   DevServer: function (env = 'dev', executionDir, config = {}) {
     try {
-      return new Server(WebpackHelper.createWebpack(env, executionDir, config));
+      const webpack = WebpackHelper.createWebpack(env, executionDir, config);
+      return new Server(webpack.compiler, webpack.config.devServer);
     } catch (err) {
       if (err.name === 'ValidationError') {
         log.error(colors.error(options.stats.colors, err.message));

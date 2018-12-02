@@ -6,15 +6,18 @@ class ServeCommand extends Command {
   async run() {
     const { flags } = this.parse(ServeCommand);
     const environment = flags.prod ? 'prod' : 'dev';
+    const port = flags.port || 3200;
+    const host = flags.host || 'localhost';
+
     this.log(`starting omen dev server`.green);
 
     const executionDir = process.cwd();
     const server = new WebpackHelper.DevServer(environment, executionDir, {});
-    server.listen(4000, 'localhost', (err) => {
+    server.listen(port, host, (err) => {
       if (err) {
         throw err;
       }
-      this.log(`dev server running at http://localhost:4000`.green);
+      this.log(`running at http://${host}:${port}`.green);
     });
   }
 }
@@ -25,6 +28,8 @@ ServeCommand.description = `start a dev server that renders your app
 
 ServeCommand.flags = {
   prod: flags.boolean({ char: 'p', description: 'run in production mode' }),
+  port: flags.string({ char: 'P', description: 'start server on port' }),
+  host: flags.string({ char: 'H', description: 'start server on host' }),
 };
 
 module.exports = ServeCommand;

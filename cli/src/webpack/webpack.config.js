@@ -20,7 +20,7 @@ module.exports = (executionDir, isProd, build = false) => ({
             options: {
               presets: [require.resolve("@babel/preset-env")],
               plugins: [
-                [require.resolve("babel-plugin-transform-react-jsx"), { "pragma": "omen.create" }]
+                [require.resolve("babel-plugin-transform-react-jsx"), { "pragma": "omen.create" }],
               ],
               env: {
                 publish: {
@@ -82,15 +82,18 @@ module.exports = (executionDir, isProd, build = false) => ({
   target: "web",
   stats: "errors-only",
   devServer: {
+    index: 'index.html',
     contentBase: path.join(executionDir, "dist"),
     compress: true,
     historyApiFallback: true,
     hot: true,
     https: false,
-    noInfo: true,
+    clientLogLevel: 'warning'
   },
   plugins: [
-    new HtmlWebpackPlugin(),
+    new HtmlWebpackPlugin({
+      template: path.join(executionDir, 'src/index.html'),
+    }),
     new MiniCssExtractPlugin(),
   ],
 });

@@ -1,6 +1,9 @@
-import {flattenDeepArray, NAMESPACES} from './helpers';
+import {DEHYDRATE, flattenDeepArray, HYDRATED, NAMESPACES, REHYDRATE} from './helpers';
 import OmenElement from './omen.element';
 import DataNode from './store/data-node';
+import Store from './store/store';
+import config from './config';
+import Routing from './routing';
 
 const renderOmenElement = (node, store) => {
   if (!node || !node.tag) return null;
@@ -44,7 +47,7 @@ const renderOmenElement = (node, store) => {
 };
 
 
-export const Renderer = {
+const Renderer = {
   create(tag, props, ...children) {
     if (!props) props = {};
 
@@ -58,13 +61,6 @@ export const Renderer = {
       props,
       children,
     };
-  },
-
-  render(root, appendTo, store) {
-    const omenElement = renderOmenElement(root, store);
-    appendTo.append(
-      omenElement.element,
-    );
   },
 
   renderToString(root, store) {
@@ -88,7 +84,54 @@ export const Renderer = {
         return document.createTextNode(src);
     }
   },
+
+  render(appendTo, root, routingOptions) {
+    document.__omen =  document.__omen || {};
+
+    const init = () => {
+      const routing = Routing({...config.routing, ...routingOptions});
+      let promise;
+      if (document.__omen.isServer) {
+        promise = routing.getInitialState()
+          .then(initialState => {
+            const scriptInitialState = document.createElement('script');
+            scriptInitialState.innerHTML = `document.__omen={initialState:${JSON.stringify(initialState)}};`;
+            document.__omen.initialState = initialState;
+            document.head.appendChild(scriptInitialState);
+            return new Store(initialState);
+          });
+      } else {
+        let initialState = document.__omen.initialState;
+        promise = new Promise(resolve => resolve(new Store(initialState)));
+      }
+
+      promise
+        .then((store) => {
+          routing.init(store);
+          const omenElement = renderOmenElement(root, store);
+          const mode = document.__omen.isServer
+            ? DEHYDRATE
+            : (document.__omen.initialState ? REHYDRATE : HYDRATED);
+          if (omenElement.init(mode, 'o')) {
+            appendTo.append(
+              omenElement.element,
+            );
+          }
+          document.dispatchEvent(new Event('__omen__ready'));
+        })
+        .catch(error => console.error('Failed to initialize omen!', error));
+
+      return promise;
+    };
+
+    if (!document.__omen.isServer) {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  },
 };
 
+export const omen = Renderer;
 
 export default Renderer;

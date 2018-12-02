@@ -1,0 +1,34 @@
+{
+  "name": "@omen/examples",
+  "description": "data driven javascript frontend library, based on JSX",
+  "scripts": {
+    "start": "omen serve",
+    "build": "omen build",
+    "test": "echo  NO TESTS DEFINED! TODO: define some",
+    "lint": "eslint src"
+  },
+  "author": "Dustin Hagemeier <dustin@commit.international>",
+  "license": "AGPL-3.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/commit-intl/omen.git"
+  },
+  "keywords": [
+    "redux",
+    "effects",
+    "reducers",
+    "mini",
+    "micro",
+    "minified",
+    "javascript",
+    "js"
+  ],
+  "bugs": {
+    "url": "https://github.com/commit-intl/omen/issues"
+  },
+  "homepage": "https://github.com/commit-intl/omen#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "@omen/cli": "0.5.6"
+  }
+}

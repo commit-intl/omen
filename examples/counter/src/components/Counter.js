@@ -6,6 +6,7 @@ import { Input } from './Input';
 
 export const Counter = ({ value }) => {
   let buttonClick = (changeValue) => (event) => {
+    console.log(event);
     value.set((data) => (data || 0) + changeValue);
   };
   let inputChange = (event) => {

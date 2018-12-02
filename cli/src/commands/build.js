@@ -11,10 +11,12 @@ class BuildCommand extends Command {
     const executionDir = process.cwd();
     const webpack = WebpackHelper.createWebpack(environment, executionDir, {});
 
-    webpack.run((err, stats) => {
+    const time = Date.now();
+    webpack.compiler.run((err, stats) => {
       if (err) {
-        this.log(colors.red(err));
+        throw (err);
       }
+      this.log(`SUCCESSFUL BUILD! (${(Date.now() - time) / 1000}s)`.green);
     });
   }
 }

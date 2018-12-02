@@ -1,6 +1,5 @@
 import Renderer from './renderer';
-import {htmlPropSet, NAMESPACES, htmlPropMap} from './helpers';
-import DataNode from './store/data-node';
+import { htmlPropSet, NAMESPACES, htmlPropMap, REHYDRATE, DEHYDRATE, HYDRATED} from './helpers';
 
 export default class OmenElement {
   constructor(tag, namespace, props, data, children, store) {
@@ -15,10 +14,68 @@ export default class OmenElement {
     this.elementProps = {};
     this.elementListeners = {};
     this.elementChildren = [];
+  }
 
-    this.initElement();
-    this.initProps();
-    this.initChildren();
+  init(mode, id) {
+    let newElement = true;
+    if (mode === REHYDRATE) {
+      newElement = this.rehydrateElement(id);
+      if (!newElement) {
+        mode = HYDRATED;
+      }
+    }
+    else {
+      this.initElement();
+    }
+
+    if (mode === DEHYDRATE) {
+      this.props['data-oid'] = id;
+    }
+
+    this.initProps(mode);
+    this.initChildren(mode, id);
+    return newElement;
+  }
+
+  rehydrateElement(id) {
+    this.element = document.querySelector(`[data-oid="${id}"]`);
+
+    if (this.element) {
+      const nodes = this.element.childNodes;
+      let i = 0;
+      let childId = 0;
+      let groupId = 0;
+      for (let i = 0; i < nodes.length; i++) {
+        let newId;
+        if (nodes[i].nodeName === '#comment') {
+          newId = parseInt(nodes[i].nodeValue.replace(/(\d+)(-\d+)?$/i, '$1'));
+        }
+        else if (nodes[i].nodeName !== '#text') {
+          newId = nodes[i].getAttribute('data-oid');
+        }
+
+        let match = newId && newId.match(/(\d+)(?:-(\d+))?$/i);
+        if (match) {
+          groupId = parseInt(match[1]);
+          childId = match[2] ? parseInt(match[2]) : 0;
+        }
+        else {
+          childId++;
+        }
+
+        if (!this.elementChildren[groupId]) {
+          this.elementChildren[groupId] = [];
+        }
+
+        this.elementChildren[groupId][childId] = nodes[i];
+      }
+
+      return false;
+    }
+    else {
+      this.initElement();
+      return true;
+    }
   }
 
   initElement() {
@@ -26,80 +83,52 @@ export default class OmenElement {
       this.element = this.namespace && this.namespace !== NAMESPACES.html
         ? document.createElementNS(this.namespace, this.tag)
         : document.createElement(this.tag);
+
+      // ENABLE INTERNAL ROUTING
+      if (this.tag === 'a') {
+        const originalOnclick = this.props.onClick;
+        this.props.onClick = (event) => {
+          let result = true;
+          if (typeof originalOnclick === 'function') {
+            result = originalOnclick(event);
+          }
+
+          if (result
+            && (!event.target.target || event.target.target === '_self')
+            && document.__omen.isInternalUrl(event.target.href)
+          ) {
+            document.__omen.navigate(event.target.href);
+            result = false;
+            event.preventDefault('');
+          }
+          return result;
+        }
+      }
     }
     else {
       console.error('Unknown jsx tag: ' + this.tag);
     }
   }
 
-  initProps() {
+  initProps(mode) {
     for (let attr in this.props) {
-      this.setAttribute(attr, this.props[attr]);
+      this.setAttribute(attr, this.props[attr], mode);
     }
   }
 
-  initChildren() {
-    const setChild = (pos, children) => {
-      if (!Array.isArray(children)) {
-        children = [children];
-      }
-
-      this.setChild(pos, ...children);
-    };
-
-    this.children.forEach(
-      (child, index) => {
-        if (!child) return;
-
-        if (child.__isDataNode) {
-          const map = new WeakMap();
-          this.subscriptions.push(
-            child.subscribe((result) => {
-              if (!result) return;
-              if (Array.isArray(result)) {
-                setChild(
-                  index,
-                  result.map(child => {
-                    let element = map.get(child);
-                    if (!element) {
-                      element = Renderer.createElement(child, this.namespace, this.store);
-                      map.set(child, element);
-                    }
-                    return element
-                  }),
-                );
-              }
-              else {
-                setChild(index, Renderer.createElement(result, this.namespace, this.store));
-              }
-            }, true),
-          );
-        }
-        else {
-          let childElement = Renderer.createElement(child, this.namespace, this.store);
-          setChild(index, childElement);
-        }
-      },
-    )
-  }
-
-  setAttribute(key, value) {
+  setAttribute(key, value, mode) {
     if (value && value.__isDataNode) {
       this.subscriptions.push(
-        value.subscribe((result) => this.setAttribute(key, result), true),
+        value.subscribe((result) => this.setAttribute(key, result, mode), mode !== REHYDRATE),
       );
     }
     else if (key.startsWith('on')) {
       let event = key.substr(2).toLowerCase();
       if (this.elementListeners[event]) {
-        if (value !== this.elementListeners[event]) {
-          this.element.removeEventListener(this.listeners[event]);
-          this.element.addEventListener(event, value);
-        }
+        this.element.removeEventListener(this.listeners[event]);
       }
-      else {
-        this.element.addEventListener(event, value);
-      }
+
+      this.element.addEventListener(event, value);
     }
     else {
       if (htmlPropMap[key]) {
@@ -107,7 +136,11 @@ export default class OmenElement {
       }
 
       if (this.elementProps[key] !== value) {
-        if (htmlPropSet.indexOf(key) >= 0) {
+        if (mode !== DEHYDRATE && htmlPropSet.indexOf(key) >= 0) {
+          console.log(mode, key, value);
+          if (mode === REHYDRATE) {
+            this.element.setAttribute(key, undefined);
+          }
           this.element[key] = value;
         }
         else if (key === 'className') {
@@ -131,16 +164,66 @@ export default class OmenElement {
     return this.elementProps[key];
   }
 
-  removeAllChidren() {
-    let c = 0;
-    for (let pos = 0; pos < this.children.length; pos++) {
-      for (let i = 0; i < this.children[pos].length; i++) {
-        let node = this.element.childNodes[c++];
-        if (node) {
-          return this.element.removeChild(node);
+  initChildren(mode, id) {
+    const createChild = (child, childId) => {
+      let element = Renderer.createElement(child, this.namespace, this.store);
+      if (element) {
+        if (element.init) {
+          element.init(mode, `${id}.${childId}`);
+        }
+        else if (mode === DEHYDRATE && element.nodeName === '#text') {
+          element = [
+            document.createComment(`${id}.${childId}`),
+            element,
+          ];
         }
       }
-    }
+      return element;
+    };
+
+    const setChild = (pos, children) => {
+      if (!Array.isArray(children)) {
+        children = [children];
+      }
+
+      this.setChild(pos, ...children);
+    };
+
+    this.children.forEach(
+      (child, index) => {
+        if (!child) return;
+
+        if (child.__isDataNode) {
+          const map = new WeakMap();
+          this.subscriptions.push(
+            child.subscribe((result) => {
+              if (!result) return;
+              if (Array.isArray(result)) {
+                setChild(
+                  index,
+                  result.map((child, childIndex) => {
+                    let element = map.get(child);
+                    if (!element) {
+                      element = createChild(child, `${index}-${childIndex}`);
+                      map.set(child, element);
+                    }
+                    return element;
+                  }),
+                );
+              }
+              else {
+                let element = createChild(result, index);
+                setChild(index, element);
+              }
+            }, true),
+          );
+        }
+        else {
+          let element = createChild(child, index);
+          setChild(index, element);
+        }
+      },
+    )
   }
 
   setChild(pos, ...children) {
@@ -159,14 +242,17 @@ export default class OmenElement {
         const currentNode = this.element.childNodes[prevIndex + i];
         const newNode = getNode(children[i]);
         if (i < children.length) {
-          if (!currentNode || !currentNode.isSameNode(newNode)) {
-            this.element.replaceChild(newNode, currentNode);
-            if (group[i] && group[i].destroy) {
-              group[i].destroy();
+          if (currentNode) {
+            if (!currentNode.isSameNode(newNode)) {
+              this.element.replaceChild(newNode, currentNode);
+              if (group[i] && group[i].destroy) {
+                group[i].destroy();
+              }
+              group[i] = children[i];
             }
-            group[i] = children[i];
           }
           else {
+            this.element.insertBefore(newNode, null);
           }
         } else if (currentNode) {
           this.element.removeChild(currentNode);
@@ -178,7 +264,7 @@ export default class OmenElement {
         i++;
       }
 
-      const insertBeforeIndex = prevIndex + group.length + 1;
+      const insertBeforeIndex = prevIndex + group.length;
       const insertBefore = this.element.childNodes[insertBeforeIndex];
 
       while (i < children.length) {
