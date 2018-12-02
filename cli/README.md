@@ -15,6 +15,9 @@ all in one CLI for omen
 * [Usage](#usage)
 * [Commands](#commands)
 <!-- tocstop -->
+* [Usage](#usage)
+* [Commands](#commands)
+<!-- tocstop -->
 * [Usage](#usage)
 * [Commands](#commands)
 <!-- tocstop -->
@@ -25,7 +28,7 @@ $ npm install -g @omen/cli
 $ omen COMMAND
 running command...
 $ omen (-v|--version|version)
-@omen/cli/0.5.6 win32-x64 node-v8.9.3
+@omen/cli/0.6.0 linux-x64 node-v10.13.0
 $ omen --help [COMMAND]
 USAGE
   $ omen COMMAND
@@ -66,25 +69,25 @@ DESCRIPTION
   ...
 ```
 
-_See code: [src\commands\build.js](https://github.com/commit-intl/omen/blob/v0.5.6/src\commands\build.js)_
+_See code: [src/commands/build.js](https://github.com/commit-intl/omen/blob/v0.6.0/src/commands/build.js)_
 
 ## `omen export`
 
-Describe the command here
+export pre-rendered pages by your ./src/pages.json
 
 ```
 USAGE
   $ omen export
 
 OPTIONS
-  -n, --name=name  name to print
+  -f, --file=file  load pages from another file
+  -p, --prod       run in production mode
 
 DESCRIPTION
   ...
-  Extra documentation goes here
 ```
 
-_See code: [src\commands\export.js](https://github.com/commit-intl/omen/blob/v0.5.6/src\commands\export.js)_
+_See code: [src/commands/export.js](https://github.com/commit-intl/omen/blob/v0.6.0/src/commands/export.js)_
 
 ## `omen help [COMMAND]`
 
@@ -101,7 +104,7 @@ OPTIONS
   --all  see all commands in CLI
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.1.3/src\commands\help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.1.3/src/commands/help.ts)_
 
 ## `omen serve`
 
@@ -120,7 +123,7 @@ DESCRIPTION
   ...
 ```
 
-_See code: [src\commands\serve.js](https://github.com/commit-intl/omen/blob/v0.5.6/src\commands\serve.js)_
+_See code: [src/commands/serve.js](https://github.com/commit-intl/omen/blob/v0.6.0/src/commands/serve.js)_
 <!-- commandsstop -->
 * [`omen build`](#omen-build)
 * [`omen help [COMMAND]`](#omen-help-command)
