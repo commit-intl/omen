@@ -48,6 +48,7 @@ module.exports = (executionDir, isProd, build = false) => ({
           {
             loader: "css-loader",
             options: {
+              url: false,
               modules: true,
               localIdentName: isProd ? '[hash:base64:8]' : '[path][name]__[local]--[hash:base64:5]'
             }

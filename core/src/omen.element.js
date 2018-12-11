@@ -137,7 +137,6 @@ export default class OmenElement {
 
       if (this.elementProps[key] !== value) {
         if (mode !== DEHYDRATE && htmlPropSet.indexOf(key) >= 0) {
-          console.log(mode, key, value);
           if (mode === REHYDRATE) {
             this.element.setAttribute(key, undefined);
           }
