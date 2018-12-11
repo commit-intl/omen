@@ -18,6 +18,9 @@ all in one CLI for omen
 * [Usage](#usage)
 * [Commands](#commands)
 <!-- tocstop -->
+* [Usage](#usage)
+* [Commands](#commands)
+<!-- tocstop -->
 * [Usage](#usage)
 * [Commands](#commands)
 <!-- tocstop -->
@@ -28,7 +31,7 @@ $ npm install -g @omen/cli
 $ omen COMMAND
 running command...
 $ omen (-v|--version|version)
-@omen/cli/0.6.0 linux-x64 node-v10.13.0
+@omen/cli/0.6.1 linux-x64 node-v10.14.1
 $ omen --help [COMMAND]
 USAGE
   $ omen COMMAND
@@ -69,7 +72,7 @@ DESCRIPTION
   ...
 ```
 
-_See code: [src/commands/build.js](https://github.com/commit-intl/omen/blob/v0.6.0/src/commands/build.js)_
+_See code: [src/commands/build.js](https://github.com/commit-intl/omen/blob/v0.6.1/src/commands/build.js)_
 
 ## `omen export`
 
@@ -87,7 +90,7 @@ DESCRIPTION
   ...
 ```
 
-_See code: [src/commands/export.js](https://github.com/commit-intl/omen/blob/v0.6.0/src/commands/export.js)_
+_See code: [src/commands/export.js](https://github.com/commit-intl/omen/blob/v0.6.1/src/commands/export.js)_
 
 ## `omen help [COMMAND]`
 
@@ -123,7 +126,7 @@ DESCRIPTION
   ...
 ```
 
-_See code: [src/commands/serve.js](https://github.com/commit-intl/omen/blob/v0.6.0/src/commands/serve.js)_
+_See code: [src/commands/serve.js](https://github.com/commit-intl/omen/blob/v0.6.1/src/commands/serve.js)_
 <!-- commandsstop -->
 * [`omen build`](#omen-build)
 * [`omen help [COMMAND]`](#omen-help-command)
