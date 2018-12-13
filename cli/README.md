@@ -4,9 +4,9 @@ omen
 all in one CLI for omen
 
 [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
-[![Version](https://img.shields.io/npm/v/omen.svg)](https://npmjs.org/package/omen)
-[![Downloads/week](https://img.shields.io/npm/dw/omen.svg)](https://npmjs.org/package/omen)
-[![License](https://img.shields.io/npm/l/omen.svg)](https://github.com/commit-intl/omen/blob/master/package.json)
+[![Version](https://img.shields.io/npm/v/@omen/cli.svg)](https://npmjs.org/package/@omen/cli)
+[![Downloads/week](https://img.shields.io/npm/dw/@omen/cli.svg)](https://npmjs.org/package/omen)
+[![License](https://img.shields.io/npm/l/@omen/cli.svg)](https://github.com/commit-intl/omen/blob/master/package.json)
 
 <!-- toc -->
 * [Usage](#usage)
@@ -19,7 +19,7 @@ $ npm install -g @omen/cli
 $ omen COMMAND
 running command...
 $ omen (-v|--version|version)
-@omen/cli/0.6.3 linux-x64 node-v10.14.1
+@omen/cli/0.6.5 linux-x64 node-v10.14.1
 $ omen --help [COMMAND]
 USAGE
   $ omen COMMAND
@@ -48,7 +48,7 @@ DESCRIPTION
   ...
 ```
 
-_See code: [src/commands/build.js](https://github.com/commit-intl/omen/blob/v0.6.3/src/commands/build.js)_
+_See code: [src/commands/build.js](https://github.com/commit-intl/omen/blob/v0.6.5/src/commands/build.js)_
 
 ## `omen export`
 
@@ -66,7 +66,7 @@ DESCRIPTION
   ...
 ```
 
-_See code: [src/commands/export.js](https://github.com/commit-intl/omen/blob/v0.6.3/src/commands/export.js)_
+_See code: [src/commands/export.js](https://github.com/commit-intl/omen/blob/v0.6.5/src/commands/export.js)_
 
 ## `omen help [COMMAND]`
 
@@ -83,7 +83,7 @@ OPTIONS
   --all  see all commands in CLI
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.1.3/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.1.4/src/commands/help.ts)_
 
 ## `omen serve`
 
@@ -102,5 +102,5 @@ DESCRIPTION
   ...
 ```
 
-_See code: [src/commands/serve.js](https://github.com/commit-intl/omen/blob/v0.6.3/src/commands/serve.js)_
+_See code: [src/commands/serve.js](https://github.com/commit-intl/omen/blob/v0.6.5/src/commands/serve.js)_
 <!-- commandsstop -->
