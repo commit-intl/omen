@@ -32,8 +32,7 @@ export const flattenDeepArray = (array) => {
   for (let i = 0; i < array.length; i++) {
     if (array[i] && array[i].constructor === Array) {
       result.push(...flattenDeepArray(array[i]));
-    }
-    else {
+    } else {
       result.push(array[i]);
     }
   }
@@ -71,7 +70,7 @@ export const htmlPropMap = {
       }
     }
     return names;
-  }
+  },
 };
 
 export const DEHYDRATE = 0;
@@ -79,12 +78,11 @@ export const HYDRATED = 1;
 export const REHYDRATE = 2;
 
 
-
 export const convertURLtoObject = (url) => {
   if (!url) return null;
 
   if (typeof url === 'string') {
-    url = new URL(url);
+    url = new URL(url, location.href);
   }
 
   return ({

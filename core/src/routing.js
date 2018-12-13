@@ -27,7 +27,7 @@ const Routing = function (options) {
       }
 
       const navigate = (href) => {
-        let url = convertURLtoObject(new URL(href));
+        let url = convertURLtoObject(href);
         updateLoctaion(url);
         window.history.pushState(url, url.href, url.pathname);
       };
