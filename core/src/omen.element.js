@@ -84,7 +84,6 @@ export default class OmenElement {
         ? document.createElementNS(this.namespace, this.tag)
         : document.createElement(this.tag);
 
-      // ENABLE INTERNAL ROUTING
       if (this.tag === 'a') {
         const originalOnclick = this.props.onClick;
         this.props.onClick = (event) => {
@@ -94,10 +93,10 @@ export default class OmenElement {
           }
 
           if (result
-            && (!event.target.target || event.target.target === '_self')
-            && document.__omen.isInternalUrl(event.target.href)
+            && (!event.currentTarget.target || event.currentTarget.target === '_self')
+            && document.__omen.isInternalUrl(event.currentTarget.href)
           ) {
-            document.__omen.navigate(event.target.href);
+            document.__omen.navigate(event.currentTarget.href);
             result = false;
             event.preventDefault('');
           }
