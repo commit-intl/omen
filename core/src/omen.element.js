@@ -212,6 +212,8 @@ function OmenElement(tag, namespace, props, data, children, store) {
     },
 
     setChild(pos, ...children) {
+      const filteredChildren = children.filter((child) => child != null);
+
       const getNode = (child) => (child && child.__isOmenElement) ? child.element : child;
 
       let prevIndex = 0;
@@ -225,15 +227,15 @@ function OmenElement(tag, namespace, props, data, children, store) {
         let i = 0;
         while (i < group.length) {
           const currentNode = self.element.childNodes[prevIndex + i];
-          const newNode = getNode(children[i]);
-          if (i < children.length) {
+          const newNode = getNode(filteredChildren[i]);
+          if (i < filteredChildren.length) {
             if (currentNode) {
               if (!currentNode.isSameNode(newNode)) {
                 self.element.replaceChild(newNode, currentNode);
                 if (group[i] && group[i].destroy) {
                   group[i].destroy();
                 }
-                group[i] = children[i];
+                group[i] = filteredChildren[i];
               }
             } else {
               self.element.insertBefore(newNode, null);
@@ -251,11 +253,11 @@ function OmenElement(tag, namespace, props, data, children, store) {
         const insertBeforeIndex = prevIndex + group.length;
         const insertBefore = self.element.childNodes[insertBeforeIndex];
 
-        while (i < children.length) {
-          const newNode = getNode(children[i]);
+        while (i < filteredChildren.length) {
+          const newNode = getNode(filteredChildren[i]);
           if (newNode) {
             self.element.insertBefore(newNode, insertBefore);
-            group[i] = children[i];
+            group[i] = filteredChildren[i];
           }
           i++;
         }
