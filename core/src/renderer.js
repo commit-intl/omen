@@ -88,8 +88,10 @@ const Renderer = {
   render(appendTo, root, routingOptions) {
     document.__omen =  document.__omen || {};
 
+    const routing = Routing({...config.routing, ...routingOptions});
+    const store = new Store();
+
     const init = () => {
-      const routing = Routing({...config.routing, ...routingOptions});
       let promise;
       if (document.__omen.isServer) {
         promise = routing.getInitialState()
@@ -98,15 +100,17 @@ const Renderer = {
             scriptInitialState.innerHTML = `document.__omen={initialState:${JSON.stringify(initialState)}};`;
             document.__omen.initialState = initialState;
             document.head.appendChild(scriptInitialState);
-            return new Store(initialState);
+            store.set(initialState);
+            return store;
           });
       } else {
         let initialState = document.__omen.initialState;
-        promise = new Promise(resolve => resolve(new Store(initialState)));
+        store.set(initialState);
+        promise = Promise.resolve(store);
       }
 
       promise
-        .then((store) => {
+        .then(() => {
           routing.init(store);
           const omenElement = renderOmenElement(root, store);
           const mode = document.__omen.isServer
@@ -128,6 +132,11 @@ const Renderer = {
       document.addEventListener('DOMContentLoaded', init);
     } else {
       init();
+    }
+
+    return {
+      store,
+      routing,
     }
   },
 };

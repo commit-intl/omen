@@ -1,13 +1,13 @@
 {
   "name": "@omen/core",
-  "version": "0.6.6",
+  "version": "0.6.8",
   "description": "data driven javascript frontend library, based on JSX",
   "main": "lib/renderer.js",
   "scripts": {
     "test": "echo  NO TESTS DEFINED! TODO: define some",
-    "build": "rm -Rf lib && cp -Rf src lib",
-    "build:min": "rm -Rf lib && set BABEL_ENV=publish&&  babel src --out-dir lib",
-    "prepublishOnly": "npm run build:min"
+    "build": "rm -Rf lib && babel src --out-dir lib",
+    "build:min": "rm -Rf lib && babel src --minified --out-dir lib",
+    "prepublishOnly": "npm run build"
   },
   "author": "Dustin Hagemeier <dustin@commit.international>",
   "license": "AGPL-3.0",
@@ -37,9 +37,8 @@
     "babel-plugin-transform-react-jsx": "^6.24.1",
     "babel-plugin-transform-regenerator": "^6.26.0",
     "babel-plugin-transform-runtime": "^6.23.0",
-    "babel-preset-babili": "^0.1.4",
     "babel-preset-es2015": "^6.24.1",
-    "babel-preset-minify": "^0.4.3",
+    "babel-preset-minify": "^0.5.0",
     "babel-preset-stage-0": "^6.24.1",
     "eslint": "^3.2.2"
   }

@@ -6,18 +6,5 @@
       "regenerator": true
     }],
     ["transform-react-jsx", { "pragma": "omen.create" }]
-  ],
-  "env": {
-    "publish": {
-      "presets": [
-        [
-          "minify",
-          {
-            "mangle": false,
-            "evaluate": false
-          }
-        ]
-      ]
-    }
-  }
+  ]
 }
